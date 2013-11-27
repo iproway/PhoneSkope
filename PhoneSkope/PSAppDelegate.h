@@ -1,6 +1,7 @@
 
 
 #import <UIKit/UIKit.h>
+#import "PSCameraViewController.h"
 
 @interface PSAppDelegate : UIResponder <UIApplicationDelegate>
 
