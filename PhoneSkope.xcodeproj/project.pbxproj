@@ -34,6 +34,28 @@
 		DC1712EB1845D2DA00006D21 /* CustomSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1712EA1845D2DA00006D21 /* CustomSwitch.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DC1712EC1845D2F500006D21 /* CustomSwitch.h in Sources */ = {isa = PBXBuildFile; fileRef = DC1712E91845D2DA00006D21 /* CustomSwitch.h */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DC1712EE1845D4C400006D21 /* CustomSwitch.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC1712ED1845D4C400006D21 /* CustomSwitch.xib */; };
+		DC1712F41846169D00006D21 /* A_letter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712EF1846169D00006D21 /* A_letter@2x.png */; };
+		DC1712F51846169D00006D21 /* camera_rotate_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F01846169D00006D21 /* camera_rotate_image@2x.png */; };
+		DC1712F61846169D00006D21 /* camera_start_rotate_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F11846169D00006D21 /* camera_start_rotate_image@2x.png */; };
+		DC1712F71846169D00006D21 /* flash_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F21846169D00006D21 /* flash_icon@2x.png */; };
+		DC1712F81846169D00006D21 /* rectImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F31846169D00006D21 /* rectImage@2x.png */; };
+		DC1712FA18461BA200006D21 /* check-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F918461BA200006D21 /* check-icon@2x.png */; };
+		DC1713001846318700006D21 /* PSFilterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1712FF1846318700006D21 /* PSFilterObject.m */; };
+		DC1713031846351D00006D21 /* PSFilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1713021846351D00006D21 /* PSFilterManager.m */; };
+		DC7EF0DE1846E025006BF98B /* bg-btn-no-select.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D21846E025006BF98B /* bg-btn-no-select.png */; };
+		DC7EF0DF1846E025006BF98B /* bg-btn-no-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D31846E025006BF98B /* bg-btn-no-select@2x.png */; };
+		DC7EF0E01846E025006BF98B /* bg-btn-selected.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D41846E025006BF98B /* bg-btn-selected.png */; };
+		DC7EF0E11846E025006BF98B /* bg-btn-selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D51846E025006BF98B /* bg-btn-selected@2x.png */; };
+		DC7EF0E21846E025006BF98B /* icon-flash-auto-focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D61846E025006BF98B /* icon-flash-auto-focus@2x.png */; };
+		DC7EF0E31846E025006BF98B /* icon-flash-auto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D71846E025006BF98B /* icon-flash-auto@2x.png */; };
+		DC7EF0E41846E025006BF98B /* icon-flash-focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D81846E025006BF98B /* icon-flash-focus@2x.png */; };
+		DC7EF0E51846E025006BF98B /* icon-flash-off-focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D91846E025006BF98B /* icon-flash-off-focus@2x.png */; };
+		DC7EF0E61846E025006BF98B /* icon-flash-off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0DA1846E025006BF98B /* icon-flash-off@2x.png */; };
+		DC7EF0E71846E025006BF98B /* icon-flash-sound-focus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0DB1846E025006BF98B /* icon-flash-sound-focus@2x.png */; };
+		DC7EF0E81846E025006BF98B /* icon-flash-sound@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0DC1846E025006BF98B /* icon-flash-sound@2x.png */; };
+		DC7EF0E91846E025006BF98B /* icon-flash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0DD1846E025006BF98B /* icon-flash@2x.png */; };
+		DC7EF0EC1846ECA2006BF98B /* bg-flash-btn-no-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0EA1846ECA2006BF98B /* bg-flash-btn-no-select@2x.png */; };
+		DC7EF0ED1846ECA2006BF98B /* bg-flash-btn-selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0EB1846ECA2006BF98B /* bg-flash-btn-selected@2x.png */; };
 		DCA0614F182910D0004EED8F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA0614E182910D0004EED8F /* Foundation.framework */; };
 		DCA06151182910D0004EED8F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA06150182910D0004EED8F /* CoreGraphics.framework */; };
 		DCA06153182910D0004EED8F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA06152182910D0004EED8F /* UIKit.framework */; };
@@ -304,6 +326,30 @@
 		DC1712E91845D2DA00006D21 /* CustomSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSwitch.h; sourceTree = "<group>"; };
 		DC1712EA1845D2DA00006D21 /* CustomSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSwitch.m; sourceTree = "<group>"; };
 		DC1712ED1845D4C400006D21 /* CustomSwitch.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomSwitch.xib; sourceTree = "<group>"; };
+		DC1712EF1846169D00006D21 /* A_letter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "A_letter@2x.png"; sourceTree = "<group>"; };
+		DC1712F01846169D00006D21 /* camera_rotate_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera_rotate_image@2x.png"; sourceTree = "<group>"; };
+		DC1712F11846169D00006D21 /* camera_start_rotate_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "camera_start_rotate_image@2x.png"; sourceTree = "<group>"; };
+		DC1712F21846169D00006D21 /* flash_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flash_icon@2x.png"; sourceTree = "<group>"; };
+		DC1712F31846169D00006D21 /* rectImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rectImage@2x.png"; sourceTree = "<group>"; };
+		DC1712F918461BA200006D21 /* check-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check-icon@2x.png"; sourceTree = "<group>"; };
+		DC1712FE1846318700006D21 /* PSFilterObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSFilterObject.h; sourceTree = "<group>"; };
+		DC1712FF1846318700006D21 /* PSFilterObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSFilterObject.m; sourceTree = "<group>"; };
+		DC1713011846351D00006D21 /* PSFilterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSFilterManager.h; sourceTree = "<group>"; };
+		DC1713021846351D00006D21 /* PSFilterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSFilterManager.m; sourceTree = "<group>"; };
+		DC7EF0D21846E025006BF98B /* bg-btn-no-select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-no-select.png"; sourceTree = "<group>"; };
+		DC7EF0D31846E025006BF98B /* bg-btn-no-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-no-select@2x.png"; sourceTree = "<group>"; };
+		DC7EF0D41846E025006BF98B /* bg-btn-selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-selected.png"; sourceTree = "<group>"; };
+		DC7EF0D51846E025006BF98B /* bg-btn-selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-selected@2x.png"; sourceTree = "<group>"; };
+		DC7EF0D61846E025006BF98B /* icon-flash-auto-focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-auto-focus@2x.png"; sourceTree = "<group>"; };
+		DC7EF0D71846E025006BF98B /* icon-flash-auto@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-auto@2x.png"; sourceTree = "<group>"; };
+		DC7EF0D81846E025006BF98B /* icon-flash-focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-focus@2x.png"; sourceTree = "<group>"; };
+		DC7EF0D91846E025006BF98B /* icon-flash-off-focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-off-focus@2x.png"; sourceTree = "<group>"; };
+		DC7EF0DA1846E025006BF98B /* icon-flash-off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-off@2x.png"; sourceTree = "<group>"; };
+		DC7EF0DB1846E025006BF98B /* icon-flash-sound-focus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-sound-focus@2x.png"; sourceTree = "<group>"; };
+		DC7EF0DC1846E025006BF98B /* icon-flash-sound@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash-sound@2x.png"; sourceTree = "<group>"; };
+		DC7EF0DD1846E025006BF98B /* icon-flash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-flash@2x.png"; sourceTree = "<group>"; };
+		DC7EF0EA1846ECA2006BF98B /* bg-flash-btn-no-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-flash-btn-no-select@2x.png"; sourceTree = "<group>"; };
+		DC7EF0EB1846ECA2006BF98B /* bg-flash-btn-selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-flash-btn-selected@2x.png"; sourceTree = "<group>"; };
 		DCA0614B182910D0004EED8F /* PhoneSkope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhoneSkope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCA0614E182910D0004EED8F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DCA06150182910D0004EED8F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -721,6 +767,8 @@
 			children = (
 				DC171281184590B600006D21 /* PSVideoObject.h */,
 				DC171282184590B600006D21 /* PSVideoObject.m */,
+				DC1712FE1846318700006D21 /* PSFilterObject.h */,
+				DC1712FF1846318700006D21 /* PSFilterObject.m */,
 			);
 			path = VideoObject;
 			sourceTree = "<group>";
@@ -798,11 +846,13 @@
 				DC171280184590B600006D21 /* VideoObject */,
 				DC1712501845908300006D21 /* PSGeneral.h */,
 				DC1712511845908300006D21 /* PSGeneral.m */,
-				DCA0615D182910D0004EED8F /* PSAppDelegate.h */,
-				DCA0615E182910D0004EED8F /* PSAppDelegate.m */,
+				DC1713011846351D00006D21 /* PSFilterManager.h */,
+				DC1713021846351D00006D21 /* PSFilterManager.m */,
 				DCD780F61844FC79008D7FF8 /* PSCameraViewController.h */,
 				DCD780F71844FC79008D7FF8 /* PSCameraViewController.m */,
 				DCD780F81844FC79008D7FF8 /* PSCameraViewController.xib */,
+				DCA0615D182910D0004EED8F /* PSAppDelegate.h */,
+				DCA0615E182910D0004EED8F /* PSAppDelegate.m */,
 				DCD781321844FEB2008D7FF8 /* Filter */,
 				DCA06169182910D1004EED8F /* Images.xcassets */,
 				DCD780FB1844FEAA008D7FF8 /* resources */,
@@ -1190,6 +1240,26 @@
 		DCD780FB1844FEAA008D7FF8 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				DC7EF0EA1846ECA2006BF98B /* bg-flash-btn-no-select@2x.png */,
+				DC7EF0EB1846ECA2006BF98B /* bg-flash-btn-selected@2x.png */,
+				DC7EF0D21846E025006BF98B /* bg-btn-no-select.png */,
+				DC7EF0D31846E025006BF98B /* bg-btn-no-select@2x.png */,
+				DC7EF0D41846E025006BF98B /* bg-btn-selected.png */,
+				DC7EF0D51846E025006BF98B /* bg-btn-selected@2x.png */,
+				DC7EF0D61846E025006BF98B /* icon-flash-auto-focus@2x.png */,
+				DC7EF0D71846E025006BF98B /* icon-flash-auto@2x.png */,
+				DC7EF0D81846E025006BF98B /* icon-flash-focus@2x.png */,
+				DC7EF0D91846E025006BF98B /* icon-flash-off-focus@2x.png */,
+				DC7EF0DA1846E025006BF98B /* icon-flash-off@2x.png */,
+				DC7EF0DB1846E025006BF98B /* icon-flash-sound-focus@2x.png */,
+				DC7EF0DC1846E025006BF98B /* icon-flash-sound@2x.png */,
+				DC7EF0DD1846E025006BF98B /* icon-flash@2x.png */,
+				DC1712F918461BA200006D21 /* check-icon@2x.png */,
+				DC1712EF1846169D00006D21 /* A_letter@2x.png */,
+				DC1712F01846169D00006D21 /* camera_rotate_image@2x.png */,
+				DC1712F11846169D00006D21 /* camera_start_rotate_image@2x.png */,
+				DC1712F21846169D00006D21 /* flash_icon@2x.png */,
+				DC1712F31846169D00006D21 /* rectImage@2x.png */,
 				DC1712DD1845AD7A00006D21 /* switchOne_off@2x.png */,
 				DC1712DE1845AD7A00006D21 /* switchOne_on@2x.png */,
 				DC1712DF1845AD7A00006D21 /* switchTwo_off@2x.png */,
@@ -1347,24 +1417,33 @@
 			files = (
 				DCD7811F1844FEAA008D7FF8 /* infor_rightbutton@2x.png in Resources */,
 				DCD7812A1844FEAA008D7FF8 /* split_round@2x.png in Resources */,
+				DC1712FA18461BA200006D21 /* check-icon@2x.png in Resources */,
+				DC1712F61846169D00006D21 /* camera_start_rotate_image@2x.png in Resources */,
 				DCD781281844FEAA008D7FF8 /* photo_menu_icon_highlight@2x.png in Resources */,
 				DC1712D51845A6E800006D21 /* PSCustomCell.xib in Resources */,
 				DCD781181844FEAA008D7FF8 /* camera_background@2x.png in Resources */,
+				DC7EF0E31846E025006BF98B /* icon-flash-auto@2x.png in Resources */,
 				DC1712E21845AD7A00006D21 /* switchOne_on@2x.png in Resources */,
 				DCD7812D1844FEAA008D7FF8 /* textboxSplit@2x.png in Resources */,
+				DC7EF0EC1846ECA2006BF98B /* bg-flash-btn-no-select@2x.png in Resources */,
 				DCD7811D1844FEAA008D7FF8 /* infor@2x.png in Resources */,
 				DCD781251844FEAA008D7FF8 /* other_background@2x.png in Resources */,
+				DC7EF0E41846E025006BF98B /* icon-flash-focus@2x.png in Resources */,
 				DCD7813A18450BD4008D7FF8 /* segment_1px_selected.png in Resources */,
 				DCD780FA1844FC79008D7FF8 /* PSCameraViewController.xib in Resources */,
 				DCD7811E1844FEAA008D7FF8 /* infor_leftbutton@2x.png in Resources */,
 				DCD7813E18450C87008D7FF8 /* segment_divider.png in Resources */,
+				DC7EF0E81846E025006BF98B /* icon-flash-sound@2x.png in Resources */,
 				DCD781231844FEAA008D7FF8 /* optionButton@2x.png in Resources */,
 				DC1712E41845AD7A00006D21 /* switchTwo_on@2x.png in Resources */,
 				DCD781191844FEAA008D7FF8 /* camera_icon@2x.png in Resources */,
 				DC1712EE1845D4C400006D21 /* CustomSwitch.xib in Resources */,
+				DC7EF0E11846E025006BF98B /* bg-btn-selected@2x.png in Resources */,
 				DCD781171844FEAA008D7FF8 /* buttom_bar@2x.png in Resources */,
+				DC7EF0E71846E025006BF98B /* icon-flash-sound-focus@2x.png in Resources */,
 				DCD781211844FEAA008D7FF8 /* menulist_icon_highlight@2x.png in Resources */,
 				DCD781221844FEAA008D7FF8 /* next@2x.png in Resources */,
+				DC7EF0E51846E025006BF98B /* icon-flash-off-focus@2x.png in Resources */,
 				DCD781311844FEAA008D7FF8 /* zoom_selected@2x.png in Resources */,
 				DCD7812E1844FEAA008D7FF8 /* video_capture_icon@2x.png in Resources */,
 				DCD7811A1844FEAA008D7FF8 /* camera_menu_icon@2x.png in Resources */,
@@ -1372,18 +1451,29 @@
 				DCD7812C1844FEAA008D7FF8 /* switch_on@2x.png in Resources */,
 				DCD7813818450BD4008D7FF8 /* segment_1px_no_select.png in Resources */,
 				DCD781241844FEAA008D7FF8 /* optionbutton_highlight@2x.png in Resources */,
+				DC7EF0E21846E025006BF98B /* icon-flash-auto-focus@2x.png in Resources */,
+				DC1712F71846169D00006D21 /* flash_icon@2x.png in Resources */,
 				DCD7811B1844FEAA008D7FF8 /* flash_select@2x.png in Resources */,
+				DC7EF0E91846E025006BF98B /* icon-flash@2x.png in Resources */,
 				DCA0616A182910D1004EED8F /* Images.xcassets in Resources */,
 				DCD781301844FEAA008D7FF8 /* zoom_out@2x.png in Resources */,
+				DC7EF0E01846E025006BF98B /* bg-btn-selected.png in Resources */,
+				DC7EF0DF1846E025006BF98B /* bg-btn-no-select@2x.png in Resources */,
 				DCD7811C1844FEAA008D7FF8 /* imagestest.jpeg in Resources */,
 				DCD7812B1844FEAA008D7FF8 /* switch_off@2x.png in Resources */,
+				DC7EF0ED1846ECA2006BF98B /* bg-flash-btn-selected@2x.png in Resources */,
+				DC1712F51846169D00006D21 /* camera_rotate_image@2x.png in Resources */,
+				DC7EF0E61846E025006BF98B /* icon-flash-off@2x.png in Resources */,
 				DCD7813F18450C87008D7FF8 /* segment_divider@2x.png in Resources */,
 				DC1712E31845AD7A00006D21 /* switchTwo_off@2x.png in Resources */,
 				DCD781201844FEAA008D7FF8 /* menulist_icon@2x.png in Resources */,
 				DCD781271844FEAA008D7FF8 /* photo_menu_icon@2x.png in Resources */,
 				DCD781291844FEAA008D7FF8 /* split@2x.png in Resources */,
+				DC1712F41846169D00006D21 /* A_letter@2x.png in Resources */,
 				DCA06159182910D0004EED8F /* InfoPlist.strings in Resources */,
 				DCD781261844FEAA008D7FF8 /* other_menu_icon@2x.png in Resources */,
+				DC7EF0DE1846E025006BF98B /* bg-btn-no-select.png in Resources */,
+				DC1712F81846169D00006D21 /* rectImage@2x.png in Resources */,
 				DC1712E11845AD7A00006D21 /* switchOne_off@2x.png in Resources */,
 				DCD7813918450BD4008D7FF8 /* segment_1px_no_select@2x.png in Resources */,
 				DCD7813B18450BD4008D7FF8 /* segment_1px_selected@2x.png in Resources */,
@@ -1428,6 +1518,7 @@
 				DCD780781844FB09008D7FF8 /* GPUImageDissolveBlendFilter.m in Sources */,
 				DCD780751844FB09008D7FF8 /* GPUImageDilationFilter.m in Sources */,
 				DCD780E81844FB09008D7FF8 /* GPUImageTwoPassTextureSamplingFilter.m in Sources */,
+				DC1713031846351D00006D21 /* PSFilterManager.m in Sources */,
 				DCD780F11844FB09008D7FF8 /* GPUImageZoomBlurFilter.m in Sources */,
 				DCD780A71844FB09008D7FF8 /* GPUImageMedianFilter.m in Sources */,
 				DCD780EE1844FB09008D7FF8 /* GPUImageWeakPixelInclusionFilter.m in Sources */,
@@ -1443,6 +1534,7 @@
 				DCD780C21844FB09008D7FF8 /* GPUImageRawDataOutput.m in Sources */,
 				DCD780A31844FB09008D7FF8 /* GPUImageLuminanceThresholdFilter.m in Sources */,
 				DCD780F21844FB09008D7FF8 /* GPUImageContext.m in Sources */,
+				DC1713001846318700006D21 /* PSFilterObject.m in Sources */,
 				DCD780691844FB09008D7FF8 /* GPUImageColorBlendFilter.m in Sources */,
 				DCD780911844FB09008D7FF8 /* GPUImageHoughTransformLineDetector.m in Sources */,
 				DCD780E41844FB09008D7FF8 /* GPUImageTransformFilter.m in Sources */,

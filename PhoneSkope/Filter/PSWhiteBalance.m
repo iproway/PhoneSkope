@@ -14,6 +14,14 @@
 {
     return [NSArray arrayWithObjects:@"Auto", @"incandescent", @"fluorescent", @"daylight", @"cloudy-daylight", nil];
 }
+
+-(GPUImageWhiteBalanceFilter*)getDefaultValue
+{
+    GPUImageOutput<GPUImageInput>* filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    [(GPUImageWhiteBalanceFilter *)filter setTemperature:5000];
+    return (GPUImageWhiteBalanceFilter *)filter;
+}
+
 -(GPUImageWhiteBalanceFilter *)getWhiteblance:(WhiteBlanceType)type;
 {
     
