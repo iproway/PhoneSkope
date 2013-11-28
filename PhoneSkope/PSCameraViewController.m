@@ -135,6 +135,16 @@
     UIImage *segmentUnselected = [[UIImage imageNamed:@"segment_1px_no_select.png"]
                                   resizableImageWithCapInsets:UIEdgeInsetsMake(0, 7, 0, 7)];
     
+    [[UISegmentedControl appearance] setTitleTextAttributes:@{
+                                                        UITextAttributeFont : [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f],
+                                                        UITextAttributeTextColor : [UIColor whiteColor],}
+                                             forState:UIControlStateNormal];
+    
+    [[UISegmentedControl appearance] setTitleTextAttributes:@{
+                                                        UITextAttributeFont : [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f],
+                                                        UITextAttributeTextColor : [UIColor colorWithRed:0/255.0 green:138/255.0 blue:196/255.0 alpha:1.0],}
+                                             forState:UIControlStateSelected];
+    
     [[UISegmentedControl appearance] setBackgroundImage:segmentUnselected
                                                forState:UIControlStateNormal
                                              barMetrics:UIBarMetricsDefault];
