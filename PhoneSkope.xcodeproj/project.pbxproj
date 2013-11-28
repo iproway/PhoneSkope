@@ -23,7 +23,6 @@
 		DC17127D184590A200006D21 /* PSTransform_2D.m in Sources */ = {isa = PBXBuildFile; fileRef = DC17126C184590A200006D21 /* PSTransform_2D.m */; };
 		DC17127E184590A200006D21 /* PSTransform_3D.m in Sources */ = {isa = PBXBuildFile; fileRef = DC17126E184590A200006D21 /* PSTransform_3D.m */; };
 		DC17127F184590A200006D21 /* PSWhiteBalance.m in Sources */ = {isa = PBXBuildFile; fileRef = DC171270184590A200006D21 /* PSWhiteBalance.m */; };
-		DC171283184590B600006D21 /* PSVideoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC171282184590B600006D21 /* PSVideoObject.m */; };
 		DC1712851845952A00006D21 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1712841845952A00006D21 /* GPUImage.framework */; };
 		DC1712D31845A6C800006D21 /* PSCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1712D21845A6C800006D21 /* PSCustomCell.m */; };
 		DC1712D51845A6E800006D21 /* PSCustomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC1712D41845A6E800006D21 /* PSCustomCell.xib */; };
@@ -42,6 +41,8 @@
 		DC1712FA18461BA200006D21 /* check-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC1712F918461BA200006D21 /* check-icon@2x.png */; };
 		DC1713001846318700006D21 /* PSFilterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1712FF1846318700006D21 /* PSFilterObject.m */; };
 		DC1713031846351D00006D21 /* PSFilterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1713021846351D00006D21 /* PSFilterManager.m */; };
+		DC1A0EDC1847452400E04E42 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1A0EDB1847452400E04E42 /* CoreImage.framework */; };
+		DC1A0EDE1847454200E04E42 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC1A0EDD1847454200E04E42 /* CoreFoundation.framework */; };
 		DC7EF0DE1846E025006BF98B /* bg-btn-no-select.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D21846E025006BF98B /* bg-btn-no-select.png */; };
 		DC7EF0DF1846E025006BF98B /* bg-btn-no-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D31846E025006BF98B /* bg-btn-no-select@2x.png */; };
 		DC7EF0E01846E025006BF98B /* bg-btn-selected.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7EF0D41846E025006BF98B /* bg-btn-selected.png */; };
@@ -313,8 +314,6 @@
 		DC17126E184590A200006D21 /* PSTransform_3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTransform_3D.m; sourceTree = "<group>"; };
 		DC17126F184590A200006D21 /* PSWhiteBalance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWhiteBalance.h; sourceTree = "<group>"; };
 		DC171270184590A200006D21 /* PSWhiteBalance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWhiteBalance.m; sourceTree = "<group>"; };
-		DC171281184590B600006D21 /* PSVideoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSVideoObject.h; sourceTree = "<group>"; };
-		DC171282184590B600006D21 /* PSVideoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSVideoObject.m; sourceTree = "<group>"; };
 		DC1712841845952A00006D21 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GPUImage.framework; path = PhoneSkope/libs/GPUImage.framework; sourceTree = "<group>"; };
 		DC1712D11845A6C800006D21 /* PSCustomCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSCustomCell.h; sourceTree = "<group>"; };
 		DC1712D21845A6C800006D21 /* PSCustomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSCustomCell.m; sourceTree = "<group>"; };
@@ -336,6 +335,8 @@
 		DC1712FF1846318700006D21 /* PSFilterObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSFilterObject.m; sourceTree = "<group>"; };
 		DC1713011846351D00006D21 /* PSFilterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSFilterManager.h; sourceTree = "<group>"; };
 		DC1713021846351D00006D21 /* PSFilterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSFilterManager.m; sourceTree = "<group>"; };
+		DC1A0EDB1847452400E04E42 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		DC1A0EDD1847454200E04E42 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		DC7EF0D21846E025006BF98B /* bg-btn-no-select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-no-select.png"; sourceTree = "<group>"; };
 		DC7EF0D31846E025006BF98B /* bg-btn-no-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-no-select@2x.png"; sourceTree = "<group>"; };
 		DC7EF0D41846E025006BF98B /* bg-btn-selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg-btn-selected.png"; sourceTree = "<group>"; };
@@ -737,6 +738,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC1A0EDE1847454200E04E42 /* CoreFoundation.framework in Frameworks */,
+				DC1A0EDC1847452400E04E42 /* CoreImage.framework in Frameworks */,
 				DC1712851845952A00006D21 /* GPUImage.framework in Frameworks */,
 				DCA063B01829124A004EED8F /* QuartzCore.framework in Frameworks */,
 				DCA063AE18291243004EED8F /* AVFoundation.framework in Frameworks */,
@@ -765,8 +768,6 @@
 		DC171280184590B600006D21 /* VideoObject */ = {
 			isa = PBXGroup;
 			children = (
-				DC171281184590B600006D21 /* PSVideoObject.h */,
-				DC171282184590B600006D21 /* PSVideoObject.m */,
 				DC1712FE1846318700006D21 /* PSFilterObject.h */,
 				DC1712FF1846318700006D21 /* PSFilterObject.m */,
 			);
@@ -823,6 +824,8 @@
 		DCA0614D182910D0004EED8F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC1A0EDD1847454200E04E42 /* CoreFoundation.framework */,
+				DC1A0EDB1847452400E04E42 /* CoreImage.framework */,
 				DC1712841845952A00006D21 /* GPUImage.framework */,
 				DCA063B118291276004EED8F /* SenTestingKit.framework */,
 				DCA063AF1829124A004EED8F /* QuartzCore.framework */,
@@ -1525,7 +1528,6 @@
 				DCD780B51844FB09008D7FF8 /* GPUImageOutput.m in Sources */,
 				DCD780801844FB09008D7FF8 /* GPUImageFilter.m in Sources */,
 				DCD780991844FB09008D7FF8 /* GPUImageLanczosResamplingFilter.m in Sources */,
-				DC171283184590B600006D21 /* PSVideoObject.m in Sources */,
 				DCD7809F1844FB09008D7FF8 /* GPUImageLocalBinaryPatternFilter.m in Sources */,
 				DCD780571844FB09008D7FF8 /* GPUImage3x3ConvolutionFilter.m in Sources */,
 				DCD780EB1844FB09008D7FF8 /* GPUImageVideoCamera.m in Sources */,
@@ -1798,8 +1800,10 @@
 		DCA06181182910D1004EED8F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Nathan Keilar (NNS2VYCNN3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -1810,6 +1814,8 @@
 				INFOPLIST_FILE = "PhoneSkope/PhoneSkope-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "D28CC732-A60B-4D2A-B8CB-E9F0197E197F";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1817,8 +1823,10 @@
 		DCA06182182910D1004EED8F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Nathan Keilar (NNS2VYCNN3)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -1829,6 +1837,8 @@
 				INFOPLIST_FILE = "PhoneSkope/PhoneSkope-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "D28CC732-A60B-4D2A-B8CB-E9F0197E197F";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

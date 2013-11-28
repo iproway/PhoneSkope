@@ -14,10 +14,23 @@
     return self;
 }
 
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status;
+{
+    NSLog(@"Switch Status = %d", status);
+    BOOL isOn = NO;
+    if (status == 1) {
+        isOn = YES;
+    }
+    if ([_switchDelegate respondsToSelector:@selector(changeSwitchStatus:)]) {
+        [_switchDelegate changeSwitchStatus:isOn];
+    }
+}
+
 - (void)setDataForCustomCell:(PSFilterObject *)data;
 {
     self.titleLabel.text = data.name;
     self.detailLabel.text = @"";
+    self.switchBtn.delegate = self;
     
     switch (data.cellType) {
         case CellCheckChoice:
@@ -41,6 +54,12 @@
         case CellSwithChoice:
         {
             self.switchBtn.hidden = NO;
+            if (data.isChecked) {
+                self.switchBtn.status = 0;
+            } else {
+                self.switchBtn.status = 1;
+            }
+            
             self.arrowBtn.hidden = YES;
             self.checkBtn.hidden = YES;
             

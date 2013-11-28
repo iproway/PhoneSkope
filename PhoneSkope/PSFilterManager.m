@@ -2,6 +2,8 @@
 
 #import "PSFilterManager.h"
 
+#define DEFAULT_INDEX -1
+
 @interface PSFilterManager()
 {
     PSWhiteBalance*         whiteBalanceObj;
@@ -250,7 +252,7 @@
         [obj1 setCameraFilterType:FilterTypeWhiteBlance];
         [obj1 setArrayValue:[self getMenuArray:FilterTypeWhiteBlance]];
         [obj1 setName:@"White blance"];
-        [obj1 setCurrentIndex:0];
+        [obj1 setCurrentIndex:DEFAULT_INDEX];
         [obj1 setValue:@""];
         [obj1 setIsChecked:NO];
         
@@ -262,7 +264,7 @@
         [obj2 setCameraFilterType:FilterTypeSceneMode];
         [obj2 setArrayValue:[self getMenuArray:FilterTypeSceneMode]];
         [obj2 setName:@"Scene mode"];
-        [obj2 setCurrentIndex:0];
+        [obj2 setCurrentIndex:DEFAULT_INDEX];
         [obj2 setValue:@""];
         [obj2 setIsChecked:NO];
         
@@ -274,7 +276,7 @@
         [obj3 setCameraFilterType:FilterTypeExposureMode];
         [obj3 setArrayValue:[self getMenuArray:FilterTypeExposureMode]];
         [obj3 setName:@"Exposure mode"];
-        [obj3 setCurrentIndex:0];
+        [obj3 setCurrentIndex:DEFAULT_INDEX];
         [obj3 setValue:@""];
         [obj3 setIsChecked:NO];
         
@@ -286,7 +288,7 @@
         [obj4 setCameraFilterType:FilterTypeExposureCompensation];
         [obj4 setArrayValue:[self getMenuArray:FilterTypeExposureCompensation]];
         [obj4 setName:@"Exposure compensation"];
-        [obj4 setCurrentIndex:0];
+        [obj4 setCurrentIndex:DEFAULT_INDEX];
         [obj4 setValue:@""];
         [obj4 setIsChecked:NO];
         
@@ -298,7 +300,7 @@
         [obj5 setCameraFilterType:FilterTypeFocusMode];
         [obj5 setArrayValue:[self getMenuArray:FilterTypeFocusMode]];
         [obj5 setName:@"Focus mode"];
-        [obj5 setCurrentIndex:0];
+        [obj5 setCurrentIndex:DEFAULT_INDEX];
         [obj5 setValue:@""];
         [obj5 setIsChecked:NO];
         
@@ -310,7 +312,7 @@
         [obj6 setCameraFilterType:FilterTypeBrightness];
         [obj6 setArrayValue:[self getMenuArray:FilterTypeBrightness]];
         [obj6 setName:@"Brightness"];
-        [obj6 setCurrentIndex:0];
+        [obj6 setCurrentIndex:DEFAULT_INDEX];
         [obj6 setValue:@""];
         [obj6 setIsChecked:NO];
         
@@ -322,7 +324,7 @@
         [obj7 setCameraFilterType:FilterTypeContrast];
         [obj7 setArrayValue:[self getMenuArray:FilterTypeContrast]];
         [obj7 setName:@"Constast"];
-        [obj7 setCurrentIndex:0];
+        [obj7 setCurrentIndex:DEFAULT_INDEX];
         [obj7 setValue:@""];
         [obj7 setIsChecked:NO];
         
@@ -334,7 +336,7 @@
         [obj8 setCameraFilterType:FilterTypeSaturation];
         [obj8 setArrayValue:[self getMenuArray:FilterTypeSaturation]];
         [obj8 setName:@"Saturation"];
-        [obj8 setCurrentIndex:0];
+        [obj8 setCurrentIndex:DEFAULT_INDEX];
         [obj8 setValue:@""];
         [obj8 setIsChecked:NO];
         
@@ -346,7 +348,7 @@
         [obj9 setCameraFilterType:FilterTypeSharpness];
         [obj9 setArrayValue:[self getMenuArray:FilterTypeSharpness]];
         [obj9 setName:@"Sharpness"];
-        [obj9 setCurrentIndex:0];
+        [obj9 setCurrentIndex:DEFAULT_INDEX];
         [obj9 setValue:@""];
         [obj9 setIsChecked:NO];
         
@@ -358,7 +360,7 @@
         [obj10 setCameraFilterType:FilterTypeRGB];
         [obj10 setArrayValue:[self getMenuArray:FilterTypeRGB]];
         [obj10 setName:@"RGB"];
-        [obj10 setCurrentIndex:0];
+        [obj10 setCurrentIndex:DEFAULT_INDEX];
         [obj10 setValue:@""];
         [obj10 setIsChecked:NO];
         
@@ -370,7 +372,7 @@
         [obj11 setCameraFilterType:FilterTypeTransform_2D];
         [obj11 setArrayValue:[self getMenuArray:FilterTypeTransform_2D]];
         [obj11 setName:@"Transform (2D)"];
-        [obj11 setCurrentIndex:0];
+        [obj11 setCurrentIndex:DEFAULT_INDEX];
         [obj11 setValue:@""];
         [obj11 setIsChecked:NO];
         
@@ -382,7 +384,7 @@
         [obj12 setCameraFilterType:FilterTypeTransform_3D];
         [obj12 setArrayValue:[self getMenuArray:FilterTypeTransform_3D]];
         [obj12 setName:@"Transform (3D)"];
-        [obj12 setCurrentIndex:0];
+        [obj12 setCurrentIndex:DEFAULT_INDEX];
         [obj12 setValue:@""];
         [obj12 setIsChecked:NO];
         
@@ -394,7 +396,7 @@
         [obj13 setCameraFilterType:FilterTypeCrop];
         [obj13 setArrayValue:[self getMenuArray:FilterTypeCrop]];
         [obj13 setName:@"CROP"];
-        [obj13 setCurrentIndex:0];
+        [obj13 setCurrentIndex:DEFAULT_INDEX];
         [obj13 setValue:@""];
         [obj13 setIsChecked:NO];
         
@@ -406,7 +408,7 @@
         [obj14 setCameraFilterType:FilterTypeMotionDetector];
         [obj14 setArrayValue:[self getMenuArray:FilterTypeMotionDetector]];
         [obj14 setName:@"Motion Detector"];
-        [obj14 setCurrentIndex:0];
+        [obj14 setCurrentIndex:DEFAULT_INDEX];
         [obj14 setValue:@""];
         [obj14 setIsChecked:NO];
         
@@ -418,7 +420,7 @@
         [obj15 setCameraFilterType:FilterTypeFaceDetection];
         [obj15 setArrayValue:[self getMenuArray:FilterTypeFaceDetection]];
         [obj15 setName:@"Face Detection"];
-        [obj15 setCurrentIndex:0];
+        [obj15 setCurrentIndex:DEFAULT_INDEX];
         [obj15 setValue:@""];
         [obj15 setIsChecked:NO];
         
@@ -437,7 +439,7 @@
         [obj1 setVideoFilterType:RotateVideoResolution];
         [obj1 setArrayValue:[self getMenuVideoArray:RotateVideoResolution]];
         [obj1 setName:@"Video resolution"];
-        [obj1 setCurrentIndex:0];
+        [obj1 setCurrentIndex:DEFAULT_INDEX];
         [obj1 setValue:@""];
         [obj1 setIsChecked:NO];
         
@@ -449,7 +451,7 @@
         [obj2 setVideoFilterType:RotateVideoFileFormat];
         [obj2 setArrayValue:[self getMenuVideoArray:RotateVideoFileFormat]];
         [obj2 setName:@"Video file format"];
-        [obj2 setCurrentIndex:0];
+        [obj2 setCurrentIndex:DEFAULT_INDEX];
         [obj2 setValue:@""];
         [obj2 setIsChecked:NO];
         
@@ -461,7 +463,7 @@
         [obj3 setVideoFilterType:RotateAutoRotateVideo];
         [obj3 setArrayValue:[self getMenuVideoArray:RotateAutoRotateVideo]];
         [obj3 setName:@"Auto rotate video"];
-        [obj3 setCurrentIndex:0];
+        [obj3 setCurrentIndex:DEFAULT_INDEX];
         [obj3 setValue:@""];
         [obj3 setIsChecked:NO];
         
@@ -480,7 +482,7 @@
         [obj1 setPhotoFilterType:PhotoResolution];
         [obj1 setArrayValue:[self getMenuPhotoArray:PhotoResolution]];
         [obj1 setName:@"Photo resolution"];
-        [obj1 setCurrentIndex:0];
+        [obj1 setCurrentIndex:DEFAULT_INDEX];
         [obj1 setValue:@""];
         [obj1 setIsChecked:NO];
         
@@ -492,7 +494,7 @@
         [obj2 setPhotoFilterType:PhotoJPEGQuanlity];
         [obj2 setArrayValue:[self getMenuPhotoArray:PhotoJPEGQuanlity]];
         [obj2 setName:@"JPEG quanlity"];
-        [obj2 setCurrentIndex:0];
+        [obj2 setCurrentIndex:DEFAULT_INDEX];
         [obj2 setValue:@""];
         [obj2 setIsChecked:NO];
         
@@ -504,7 +506,7 @@
         [obj3 setPhotoFilterType:PhotoSaveGPS];
         [obj3 setArrayValue:[self getMenuPhotoArray:PhotoSaveGPS]];
         [obj3 setName:@"Save GPS data in EXIF"];
-        [obj3 setCurrentIndex:0];
+        [obj3 setCurrentIndex:DEFAULT_INDEX];
         [obj3 setValue:@""];
         [obj3 setIsChecked:NO];
         
@@ -516,7 +518,7 @@
         [obj4 setPhotoFilterType:PhotoOverlay];
         [obj4 setArrayValue:[self getMenuPhotoArray:PhotoOverlay]];
         [obj4 setName:@"Overlay a time and date"];
-        [obj4 setCurrentIndex:0];
+        [obj4 setCurrentIndex:DEFAULT_INDEX];
         [obj4 setValue:@""];
         [obj4 setIsChecked:NO];
         
@@ -528,7 +530,7 @@
         [obj5 setPhotoFilterType:PhotoDelayJPEG];
         [obj5 setArrayValue:[self getMenuPhotoArray:PhotoDelayJPEG]];
         [obj5 setName:@"HDR"];
-        [obj5 setCurrentIndex:0];
+        [obj5 setCurrentIndex:DEFAULT_INDEX];
         [obj5 setValue:@""];
         [obj5 setIsChecked:NO];
         
@@ -540,7 +542,7 @@
         [obj6 setPhotoFilterType:PhotoSelfTimer];
         [obj6 setArrayValue:[self getMenuPhotoArray:PhotoSelfTimer]];
         [obj6 setName:@"Self-timer"];
-        [obj6 setCurrentIndex:0];
+        [obj6 setCurrentIndex:DEFAULT_INDEX];
         [obj6 setValue:@""];
         [obj6 setIsChecked:NO];
         
@@ -552,7 +554,7 @@
         [obj7 setPhotoFilterType:PhotoStabilizer];
         [obj7 setArrayValue:[self getMenuPhotoArray:PhotoStabilizer]];
         [obj7 setName:@"Image Stabilizer"];
-        [obj7 setCurrentIndex:0];
+        [obj7 setCurrentIndex:DEFAULT_INDEX];
         [obj7 setValue:@""];
         [obj7 setIsChecked:NO];
         
@@ -571,7 +573,7 @@
         [obj1 setOthersFilterType:OthersShowGrid];
         [obj1 setArrayValue:[self getMenuOtherArray:OthersShowGrid]];
         [obj1 setName:@"Show grid"];
-        [obj1 setCurrentIndex:0];
+        [obj1 setCurrentIndex:DEFAULT_INDEX];
         [obj1 setValue:@""];
         [obj1 setIsChecked:NO];
         
@@ -583,7 +585,7 @@
         [obj2 setOthersFilterType:OthersPreviewTime];
         [obj2 setArrayValue:[self getMenuOtherArray:OthersPreviewTime]];
         [obj2 setName:@"Preview time"];
-        [obj2 setCurrentIndex:0];
+        [obj2 setCurrentIndex:DEFAULT_INDEX];
         [obj2 setValue:@""];
         [obj2 setIsChecked:NO];
         
@@ -595,7 +597,7 @@
         [obj3 setOthersFilterType:OthersVibrateButtonPress];
         [obj3 setArrayValue:[self getMenuOtherArray:OthersVibrateButtonPress]];
         [obj3 setName:@"Vibrate on utton press"];
-        [obj3 setCurrentIndex:0];
+        [obj3 setCurrentIndex:DEFAULT_INDEX];
         [obj3 setValue:@""];
         [obj3 setIsChecked:NO];
         
@@ -607,7 +609,7 @@
         [obj4 setOthersFilterType:OthersFormatFileNames];
         [obj4 setArrayValue:[self getMenuOtherArray:OthersFormatFileNames]];
         [obj4 setName:@"Format of file names"];
-        [obj4 setCurrentIndex:0];
+        [obj4 setCurrentIndex:DEFAULT_INDEX];
         [obj4 setValue:@""];
         [obj4 setIsChecked:NO];
         
@@ -619,7 +621,7 @@
         [obj5 setOthersFilterType:OthersFolderSavePhotoVideo];
         [obj5 setArrayValue:[self getMenuOtherArray:OthersFolderSavePhotoVideo]];
         [obj5 setName:@"Folder to save photo and video"];
-        [obj5 setCurrentIndex:0];
+        [obj5 setCurrentIndex:DEFAULT_INDEX];
         [obj5 setValue:@""];
         [obj5 setIsChecked:NO];
         

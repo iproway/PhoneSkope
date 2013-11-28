@@ -1,10 +1,10 @@
 
 
 #import "PSCameraViewController.h"
-#import "PSVideoObject.h"
 #import "PSCustomCell.h"
 
 #define TABLE_HEIGHT 36.0f
+#define MAX_ITEM_COUNT 8
 
 @interface PSCameraViewController ()
 {
@@ -17,6 +17,8 @@
     
     NSArray* _arrayFilterChildElement;
     
+    PSFilterObject* _currentParentFilterObject;
+    PSFilterObject* _currentChildFilterObject;
     PSFilterManager* _filterManager;
     
 //    PSGeneral* _gerenalObject;
@@ -112,9 +114,6 @@
                     forState:UIControlStateNormal];
     [self.flSoundBtn setImage:[UIImage imageNamed:@"icon-flash-sound-focus.png"]
                      forState:UIControlStateSelected];
-    
-    
-//    self.sliderBar set
 }
 
 - (void)initSegmentControll;
@@ -159,6 +158,10 @@
     
     _currentSessionFilter = CameraSetting;
     [self.segmentControlFilter setSelectedSegmentIndex:0];
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 7.0) {
+        self.segmentControlFilter.frame = CGRectMake(self.segmentControlFilter.frame.origin.x, self.segmentControlFilter.frame.origin.y - 15, self.segmentControlFilter.frame.size.width, self.segmentControlFilter.frame.size.height);
+    }
 }
 
 -(IBAction) segmentChange:(id)sender;
@@ -184,25 +187,32 @@
     
     [self.tableViewFilter reloadData];
     
-    int height = 0;
+    int height = 0, count = 0;
+    
     switch (_currentSessionFilter) {
         case CameraSetting:
-            height = _arrayCamera.count * TABLE_HEIGHT;
+            count = _arrayCamera.count;
             break;
         case OtherSetting:
-            height = _arrayOther.count * TABLE_HEIGHT;
+            count = _arrayOther.count;
             break;
         case PhotoSetting:
-            height = _arrayPhoto.count * TABLE_HEIGHT;
+            count = _arrayPhoto.count;
             break;
-        default:
-            height = _arrayCamera.count * TABLE_HEIGHT;
+        case VideoSetting:
+            count = _arrayVideo.count;
+            break;
+        case ChildSetting:
+            count = _arrayFilterChildElement.count;
             break;
     }
     
-    if (height > self.filterView.frame.size.height)
-        height = self.filterView.frame.size.height;
+    if (count > MAX_ITEM_COUNT)
+        count = MAX_ITEM_COUNT;
     
+    height = count * TABLE_HEIGHT;
+    
+    [self.tableViewFilter setContentSize:CGSizeMake(self.tableViewFilter.frame.size.width, height)];
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
 }
@@ -418,6 +428,7 @@
         cell.switchBtn.arrange = CustomSwitchArrangeONLeftOFFRight;
         cell.switchBtn.onImage = [UIImage imageNamed:@"switchOne_on.png"];
         cell.switchBtn.offImage = [UIImage imageNamed:@"switchOne_off.png"];
+        cell.switchDelegate = self;
         cell.switchBtn.status = CustomSwitchStatusOff;
         cell.titleLabel.textColor = [UIColor whiteColor];
         cell.detailLabel.textColor = [UIColor whiteColor];
@@ -456,21 +467,25 @@
     switch (_currentSessionFilter) {
         case CameraSetting:
             object = [_arrayCamera objectAtIndex:indexPath.row];
+            _currentParentFilterObject = object;
             _arrayFilterChildElement = [_filterManager getMenuArray:indexPath.row];
             _currentSessionFilter = ChildSetting;
             break;
         case OtherSetting:
             object = [_arrayOther objectAtIndex:indexPath.row];
+            _currentParentFilterObject = object;
             _arrayFilterChildElement = [_filterManager getMenuOtherArray:indexPath.row];
             _currentSessionFilter = ChildSetting;
             break;
         case PhotoSetting:
             object = [_arrayPhoto objectAtIndex:indexPath.row];
+            _currentParentFilterObject = object;
             _arrayFilterChildElement = [_filterManager getMenuPhotoArray:indexPath.row];
             _currentSessionFilter = ChildSetting;
             break;
         case VideoSetting:
             object = [_arrayVideo objectAtIndex:indexPath.row];
+            _currentParentFilterObject = object;
             _arrayFilterChildElement = [_filterManager getMenuVideoArray:indexPath.row];
             _currentSessionFilter = ChildSetting;
             break;
@@ -486,6 +501,13 @@
 
             object = [_arrayFilterChildElement objectAtIndex:indexPath.row];
             [object setIsChecked:YES];
+            [object setCurrentIndex:indexPath.row];
+            
+            _currentParentFilterObject.currentIndex = indexPath.row;
+            _currentParentFilterObject.value = object.name;
+            
+            _currentChildFilterObject = object;
+            
             [self.tableViewFilter reloadData];
             
             return;
@@ -502,6 +524,9 @@
         [obj setName:[_arrayFilterChildElement objectAtIndex:i]];
         [obj setValue:@""];
         [obj setIsChecked:NO];
+        if  (_currentParentFilterObject.currentIndex == i) {
+            [obj setIsChecked:YES];
+        }
         
         [tmpArr addObject:obj];
     }
@@ -513,14 +538,26 @@
 
         [self.tableViewFilter reloadData];
         
-        int height = 0;
-        height = _arrayFilterChildElement.count * TABLE_HEIGHT;
+        int height = 0, count = 0;
+        count = _arrayFilterChildElement.count;
+        if (count > MAX_ITEM_COUNT)
+            count = MAX_ITEM_COUNT;
         
-        if (height > self.filterView.frame.size.height)
-            height = self.filterView.frame.size.height;
+        height = count * TABLE_HEIGHT;
         
+        [self.tableViewFilter setContentSize:CGSizeMake(self.tableViewFilter.frame.size.width, height)];
         self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                                 self.tableViewFilter.frame.size.width, height);
+    }
+}
+
+-(void)changeSwitchStatus:(BOOL)status;
+{
+    NSLog(@"----changeSwitchStatus----- %d", status);
+    if (_currentSessionFilter == ChildSetting) {
+        _currentChildFilterObject.isChecked = status;
+    } else {
+        _currentParentFilterObject.isChecked = status;
     }
 }
 

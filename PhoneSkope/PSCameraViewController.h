@@ -3,8 +3,9 @@
 #import <UIKit/UIKit.h>
 #import "PSGeneral.h"
 #import "PSFilterManager.h"
+#import "PSCustomCell.h"
 
-@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SwitchChangeDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *filterView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentControlFilter;
