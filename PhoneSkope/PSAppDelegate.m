@@ -9,6 +9,8 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     
+    [UIApplication sharedApplication].statusBarHidden = YES;
+    
     PSCameraViewController* rootViewController = [[PSCameraViewController alloc] initWithNibName:@"PSCameraViewController" bundle:nil];
     rootViewController.view.frame = [[UIScreen mainScreen] bounds];
     [self.window addSubview:rootViewController.view];

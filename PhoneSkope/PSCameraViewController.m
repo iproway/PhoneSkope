@@ -346,6 +346,8 @@
     
     // Do any additional setup after loading the view from its nib.
     
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
+    
     [self initSegmentControll];
     
     self.filterView.backgroundColor = [UIColor clearColor];
@@ -367,6 +369,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 //*****************************************************************************
@@ -553,7 +559,7 @@
 
 -(void)changeSwitchStatus:(BOOL)status;
 {
-    NSLog(@"----changeSwitchStatus----- %d", status);
+//    NSLog(@"----changeSwitchStatus----- %d", status);
     if (_currentSessionFilter == ChildSetting) {
         _currentChildFilterObject.isChecked = status;
     } else {

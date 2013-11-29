@@ -187,7 +187,6 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                 </slider>
             </subviews>
-            <color key="backgroundColor" red="0.71764707569999997" green="0.82352948189999997" blue="0.46274513010000001" alpha="1" colorSpace="deviceRGB"/>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
         </view>
     </objects>
