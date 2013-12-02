@@ -5,7 +5,9 @@
 #import "PSFilterManager.h"
 #import "PSCustomCell.h"
 
-@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SwitchChangeDelegate>
+@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SwitchChangeDelegate, UIGestureRecognizerDelegate>
+@property (weak, nonatomic) IBOutlet UIButton *thumbPhotoImage;
+@property (weak, nonatomic) IBOutlet UIView *captureView;
 
 @property (weak, nonatomic) IBOutlet UIView *filterView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentControlFilter;
@@ -20,5 +22,6 @@
 @property (weak, nonatomic) IBOutlet UIButton* flAlwayBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flNoneBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flSoundBtn;
+- (IBAction)openPhotoGallery:(id)sender;
 
 @end

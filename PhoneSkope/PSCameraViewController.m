@@ -8,7 +8,8 @@
 
 @interface PSCameraViewController ()
 {
-    CameraMode _currentSessionFilter;
+    FilterMode _currentSessionFilter;
+    FilterMode _backupFilter;
     
     NSArray* _arrayCamera;
     NSArray* _arrayPhoto;
@@ -17,11 +18,12 @@
     
     NSArray* _arrayFilterChildElement;
     
-    PSFilterObject* _currentParentFilterObject;
-    PSFilterObject* _currentChildFilterObject;
+    NSArray* _backupArray;
+    
+    PSFilterData* _currentParentFilterObject;
+    PSFilterData* _currentChildFilterObject;
     PSFilterManager* _filterManager;
     
-//    PSGeneral* _gerenalObject;
     BOOL _isChildFilter;
 }
 
@@ -129,6 +131,8 @@
     
     [self.segmentControlFilter addTarget:self action:@selector(segmentChange:) forControlEvents:UIControlEventValueChanged];
     
+    [self.segmentControlFilter addTarget:self action:@selector(segmentTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
     UIImage *segmentSelected = [[UIImage imageNamed:@"segment_1px_selected.png"]
                                 resizableImageWithCapInsets:UIEdgeInsetsMake(0, 7, 0, 7)];
     UIImage *segmentUnselected = [[UIImage imageNamed:@"segment_1px_no_select.png"]
@@ -164,10 +168,28 @@
     }
 }
 
+-(IBAction) segmentTouch:(id)sender;
+{
+
+    _currentSessionFilter = _backupFilter;
+    
+    int height = 0, count = 0;
+    count = _backupArray.count;
+    [self.tableViewFilter reloadData];
+
+    if (count > MAX_ITEM_COUNT)
+    count = MAX_ITEM_COUNT;
+
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
+}
+
 -(IBAction) segmentChange:(id)sender;
 {
     _isChildFilter = NO;
     UISegmentedControl * control = sender;
+    
     int selectedIndex = [control selectedSegmentIndex];
     
     switch (selectedIndex) {
@@ -185,22 +207,36 @@
             break;
     }
     
+    _backupFilter = _currentSessionFilter;
+    
     [self.tableViewFilter reloadData];
     
     int height = 0, count = 0;
     
     switch (_currentSessionFilter) {
         case CameraSetting:
+        {
             count = _arrayCamera.count;
+            _backupArray = _arrayCamera;
+        }
             break;
         case OtherSetting:
+        {
             count = _arrayOther.count;
+            _backupArray = _arrayOther;
+        }
             break;
         case PhotoSetting:
+        {
             count = _arrayPhoto.count;
+            _backupArray = _arrayPhoto;
+        }
             break;
         case VideoSetting:
+        {
             count = _arrayVideo.count;
+            _backupArray = _arrayVideo;
+        }
             break;
         case ChildSetting:
             count = _arrayFilterChildElement.count;
@@ -211,8 +247,6 @@
         count = MAX_ITEM_COUNT;
     
     height = count * TABLE_HEIGHT;
-    
-    [self.tableViewFilter setContentSize:CGSizeMake(self.tableViewFilter.frame.size.width, height)];
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
 }
@@ -220,6 +254,31 @@
 
 #pragma mark -
 #pragma mark - IBAction show flash menu
+
+- (IBAction)backgroundGestureAction:(id)sender;
+{
+    NSLog(@"backgroundGestureAction");
+    self.flashMenu.hidden = YES;
+    self.filterView.hidden = YES;
+    self.sliderBar.hidden = YES;
+    [self.flashBtn setSelected:NO];
+    [self.zoomBtn setSelected:NO];
+    [self.optionBtn setSelected:NO];
+}
+
+- (IBAction)openPhotoGallery:(id)sender;
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    } else {
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    }
+    
+    [self presentModalViewController:picker animated:YES];
+}
 
 -(IBAction)actionFilterOption:(id)sender
 {
@@ -346,8 +405,6 @@
     
     // Do any additional setup after loading the view from its nib.
     
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
-    
     [self initSegmentControll];
     
     self.filterView.backgroundColor = [UIColor clearColor];
@@ -363,6 +420,14 @@
     self.sliderBar.hidden = YES;
     self.filterView.hidden = YES;
     self.flashMenu.hidden = YES;
+    
+    // single tap gesture recognizer
+    UITapGestureRecognizer *tapGestureRecognize = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundGestureAction:)];
+    tapGestureRecognize.delegate = self;
+    tapGestureRecognize.numberOfTapsRequired = 1;
+    [self.captureView addGestureRecognizer:tapGestureRecognize];
+    [self.captureView setUserInteractionEnabled:YES];
+    self.captureView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -404,7 +469,7 @@
             return _arrayVideo.count;
             break;
         case ChildSetting:
-            return _arrayFilterChildElement.count;
+            return _currentParentFilterObject.arrayValue.count;
             break;
         default:
             return 0;
@@ -440,7 +505,8 @@
         cell.detailLabel.textColor = [UIColor whiteColor];
     }
     
-    PSFilterObject* object;
+    cell.isChild = NO;
+    PSFilterData* object;
     switch (_currentSessionFilter) {
         case CameraSetting:
             object = [_arrayCamera objectAtIndex:indexPath.row];
@@ -455,10 +521,14 @@
             object = [_arrayVideo objectAtIndex:indexPath.row];
             break;
         case ChildSetting:
-            object = [_arrayFilterChildElement objectAtIndex:indexPath.row];
+        {
+            object = _currentParentFilterObject;
+            cell.isChild = YES;
+        }
             break;
     }
     
+    cell.tag = indexPath.row;
     [cell setDataForCustomCell:object];
     
     return cell;
@@ -469,102 +539,102 @@
     NSLog(@"indexPath.row = %d", indexPath.row);
 //    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    PSFilterObject* object;
+    int height = 0, count = 0;
     switch (_currentSessionFilter) {
         case CameraSetting:
-            object = [_arrayCamera objectAtIndex:indexPath.row];
-            _currentParentFilterObject = object;
-            _arrayFilterChildElement = [_filterManager getMenuArray:indexPath.row];
+        {
+            _backupFilter = _currentSessionFilter;
+            _currentParentFilterObject = [_arrayCamera objectAtIndex:indexPath.row];
+            if (_currentParentFilterObject.switchValue != -1)
+                return;
+                
+            _backupArray = _arrayCamera;
             _currentSessionFilter = ChildSetting;
-            break;
-        case OtherSetting:
-            object = [_arrayOther objectAtIndex:indexPath.row];
-            _currentParentFilterObject = object;
-            _arrayFilterChildElement = [_filterManager getMenuOtherArray:indexPath.row];
-            _currentSessionFilter = ChildSetting;
-            break;
-        case PhotoSetting:
-            object = [_arrayPhoto objectAtIndex:indexPath.row];
-            _currentParentFilterObject = object;
-            _arrayFilterChildElement = [_filterManager getMenuPhotoArray:indexPath.row];
-            _currentSessionFilter = ChildSetting;
+            count = _currentParentFilterObject.arrayValue.count;
+        }
             break;
         case VideoSetting:
-            object = [_arrayVideo objectAtIndex:indexPath.row];
-            _currentParentFilterObject = object;
-            _arrayFilterChildElement = [_filterManager getMenuVideoArray:indexPath.row];
-            _currentSessionFilter = ChildSetting;
-            break;
-        case ChildSetting: // TODO
         {
-            if (!_arrayFilterChildElement || _arrayFilterChildElement.count < indexPath.row + 1) {
+            _backupFilter = _currentSessionFilter;
+            _currentParentFilterObject = [_arrayVideo objectAtIndex:indexPath.row];
+            if (_currentParentFilterObject.switchValue != -1)
                 return;
-            }
             
-            for (PSFilterObject *obj in _arrayFilterChildElement) {
-                [obj setIsChecked:NO];
-            }
-
-            object = [_arrayFilterChildElement objectAtIndex:indexPath.row];
-            [object setIsChecked:YES];
-            [object setCurrentIndex:indexPath.row];
+            _backupArray = _arrayVideo;
+            _currentSessionFilter = ChildSetting;
+            count = _currentParentFilterObject.arrayValue.count;
+        }
+            break;
+        case PhotoSetting:
+        {
+            _backupFilter = _currentSessionFilter;
+            _currentParentFilterObject = [_arrayPhoto objectAtIndex:indexPath.row];
+            if (_currentParentFilterObject.switchValue != -1)
+                return;
             
-            _currentParentFilterObject.currentIndex = indexPath.row;
-            _currentParentFilterObject.value = object.name;
+            _backupArray = _arrayPhoto;
+            _currentSessionFilter = ChildSetting;
+            count = _currentParentFilterObject.arrayValue.count;
+        }
+            break;
+        case OtherSetting:
+        {
+            _backupFilter = _currentSessionFilter;
+            _currentParentFilterObject = [_arrayOther objectAtIndex:indexPath.row];
+            if (_currentParentFilterObject.switchValue != -1)
+                return;
             
-            _currentChildFilterObject = object;
+            _backupArray = _arrayOther;
+            _currentSessionFilter = ChildSetting;
+            count = _currentParentFilterObject.arrayValue.count;
+        }
+            break;
+        case ChildSetting:
+        {
+            _currentParentFilterObject.indexValue = indexPath.row;
+            _currentSessionFilter = _backupFilter;
+            count = _backupArray.count;
             
-            [self.tableViewFilter reloadData];
-            
-            return;
         }
             break;
     }
     
-    NSMutableArray *tmpArr = [[NSMutableArray alloc] initWithCapacity:_arrayFilterChildElement.count];
-    for (int i = 0; i < _arrayFilterChildElement.count; i++) {
-        
-        PSFilterObject *obj = [[PSFilterObject alloc] init];
-        [obj setCameraMode:ChildSetting];
-        [obj setCellType:CellCheckChoice];
-        [obj setName:[_arrayFilterChildElement objectAtIndex:i]];
-        [obj setValue:@""];
-        [obj setIsChecked:NO];
-        if  (_currentParentFilterObject.currentIndex == i) {
-            [obj setIsChecked:YES];
-        }
-        
-        [tmpArr addObject:obj];
-    }
+    [self.tableViewFilter reloadData];
     
-    _arrayFilterChildElement = tmpArr;
-    _currentSessionFilter = ChildSetting;
-    
-    if (object.cellType != CellSwithChoice) {
+    if (count > MAX_ITEM_COUNT)
+        count = MAX_ITEM_COUNT;
 
-        [self.tableViewFilter reloadData];
-        
-        int height = 0, count = 0;
-        count = _arrayFilterChildElement.count;
-        if (count > MAX_ITEM_COUNT)
-            count = MAX_ITEM_COUNT;
-        
-        height = count * TABLE_HEIGHT;
-        
-        [self.tableViewFilter setContentSize:CGSizeMake(self.tableViewFilter.frame.size.width, height)];
-        self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
-                                                self.tableViewFilter.frame.size.width, height);
-    }
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
 }
 
--(void)changeSwitchStatus:(BOOL)status;
-{
-//    NSLog(@"----changeSwitchStatus----- %d", status);
-    if (_currentSessionFilter == ChildSetting) {
-        _currentChildFilterObject.isChecked = status;
-    } else {
-        _currentParentFilterObject.isChecked = status;
-    }
+
+
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
+{    
+//    if (_currentSessionFilter != ChildSetting) {
+//        PSFilterObject* object;
+//        switch (_currentSessionFilter) {
+//            case CameraSetting:
+//                object = [_arrayCamera objectAtIndex:index];
+//                break;
+//            case OtherSetting:
+//                object = [_arrayOther objectAtIndex:index];
+//                break;
+//            case PhotoSetting:
+//                object = [_arrayPhoto objectAtIndex:index];
+//                break;
+//            case VideoSetting:
+//                object = [_arrayVideo objectAtIndex:index];
+//                break;
+//            case ChildSetting:
+//                object = [_arrayFilterChildElement objectAtIndex:index];
+//                break;
+//        }
+//        
+//        object.isChecked = status;
+//    }
 }
 
 @end

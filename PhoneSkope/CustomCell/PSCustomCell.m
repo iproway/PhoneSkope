@@ -14,73 +14,56 @@
     return self;
 }
 
--(void)customSwitchSetStatus:(CustomSwitchStatus)status;
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
 {
     NSLog(@"Switch Status = %d", status);
     BOOL isOn = NO;
     if (status == 1) {
         isOn = YES;
     }
-    if ([_switchDelegate respondsToSelector:@selector(changeSwitchStatus:)]) {
-        [_switchDelegate changeSwitchStatus:isOn];
+    if ([_switchDelegate respondsToSelector:@selector(changeSwitchStatus:atIndex:)]) {
+        [_switchDelegate changeSwitchStatus:isOn atIndex:index];
     }
 }
 
-- (void)setDataForCustomCell:(PSFilterObject *)data;
+- (void)setDataForCustomCell:(PSFilterData *)data;
 {
-    self.titleLabel.text = data.name;
+    self.titleLabel.text = data.filterTitle;
+    
     self.detailLabel.text = @"";
+    if (data.indexValue != -1 && data.arrayValue && data.indexValue < data.arrayValue.count) {
+        self.detailLabel.text = [data.arrayValue objectAtIndex:data.indexValue];
+    }
+    
     self.switchBtn.delegate = self;
     
-    switch (data.cellType) {
-        case CellCheckChoice:
-        {
-            self.switchBtn.hidden = YES;
+    if (!self.isChild) {
+        self.checkBtn.hidden = YES;
+        
+        if (data.switchValue != -1) {
+            self.switchBtn.hidden = NO;
+            [self.switchBtn setData:data];
+//            [self.switchBtn setStatus:data.switchValue];
             self.arrowBtn.hidden = YES;
-            if (data.isChecked)
-                self.checkBtn.hidden = NO;
-            else
-                self.checkBtn.hidden = YES;
-        }
-            break;
-        case CellManyChoice:
-        {
-            self.detailLabel.text = data.value;
+        } else {
             self.switchBtn.hidden = YES;
             self.arrowBtn.hidden = NO;
-            self.checkBtn.hidden = YES;
         }
-            break;
-        case CellSwithChoice:
-        {
-            self.switchBtn.hidden = NO;
-            if (data.isChecked) {
-                self.switchBtn.status = 0;
-            } else {
-                self.switchBtn.status = 1;
-            }
-            
-            self.arrowBtn.hidden = YES;
-            self.checkBtn.hidden = YES;
-            
-        }
-            break;
-        case CellNone:
-        {
-            self.switchBtn.hidden = YES;
-            self.arrowBtn.hidden = YES;
-            self.checkBtn.hidden = YES;
+        
+    } else {
 
-        }
-            break;
-            
-        default:
-        {
-            self.switchBtn.hidden = YES;
-            self.arrowBtn.hidden = YES;
+        self.switchBtn.hidden = YES;
+        self.arrowBtn.hidden = YES;
+        
+        self.titleLabel.text = [data.arrayValue objectAtIndex:self.tag];
+        self.detailLabel.text = @"";
+
+        if (data.indexValue == self.tag) {
+            self.checkBtn.hidden = NO;
+        } else {
             self.checkBtn.hidden = YES;
         }
-            break;
+        
     }
 }
 

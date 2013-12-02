@@ -1,6 +1,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import "PSFilterData.h"
 #import "PSFilterObject.h"
 #import "PSWhiteBalance.h"
 #import "PSSceneMode.h"
@@ -25,9 +26,9 @@
 @property(nonatomic,strong) NSArray *arrayPhotoSetting;
 @property(nonatomic,strong) NSArray *arrayOthersSetting;
 
--(NSArray*)getMenuArray:(CameraFilterType)type;
--(NSArray*)getMenuVideoArray:(VideoFilterType)type;
--(NSArray*)getMenuPhotoArray:(PhotoFilterType)type;
--(NSArray*)getMenuOtherArray:(OthersFilterType)type;
+-(NSArray*)getMenuCameraArray:(CameraType)type;
+-(NSArray*)getMenuVideoArray:(VideoType)type;
+-(NSArray*)getMenuPhotoArray:(PhotoType)type;
+-(NSArray*)getMenuOtherArray:(OtherType)type;
 
 @end

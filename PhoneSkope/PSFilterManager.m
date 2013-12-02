@@ -51,7 +51,6 @@
 {
     self = [super init];
     if (self) {
-        [self getDefaultValue];
         // init data
         [self initDataFilter];
     }
@@ -103,18 +102,18 @@
     cropObj                     = [[PSCrop alloc]init];
     cropFilter                  = [cropObj getDefaultValue];
 //    if (isMotionDetectorOpened) {
-//        motionDetectorObj           = [[PSMotionDetector alloc]initWithView:_view Camera:_camera];
+//        motionDetectorObj           = [[PSMotionDetector alloc]init];
 //        montionDetectorFilter       = [motionDetectorObj getDefaultValue];
 //    }
 //    
 //    if (isFaceDetectionOpened) {
-//        faceDetectionObj            = [[PSFaceDetection alloc]initWithView:_view Camera:_camera];
+//        faceDetectionObj            = [[PSFaceDetection alloc]init];
 //        faceDetectorFilter          = [faceDetectionObj getFaceDection];
 //    }
 //    
 }
 
--(NSArray*)getMenuArray:(CameraFilterType)type
+-(NSArray*)getMenuCameraArray:(CameraType)type;
 {
     switch (type) {
         case FilterTypeWhiteBlance:
@@ -168,7 +167,7 @@
     }
 }
 
--(NSArray*)getMenuVideoArray:(VideoFilterType)type
+-(NSArray*)getMenuVideoArray:(VideoType)type
 {
     switch (type) {
         case RotateVideoResolution:
@@ -186,7 +185,7 @@
     }
 }
 
--(NSArray*)getMenuPhotoArray:(PhotoFilterType)type
+-(NSArray*)getMenuPhotoArray:(PhotoType)type
 {
     switch (type) {
         case PhotoResolution:
@@ -215,7 +214,7 @@
             break;
     }
 }
--(NSArray*)getMenuOtherArray:(OthersFilterType)type
+-(NSArray*)getMenuOtherArray:(OtherType)type
 {
     switch (type) {
         case OthersShowGrid:
@@ -242,232 +241,219 @@
 
 - (void)initDataFilter;
 {
+    [self getDefaultValue];
+    
+    NSArray *arrCameraSetting = [[NSArray alloc] initWithObjects:
+                                 @"White blance",
+                                 @"Scene mode",
+                                 @"Exposure mode",
+                                 @"Exposure compensation",
+                                 @"Focus mode",
+                                 @"Brightness",
+                                 @"Constast",
+                                 @"Saturation",
+                                 @"Sharpness",
+                                 @"RGB",
+                                 @"Transform (2D)",
+                                 @"Transform (3D)",
+                                 @"CROP",
+                                 @"Motion Detector",
+                                 @"Face Detection", nil];
+    
+    NSArray *arrVideoSetting = [[NSArray alloc] initWithObjects:
+                                @"Video resolution",
+                                @"Video file format",
+                                @"Auto rotate video", nil];
+    
+    NSArray *arrPhotoSetting = [[NSArray alloc] initWithObjects:
+                                @"Photo resolution",
+                                @"JPEG quanlity",
+                                @"Save GPS data in EXIF",
+                                @"Overlay a time and date",
+                                @"HDR",
+                                @"Self-timer",
+                                @"Image Stabilizer", nil];
+    
+    NSArray *arrOtherSetting = [[NSArray alloc] initWithObjects:
+                                @"Show grid",
+                                @"Preview time",
+                                @"Vibrate on button press",
+                                @"Format of file names",
+                                @"Folder to save photo and video", nil];
+    
     // Init data for CameraSetting Filter
     if (!self.arrayCameraSetting) {
         NSMutableArray* arrayData = [[NSMutableArray alloc]init];
         
-        PSFilterObject *obj1 = [[PSFilterObject alloc] init];
-        [obj1 setCameraMode:CameraSetting];
-        [obj1 setCellType:CellManyChoice];
-        [obj1 setCameraFilterType:FilterTypeWhiteBlance];
-        [obj1 setArrayValue:[self getMenuArray:FilterTypeWhiteBlance]];
-        [obj1 setName:@"White blance"];
-        [obj1 setCurrentIndex:DEFAULT_INDEX];
-        [obj1 setValue:@""];
-        [obj1 setIsChecked:NO];
+        PSFilterData *data1 = [[PSFilterData alloc] init];
+        [data1 setFilterMode:CameraSetting];
+        [data1 setCameraType:FilterTypeWhiteBlance];
+        [data1 setFilterTitle:[arrCameraSetting objectAtIndex:data1.cameraType]];
+        [data1 setArrayValue:[self getMenuCameraArray:data1.cameraType]];
+        [data1 setSwitchValue:DEFAULT_INDEX];
+        [data1 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data1];
         
-        [arrayData addObject:obj1];
+        PSFilterData *data2 = [[PSFilterData alloc] init];
+        [data2 setFilterMode:CameraSetting];
+        [data2 setCameraType:FilterTypeSceneMode];
+        [data2 setFilterTitle:[arrCameraSetting objectAtIndex:data2.cameraType]];
+        [data2 setArrayValue:[self getMenuCameraArray:data2.cameraType]];
+        [data2 setSwitchValue:DEFAULT_INDEX];
+        [data2 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data2];
         
-        PSFilterObject *obj2 = [[PSFilterObject alloc] init];
-        [obj2 setCameraMode:CameraSetting];
-        [obj2 setCellType:CellManyChoice];
-        [obj2 setCameraFilterType:FilterTypeSceneMode];
-        [obj2 setArrayValue:[self getMenuArray:FilterTypeSceneMode]];
-        [obj2 setName:@"Scene mode"];
-        [obj2 setCurrentIndex:DEFAULT_INDEX];
-        [obj2 setValue:@""];
-        [obj2 setIsChecked:NO];
+        PSFilterData *data3 = [[PSFilterData alloc] init];
+        [data3 setFilterMode:CameraSetting];
+        [data3 setCameraType:FilterTypeExposureMode];
+        [data3 setFilterTitle:[arrCameraSetting objectAtIndex:data3.cameraType]];
+        [data3 setArrayValue:[self getMenuCameraArray:data3.cameraType]];
+        [data3 setSwitchValue:DEFAULT_INDEX];
+        [data3 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data3];
         
-        [arrayData addObject:obj2];
+        PSFilterData *data4 = [[PSFilterData alloc] init];
+        [data4 setFilterMode:CameraSetting];
+        [data4 setCameraType:FilterTypeExposureCompensation];
+        [data4 setFilterTitle:[arrCameraSetting objectAtIndex:data4.cameraType]];
+        [data4 setArrayValue:[self getMenuCameraArray:data4.cameraType]];
+        [data4 setSwitchValue:DEFAULT_INDEX];
+        [data4 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data4];
         
-        PSFilterObject *obj3 = [[PSFilterObject alloc] init];
-        [obj3 setCameraMode:CameraSetting];
-        [obj3 setCellType:CellManyChoice];
-        [obj3 setCameraFilterType:FilterTypeExposureMode];
-        [obj3 setArrayValue:[self getMenuArray:FilterTypeExposureMode]];
-        [obj3 setName:@"Exposure mode"];
-        [obj3 setCurrentIndex:DEFAULT_INDEX];
-        [obj3 setValue:@""];
-        [obj3 setIsChecked:NO];
+        PSFilterData *data5 = [[PSFilterData alloc] init];
+        [data5 setFilterMode:CameraSetting];
+        [data5 setCameraType:FilterTypeFocusMode];
+        [data5 setFilterTitle:[arrCameraSetting objectAtIndex:data5.cameraType]];
+        [data5 setArrayValue:[self getMenuCameraArray:data5.cameraType]];
+        [data5 setSwitchValue:DEFAULT_INDEX];
+        [data5 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data5];
         
-        [arrayData addObject:obj3];
+        PSFilterData *data6 = [[PSFilterData alloc] init];
+        [data6 setFilterMode:CameraSetting];
+        [data6 setCameraType:FilterTypeBrightness];
+        [data6 setFilterTitle:[arrCameraSetting objectAtIndex:data6.cameraType]];
+        [data6 setArrayValue:[self getMenuCameraArray:data6.cameraType]];
+        [data6 setSwitchValue:DEFAULT_INDEX];
+        [data6 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data6];
         
-        PSFilterObject *obj4 = [[PSFilterObject alloc] init];
-        [obj4 setCameraMode:CameraSetting];
-        [obj4 setCellType:CellManyChoice];
-        [obj4 setCameraFilterType:FilterTypeExposureCompensation];
-        [obj4 setArrayValue:[self getMenuArray:FilterTypeExposureCompensation]];
-        [obj4 setName:@"Exposure compensation"];
-        [obj4 setCurrentIndex:DEFAULT_INDEX];
-        [obj4 setValue:@""];
-        [obj4 setIsChecked:NO];
+        PSFilterData *data7 = [[PSFilterData alloc] init];
+        [data7 setFilterMode:CameraSetting];
+        [data7 setCameraType:FilterTypeContrast];
+        [data7 setFilterTitle:[arrCameraSetting objectAtIndex:data7.cameraType]];
+        [data7 setArrayValue:[self getMenuCameraArray:data7.cameraType]];
+        [data7 setSwitchValue:DEFAULT_INDEX];
+        [data7 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data7];
         
-        [arrayData addObject:obj4];
+        PSFilterData *data8 = [[PSFilterData alloc] init];
+        [data8 setFilterMode:CameraSetting];
+        [data8 setCameraType:FilterTypeSaturation];
+        [data8 setFilterTitle:[arrCameraSetting objectAtIndex:data8.cameraType]];
+        [data8 setArrayValue:[self getMenuCameraArray:data8.cameraType]];
+        [data8 setSwitchValue:DEFAULT_INDEX];
+        [data8 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data8];
         
-        PSFilterObject *obj5 = [[PSFilterObject alloc] init];
-        [obj5 setCameraMode:CameraSetting];
-        [obj5 setCellType:CellManyChoice];
-        [obj5 setCameraFilterType:FilterTypeFocusMode];
-        [obj5 setArrayValue:[self getMenuArray:FilterTypeFocusMode]];
-        [obj5 setName:@"Focus mode"];
-        [obj5 setCurrentIndex:DEFAULT_INDEX];
-        [obj5 setValue:@""];
-        [obj5 setIsChecked:NO];
+        PSFilterData *data9 = [[PSFilterData alloc] init];
+        [data9 setFilterMode:CameraSetting];
+        [data9 setCameraType:FilterTypeSharpness];
+        [data9 setFilterTitle:[arrCameraSetting objectAtIndex:data9.cameraType]];
+        [data9 setArrayValue:[self getMenuCameraArray:data9.cameraType]];
+        [data9 setSwitchValue:DEFAULT_INDEX];
+        [data9 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data9];
         
-        [arrayData addObject:obj5];
+        PSFilterData *data10 = [[PSFilterData alloc] init];
+        [data10 setFilterMode:CameraSetting];
+        [data10 setCameraType:FilterTypeRGB];
+        [data10 setFilterTitle:[arrCameraSetting objectAtIndex:data10.cameraType]];
+        [data10 setArrayValue:[self getMenuCameraArray:data10.cameraType]];
+        [data10 setSwitchValue:DEFAULT_INDEX];
+        [data10 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data10];
         
-        PSFilterObject *obj6 = [[PSFilterObject alloc] init];
-        [obj6 setCameraMode:CameraSetting];
-        [obj6 setCellType:CellManyChoice];
-        [obj6 setCameraFilterType:FilterTypeBrightness];
-        [obj6 setArrayValue:[self getMenuArray:FilterTypeBrightness]];
-        [obj6 setName:@"Brightness"];
-        [obj6 setCurrentIndex:DEFAULT_INDEX];
-        [obj6 setValue:@""];
-        [obj6 setIsChecked:NO];
+        PSFilterData *data11 = [[PSFilterData alloc] init];
+        [data11 setFilterMode:CameraSetting];
+        [data11 setCameraType:FilterTypeTransform_2D];
+        [data11 setFilterTitle:[arrCameraSetting objectAtIndex:data11.cameraType]];
+        [data11 setArrayValue:[self getMenuCameraArray:data11.cameraType]];
+        [data11 setSwitchValue:DEFAULT_INDEX];
+        [data11 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data11];
         
-        [arrayData addObject:obj6];
+        PSFilterData *data12 = [[PSFilterData alloc] init];
+        [data12 setFilterMode:CameraSetting];
+        [data12 setCameraType:FilterTypeTransform_3D];
+        [data12 setFilterTitle:[arrCameraSetting objectAtIndex:data12.cameraType]];
+        [data12 setArrayValue:[self getMenuCameraArray:data12.cameraType]];
+        [data12 setSwitchValue:DEFAULT_INDEX];
+        [data12 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data12];
         
-        PSFilterObject *obj7 = [[PSFilterObject alloc] init];
-        [obj7 setCameraMode:CameraSetting];
-        [obj7 setCellType:CellManyChoice];
-        [obj7 setCameraFilterType:FilterTypeContrast];
-        [obj7 setArrayValue:[self getMenuArray:FilterTypeContrast]];
-        [obj7 setName:@"Constast"];
-        [obj7 setCurrentIndex:DEFAULT_INDEX];
-        [obj7 setValue:@""];
-        [obj7 setIsChecked:NO];
+        PSFilterData *data13 = [[PSFilterData alloc] init];
+        [data13 setFilterMode:CameraSetting];
+        [data13 setCameraType:FilterTypeCrop];
+        [data13 setFilterTitle:[arrCameraSetting objectAtIndex:data13.cameraType]];
+        [data13 setArrayValue:[self getMenuCameraArray:data13.cameraType]];
+        [data13 setSwitchValue:DEFAULT_INDEX];
+        [data13 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data13];
         
-        [arrayData addObject:obj7];
+        PSFilterData *data14 = [[PSFilterData alloc] init];
+        [data14 setFilterMode:CameraSetting];
+        [data14 setCameraType:FilterTypeMotionDetector];
+        [data14 setFilterTitle:[arrCameraSetting objectAtIndex:data14.cameraType]];
+        [data14 setArrayValue:[self getMenuCameraArray:data14.cameraType]];
+        [data14 setSwitchValue:DEFAULT_INDEX];
+        [data14 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data14];
         
-        PSFilterObject *obj8 = [[PSFilterObject alloc] init];
-        [obj8 setCameraMode:CameraSetting];
-        [obj8 setCellType:CellManyChoice];
-        [obj8 setCameraFilterType:FilterTypeSaturation];
-        [obj8 setArrayValue:[self getMenuArray:FilterTypeSaturation]];
-        [obj8 setName:@"Saturation"];
-        [obj8 setCurrentIndex:DEFAULT_INDEX];
-        [obj8 setValue:@""];
-        [obj8 setIsChecked:NO];
+        PSFilterData *data15 = [[PSFilterData alloc] init];
+        [data15 setFilterMode:CameraSetting];
+        [data15 setCameraType:FilterTypeFaceDetection];
+        [data15 setFilterTitle:[arrCameraSetting objectAtIndex:data15.cameraType]];
+        [data15 setArrayValue:[self getMenuCameraArray:data15.cameraType]];
+        [data15 setSwitchValue:0];
+        [data15 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data15];
         
-        [arrayData addObject:obj8];
-        
-        PSFilterObject *obj9 = [[PSFilterObject alloc] init];
-        [obj9 setCameraMode:CameraSetting];
-        [obj9 setCellType:CellManyChoice];
-        [obj9 setCameraFilterType:FilterTypeSharpness];
-        [obj9 setArrayValue:[self getMenuArray:FilterTypeSharpness]];
-        [obj9 setName:@"Sharpness"];
-        [obj9 setCurrentIndex:DEFAULT_INDEX];
-        [obj9 setValue:@""];
-        [obj9 setIsChecked:NO];
-        
-        [arrayData addObject:obj9];
-        
-        PSFilterObject *obj10 = [[PSFilterObject alloc] init];
-        [obj10 setCameraMode:CameraSetting];
-        [obj10 setCellType:CellManyChoice];
-        [obj10 setCameraFilterType:FilterTypeRGB];
-        [obj10 setArrayValue:[self getMenuArray:FilterTypeRGB]];
-        [obj10 setName:@"RGB"];
-        [obj10 setCurrentIndex:DEFAULT_INDEX];
-        [obj10 setValue:@""];
-        [obj10 setIsChecked:NO];
-        
-        [arrayData addObject:obj10];
-        
-        PSFilterObject *obj11 = [[PSFilterObject alloc] init];
-        [obj11 setCameraMode:CameraSetting];
-        [obj11 setCellType:CellManyChoice];
-        [obj11 setCameraFilterType:FilterTypeTransform_2D];
-        [obj11 setArrayValue:[self getMenuArray:FilterTypeTransform_2D]];
-        [obj11 setName:@"Transform (2D)"];
-        [obj11 setCurrentIndex:DEFAULT_INDEX];
-        [obj11 setValue:@""];
-        [obj11 setIsChecked:NO];
-        
-        [arrayData addObject:obj11];
-        
-        PSFilterObject *obj12 = [[PSFilterObject alloc] init];
-        [obj12 setCameraMode:CameraSetting];
-        [obj12 setCellType:CellManyChoice];
-        [obj12 setCameraFilterType:FilterTypeTransform_3D];
-        [obj12 setArrayValue:[self getMenuArray:FilterTypeTransform_3D]];
-        [obj12 setName:@"Transform (3D)"];
-        [obj12 setCurrentIndex:DEFAULT_INDEX];
-        [obj12 setValue:@""];
-        [obj12 setIsChecked:NO];
-        
-        [arrayData addObject:obj12];
-        
-        PSFilterObject *obj13 = [[PSFilterObject alloc] init];
-        [obj13 setCameraMode:CameraSetting];
-        [obj13 setCellType:CellManyChoice];
-        [obj13 setCameraFilterType:FilterTypeCrop];
-        [obj13 setArrayValue:[self getMenuArray:FilterTypeCrop]];
-        [obj13 setName:@"CROP"];
-        [obj13 setCurrentIndex:DEFAULT_INDEX];
-        [obj13 setValue:@""];
-        [obj13 setIsChecked:NO];
-        
-        [arrayData addObject:obj13];
-        
-        PSFilterObject *obj14 = [[PSFilterObject alloc] init];
-        [obj14 setCameraMode:CameraSetting];
-        [obj14 setCellType:CellManyChoice];
-        [obj14 setCameraFilterType:FilterTypeMotionDetector];
-        [obj14 setArrayValue:[self getMenuArray:FilterTypeMotionDetector]];
-        [obj14 setName:@"Motion Detector"];
-        [obj14 setCurrentIndex:DEFAULT_INDEX];
-        [obj14 setValue:@""];
-        [obj14 setIsChecked:NO];
-        
-        [arrayData addObject:obj14];
-        
-        PSFilterObject *obj15 = [[PSFilterObject alloc] init];
-        [obj15 setCameraMode:CameraSetting];
-        [obj15 setCellType:CellSwithChoice];
-        [obj15 setCameraFilterType:FilterTypeFaceDetection];
-        [obj15 setArrayValue:[self getMenuArray:FilterTypeFaceDetection]];
-        [obj15 setName:@"Face Detection"];
-        [obj15 setCurrentIndex:DEFAULT_INDEX];
-        [obj15 setValue:@""];
-        [obj15 setIsChecked:NO];
-        
-        [arrayData addObject:obj15];
-
         [self setArrayCameraSetting:arrayData];
     }
+    
 
     // Init data for VideoSetting Filter
     if (!self.arrayVideoSetting) {
         NSMutableArray* arrayData = [[NSMutableArray alloc]init];
         
-        PSFilterObject *obj1 = [[PSFilterObject alloc] init];
-        [obj1 setCameraMode:VideoSetting];
-        [obj1 setCellType:CellManyChoice];
-        [obj1 setVideoFilterType:RotateVideoResolution];
-        [obj1 setArrayValue:[self getMenuVideoArray:RotateVideoResolution]];
-        [obj1 setName:@"Video resolution"];
-        [obj1 setCurrentIndex:DEFAULT_INDEX];
-        [obj1 setValue:@""];
-        [obj1 setIsChecked:NO];
+        PSFilterData *data1 = [[PSFilterData alloc] init];
+        [data1 setFilterMode:VideoSetting];
+        [data1 setVideoType:RotateVideoResolution];
+        [data1 setFilterTitle:[arrVideoSetting objectAtIndex:data1.videoType]];
+        [data1 setArrayValue:[self getMenuVideoArray:data1.videoType]];
+        [data1 setSwitchValue:DEFAULT_INDEX];
+        [data1 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data1];
         
-        [arrayData addObject:obj1];
+        PSFilterData *data2 = [[PSFilterData alloc] init];
+        [data2 setFilterMode:VideoSetting];
+        [data2 setVideoType:RotateVideoFileFormat];
+        [data2 setFilterTitle:[arrVideoSetting objectAtIndex:data2.videoType]];
+        [data2 setArrayValue:[self getMenuVideoArray:data2.videoType]];
+        [data2 setSwitchValue:DEFAULT_INDEX];
+        [data2 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data2];
         
-        PSFilterObject *obj2 = [[PSFilterObject alloc] init];
-        [obj2 setCameraMode:VideoSetting];
-        [obj2 setCellType:CellManyChoice];
-        [obj2 setVideoFilterType:RotateVideoFileFormat];
-        [obj2 setArrayValue:[self getMenuVideoArray:RotateVideoFileFormat]];
-        [obj2 setName:@"Video file format"];
-        [obj2 setCurrentIndex:DEFAULT_INDEX];
-        [obj2 setValue:@""];
-        [obj2 setIsChecked:NO];
-        
-        [arrayData addObject:obj2];
-        
-        PSFilterObject *obj3 = [[PSFilterObject alloc] init];
-        [obj3 setCameraMode:VideoSetting];
-        [obj3 setCellType:CellSwithChoice];
-        [obj3 setVideoFilterType:RotateAutoRotateVideo];
-        [obj3 setArrayValue:[self getMenuVideoArray:RotateAutoRotateVideo]];
-        [obj3 setName:@"Auto rotate video"];
-        [obj3 setCurrentIndex:DEFAULT_INDEX];
-        [obj3 setValue:@""];
-        [obj3 setIsChecked:NO];
-        
-        [arrayData addObject:obj3];
+        PSFilterData *data3 = [[PSFilterData alloc] init];
+        [data3 setFilterMode:VideoSetting];
+        [data3 setVideoType:RotateAutoRotateVideo];
+        [data3 setFilterTitle:[arrVideoSetting objectAtIndex:data3.videoType]];
+        [data3 setArrayValue:[self getMenuVideoArray:data3.videoType]];
+        [data3 setSwitchValue:0];
+        [data3 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data3];
         
         [self setArrayVideoSetting:arrayData];
     }
@@ -476,89 +462,68 @@
     if (!self.arrayPhotoSetting) {
         NSMutableArray* arrayData = [[NSMutableArray alloc]init];
         
-        PSFilterObject *obj1 = [[PSFilterObject alloc] init];
-        [obj1 setCameraMode:PhotoSetting];
-        [obj1 setCellType:CellManyChoice];
-        [obj1 setPhotoFilterType:PhotoResolution];
-        [obj1 setArrayValue:[self getMenuPhotoArray:PhotoResolution]];
-        [obj1 setName:@"Photo resolution"];
-        [obj1 setCurrentIndex:DEFAULT_INDEX];
-        [obj1 setValue:@""];
-        [obj1 setIsChecked:NO];
+        PSFilterData *data1 = [[PSFilterData alloc] init];
+        [data1 setFilterMode:PhotoSetting];
+        [data1 setPhotoType:PhotoResolution];
+        [data1 setFilterTitle:[arrPhotoSetting objectAtIndex:data1.photoType]];
+        [data1 setArrayValue:[self getMenuPhotoArray:data1.photoType]];
+        [data1 setSwitchValue:DEFAULT_INDEX];
+        [data1 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data1];
         
-        [arrayData addObject:obj1];
+        PSFilterData *data2 = [[PSFilterData alloc] init];
+        [data2 setFilterMode:PhotoSetting];
+        [data2 setPhotoType:PhotoJPEGQuanlity];
+        [data2 setFilterTitle:[arrPhotoSetting objectAtIndex:data2.photoType]];
+        [data2 setArrayValue:[self getMenuPhotoArray:data2.photoType]];
+        [data2 setSwitchValue:DEFAULT_INDEX];
+        [data2 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data2];
         
-        PSFilterObject *obj2 = [[PSFilterObject alloc] init];
-        [obj2 setCameraMode:PhotoSetting];
-        [obj2 setCellType:CellManyChoice];
-        [obj2 setPhotoFilterType:PhotoJPEGQuanlity];
-        [obj2 setArrayValue:[self getMenuPhotoArray:PhotoJPEGQuanlity]];
-        [obj2 setName:@"JPEG quanlity"];
-        [obj2 setCurrentIndex:DEFAULT_INDEX];
-        [obj2 setValue:@""];
-        [obj2 setIsChecked:NO];
+        PSFilterData *data3 = [[PSFilterData alloc] init];
+        [data3 setFilterMode:PhotoSetting];
+        [data3 setPhotoType:PhotoSaveGPS];
+        [data3 setFilterTitle:[arrPhotoSetting objectAtIndex:data3.photoType]];
+        [data3 setArrayValue:[self getMenuPhotoArray:data3.photoType]];
+        [data3 setSwitchValue:0];
+        [data3 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data3];
         
-        [arrayData addObject:obj2];
+        PSFilterData *data4 = [[PSFilterData alloc] init];
+        [data4 setFilterMode:PhotoSetting];
+        [data4 setPhotoType:PhotoOverlay];
+        [data4 setFilterTitle:[arrPhotoSetting objectAtIndex:data4.photoType]];
+        [data4 setArrayValue:[self getMenuPhotoArray:data4.photoType]];
+        [data4 setSwitchValue:0];
+        [data4 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data4];
         
-        PSFilterObject *obj3 = [[PSFilterObject alloc] init];
-        [obj3 setCameraMode:PhotoSetting];
-        [obj3 setCellType:CellSwithChoice];
-        [obj3 setPhotoFilterType:PhotoSaveGPS];
-        [obj3 setArrayValue:[self getMenuPhotoArray:PhotoSaveGPS]];
-        [obj3 setName:@"Save GPS data in EXIF"];
-        [obj3 setCurrentIndex:DEFAULT_INDEX];
-        [obj3 setValue:@""];
-        [obj3 setIsChecked:NO];
+        PSFilterData *data5 = [[PSFilterData alloc] init];
+        [data5 setFilterMode:PhotoSetting];
+        [data5 setPhotoType:PhotoDelayJPEG];
+        [data5 setFilterTitle:[arrPhotoSetting objectAtIndex:data5.photoType]];
+        [data5 setArrayValue:[self getMenuPhotoArray:data5.photoType]];
+        [data5 setSwitchValue:0];
+        [data5 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data5];
         
-        [arrayData addObject:obj3];
+        PSFilterData *data6 = [[PSFilterData alloc] init];
+        [data6 setFilterMode:PhotoSetting];
+        [data6 setPhotoType:PhotoSelfTimer];
+        [data6 setFilterTitle:[arrPhotoSetting objectAtIndex:data6.photoType]];
+        [data6 setArrayValue:[self getMenuPhotoArray:data6.photoType]];
+        [data6 setSwitchValue:DEFAULT_INDEX];
+        [data6 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data6];
         
-        PSFilterObject *obj4 = [[PSFilterObject alloc] init];
-        [obj4 setCameraMode:PhotoSetting];
-        [obj4 setCellType:CellSwithChoice];
-        [obj4 setPhotoFilterType:PhotoOverlay];
-        [obj4 setArrayValue:[self getMenuPhotoArray:PhotoOverlay]];
-        [obj4 setName:@"Overlay a time and date"];
-        [obj4 setCurrentIndex:DEFAULT_INDEX];
-        [obj4 setValue:@""];
-        [obj4 setIsChecked:NO];
-        
-        [arrayData addObject:obj4];
-        
-        PSFilterObject *obj5 = [[PSFilterObject alloc] init];
-        [obj5 setCameraMode:PhotoSetting];
-        [obj5 setCellType:CellSwithChoice];
-        [obj5 setPhotoFilterType:PhotoDelayJPEG];
-        [obj5 setArrayValue:[self getMenuPhotoArray:PhotoDelayJPEG]];
-        [obj5 setName:@"HDR"];
-        [obj5 setCurrentIndex:DEFAULT_INDEX];
-        [obj5 setValue:@""];
-        [obj5 setIsChecked:NO];
-        
-        [arrayData addObject:obj5];
-        
-        PSFilterObject *obj6 = [[PSFilterObject alloc] init];
-        [obj6 setCameraMode:PhotoSetting];
-        [obj6 setCellType:CellManyChoice];
-        [obj6 setPhotoFilterType:PhotoSelfTimer];
-        [obj6 setArrayValue:[self getMenuPhotoArray:PhotoSelfTimer]];
-        [obj6 setName:@"Self-timer"];
-        [obj6 setCurrentIndex:DEFAULT_INDEX];
-        [obj6 setValue:@""];
-        [obj6 setIsChecked:NO];
-        
-        [arrayData addObject:obj6];
-        
-        PSFilterObject *obj7 = [[PSFilterObject alloc] init];
-        [obj7 setCameraMode:PhotoSetting];
-        [obj7 setCellType:CellSwithChoice];
-        [obj7 setPhotoFilterType:PhotoStabilizer];
-        [obj7 setArrayValue:[self getMenuPhotoArray:PhotoStabilizer]];
-        [obj7 setName:@"Image Stabilizer"];
-        [obj7 setCurrentIndex:DEFAULT_INDEX];
-        [obj7 setValue:@""];
-        [obj7 setIsChecked:NO];
-        
-        [arrayData addObject:obj7];
+        PSFilterData *data7 = [[PSFilterData alloc] init];
+        [data7 setFilterMode:PhotoSetting];
+        [data7 setPhotoType:PhotoStabilizer];
+        [data7 setFilterTitle:[arrPhotoSetting objectAtIndex:data7.photoType]];
+        [data7 setArrayValue:[self getMenuPhotoArray:data7.photoType]];
+        [data7 setSwitchValue:0];
+        [data7 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data7];
         
         [self setArrayPhotoSetting:arrayData];
     }
@@ -567,65 +532,50 @@
     if (!self.arrayOthersSetting) {
         NSMutableArray* arrayData = [[NSMutableArray alloc]init];
         
-        PSFilterObject *obj1 = [[PSFilterObject alloc] init];
-        [obj1 setCameraMode:OtherSetting];
-        [obj1 setCellType:CellSwithChoice];
-        [obj1 setOthersFilterType:OthersShowGrid];
-        [obj1 setArrayValue:[self getMenuOtherArray:OthersShowGrid]];
-        [obj1 setName:@"Show grid"];
-        [obj1 setCurrentIndex:DEFAULT_INDEX];
-        [obj1 setValue:@""];
-        [obj1 setIsChecked:NO];
+        PSFilterData *data1 = [[PSFilterData alloc] init];
+        [data1 setFilterMode:OtherSetting];
+        [data1 setOtherType:OthersShowGrid];
+        [data1 setFilterTitle:[arrOtherSetting objectAtIndex:data1.otherType]];
+        [data1 setArrayValue:[self getMenuOtherArray:data1.otherType]];
+        [data1 setSwitchValue:0];
+        [data1 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data1];
         
-        [arrayData addObject:obj1];
+        PSFilterData *data2 = [[PSFilterData alloc] init];
+        [data2 setFilterMode:OtherSetting];
+        [data2 setOtherType:OthersPreviewTime];
+        [data2 setFilterTitle:[arrOtherSetting objectAtIndex:data2.otherType]];
+        [data2 setArrayValue:[self getMenuOtherArray:data2.otherType]];
+        [data2 setSwitchValue:DEFAULT_INDEX];
+        [data2 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data2];
         
-        PSFilterObject *obj2 = [[PSFilterObject alloc] init];
-        [obj2 setCameraMode:OtherSetting];
-        [obj2 setCellType:CellManyChoice];
-        [obj2 setOthersFilterType:OthersPreviewTime];
-        [obj2 setArrayValue:[self getMenuOtherArray:OthersPreviewTime]];
-        [obj2 setName:@"Preview time"];
-        [obj2 setCurrentIndex:DEFAULT_INDEX];
-        [obj2 setValue:@""];
-        [obj2 setIsChecked:NO];
+        PSFilterData *data3 = [[PSFilterData alloc] init];
+        [data3 setFilterMode:OtherSetting];
+        [data3 setOtherType:OthersVibrateButtonPress];
+        [data3 setFilterTitle:[arrOtherSetting objectAtIndex:data3.otherType]];
+        [data3 setArrayValue:[self getMenuOtherArray:data3.otherType]];
+        [data3 setSwitchValue:0];
+        [data3 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data3];
         
-        [arrayData addObject:obj2];
+        PSFilterData *data4 = [[PSFilterData alloc] init];
+        [data4 setFilterMode:OtherSetting];
+        [data4 setOtherType:OthersFormatFileNames];
+        [data4 setFilterTitle:[arrOtherSetting objectAtIndex:data4.otherType]];
+        [data4 setArrayValue:[self getMenuOtherArray:data4.otherType]];
+        [data4 setSwitchValue:DEFAULT_INDEX];
+        [data4 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data4];
         
-        PSFilterObject *obj3 = [[PSFilterObject alloc] init];
-        [obj3 setCameraMode:OtherSetting];
-        [obj3 setCellType:CellSwithChoice];
-        [obj3 setOthersFilterType:OthersVibrateButtonPress];
-        [obj3 setArrayValue:[self getMenuOtherArray:OthersVibrateButtonPress]];
-        [obj3 setName:@"Vibrate on utton press"];
-        [obj3 setCurrentIndex:DEFAULT_INDEX];
-        [obj3 setValue:@""];
-        [obj3 setIsChecked:NO];
-        
-        [arrayData addObject:obj3];
-        
-        PSFilterObject *obj4 = [[PSFilterObject alloc] init];
-        [obj4 setCameraMode:OtherSetting];
-        [obj4 setCellType:CellManyChoice];
-        [obj4 setOthersFilterType:OthersFormatFileNames];
-        [obj4 setArrayValue:[self getMenuOtherArray:OthersFormatFileNames]];
-        [obj4 setName:@"Format of file names"];
-        [obj4 setCurrentIndex:DEFAULT_INDEX];
-        [obj4 setValue:@""];
-        [obj4 setIsChecked:NO];
-        
-        [arrayData addObject:obj4];
-        
-        PSFilterObject *obj5 = [[PSFilterObject alloc] init];
-        [obj5 setCameraMode:OtherSetting];
-        [obj5 setCellType:CellManyChoice];
-        [obj5 setOthersFilterType:OthersFolderSavePhotoVideo];
-        [obj5 setArrayValue:[self getMenuOtherArray:OthersFolderSavePhotoVideo]];
-        [obj5 setName:@"Folder to save photo and video"];
-        [obj5 setCurrentIndex:DEFAULT_INDEX];
-        [obj5 setValue:@""];
-        [obj5 setIsChecked:NO];
-        
-        [arrayData addObject:obj5];
+        PSFilterData *data5 = [[PSFilterData alloc] init];
+        [data5 setFilterMode:OtherSetting];
+        [data5 setOtherType:OthersFolderSavePhotoVideo];
+        [data5 setFilterTitle:[arrOtherSetting objectAtIndex:data5.otherType]];
+        [data5 setArrayValue:[self getMenuOtherArray:data5.otherType]];
+        [data5 setSwitchValue:DEFAULT_INDEX];
+        [data5 setIndexValue:DEFAULT_INDEX];
+        [arrayData addObject:data5];
         
         [self setArrayOthersSetting:arrayData];
     }

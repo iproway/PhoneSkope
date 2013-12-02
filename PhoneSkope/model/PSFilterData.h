@@ -9,15 +9,7 @@ typedef enum
     PhotoSetting,
     OtherSetting,
     ChildSetting
-} CameraMode;
-
-typedef enum
-{
-    CellManyChoice,
-    CellSwithChoice,
-    CellCheckChoice,
-    CellNone
-} CellType;
+} FilterMode;
 
 typedef enum
 {
@@ -36,7 +28,7 @@ typedef enum
     FilterTypeCrop = 12,
     FilterTypeMotionDetector = 13,
     FilterTypeFaceDetection = 14
-} CameraFilterType;
+} CameraType;
 
 typedef enum
 {
@@ -45,14 +37,14 @@ typedef enum
     OthersVibrateButtonPress = 2,
     OthersFormatFileNames = 3,
     OthersFolderSavePhotoVideo = 4
-} OthersFilterType;
+} OtherType;
 
 typedef enum
 {
     RotateVideoResolution = 0,
     RotateVideoFileFormat = 1,
     RotateAutoRotateVideo = 2
-} VideoFilterType;
+} VideoType;
 
 typedef enum{
     PhotoResolution = 0,
@@ -62,24 +54,20 @@ typedef enum{
     PhotoDelayJPEG  = 4,
     PhotoSelfTimer = 5,
     PhotoStabilizer = 6
-} PhotoFilterType;
+} PhotoType;
 
+@interface PSFilterData : NSObject
 
-@interface PSFilterObject : NSObject
-
-@property(nonatomic, strong) NSString* name;
-@property(nonatomic, strong) NSString* value;
-@property(nonatomic) int currentIndex;
-@property(nonatomic) BOOL isChecked;
-
+@property(nonatomic,strong) NSString* filterTitle;
+@property(nonatomic,assign) int indexValue;
+@property(nonatomic,assign) int switchValue;
 @property(nonatomic,strong) NSArray* arrayValue;
 
-@property(nonatomic,assign) CameraMode cameraMode;
-@property(nonatomic,assign) CellType cellType;
+@property(nonatomic,assign) FilterMode filterMode;
 
-@property(nonatomic,assign) CameraFilterType cameraFilterType;
-@property(nonatomic,assign) VideoFilterType videoFilterType;
-@property(nonatomic,assign) PhotoFilterType photoFilterType;
-@property(nonatomic,assign) OthersFilterType othersFilterType;
+@property(nonatomic,assign) CameraType cameraType;
+@property(nonatomic,assign) PhotoType photoType;
+@property(nonatomic,assign) VideoType videoType;
+@property(nonatomic,assign) OtherType otherType;
 
 @end

@@ -2,11 +2,11 @@
 
 #import <UIKit/UIKit.h>
 #import "CustomSwitch.h"
-#import "PSFilterObject.h"
+#import "PSFilterData.h"
 
 @protocol SwitchChangeDelegate <NSObject>
 
--(void)changeSwitchStatus:(BOOL)status;
+-(void)changeSwitchStatus:(BOOL)status atIndex:(int)index;
 
 @end
 
@@ -18,7 +18,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *arrowBtn;
 @property (weak, nonatomic) IBOutlet UIImageView *checkBtn;
 @property(nonatomic,retain) IBOutlet id<SwitchChangeDelegate> switchDelegate;
+@property(nonatomic,assign) BOOL isChild;
 
-- (void)setDataForCustomCell:(PSFilterObject *)data;
+- (void)setDataForCustomCell:(PSFilterData *)data;
 
 @end

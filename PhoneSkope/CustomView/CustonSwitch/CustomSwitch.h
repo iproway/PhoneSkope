@@ -1,6 +1,7 @@
 
 
 #import <UIKit/UIKit.h>
+#import "PSFilterData.h"
 
 typedef NS_ENUM(NSUInteger, CustomSwitchStatus)
 {
@@ -16,7 +17,7 @@ typedef NS_ENUM(NSUInteger, CustomSwitchArrange)
 
 @protocol CustomSwitchDelegate <NSObject>
 
--(void)customSwitchSetStatus:(CustomSwitchStatus)status;
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
 @end
 
 @interface CustomSwitch : UIControl
@@ -32,4 +33,5 @@ typedef NS_ENUM(NSUInteger, CustomSwitchArrange)
 @property(nonatomic,retain) IBOutlet id<CustomSwitchDelegate> delegate;
 @property(nonatomic) CustomSwitchArrange arrange;
 @property(nonatomic) CustomSwitchStatus status;
+@property(nonatomic, strong) PSFilterData *data;
 @end

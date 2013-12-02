@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC617178184C18B600F5B2D5 /* PSFilterData.m in Sources */ = {isa = PBXBuildFile; fileRef = DC617177184C18B600F5B2D5 /* PSFilterData.m */; };
 		DC7746051848208200888915 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746041848208200888915 /* Foundation.framework */; };
 		DC7746071848208200888915 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746061848208200888915 /* CoreGraphics.framework */; };
 		DC7746091848208200888915 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746081848208200888915 /* UIKit.framework */; };
@@ -20,7 +21,6 @@
 		DC7746281848208300888915 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DC7746261848208300888915 /* InfoPlist.strings */; };
 		DC77462A1848208300888915 /* PhoneSkopeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746291848208300888915 /* PhoneSkopeTests.m */; };
 		DC7746341848250200888915 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746331848250200888915 /* GPUImage.framework */; };
-		DC7746A41848259800888915 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746371848259800888915 /* GPUImage.framework */; };
 		DC7746A51848259800888915 /* PSCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DC77463A1848259800888915 /* PSCustomCell.m */; };
 		DC7746A61848259800888915 /* PSCustomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC77463B1848259800888915 /* PSCustomCell.xib */; };
 		DC7746A71848259800888915 /* PSCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC77463D1848259800888915 /* PSCameraViewController.m */; };
@@ -83,7 +83,6 @@
 		DC7746E01848259800888915 /* zoom_normal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746771848259800888915 /* zoom_normal@2x.png */; };
 		DC7746E11848259800888915 /* zoom_out@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746781848259800888915 /* zoom_out@2x.png */; };
 		DC7746E21848259800888915 /* zoom_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746791848259800888915 /* zoom_selected@2x.png */; };
-		DC7746E31848259800888915 /* PSFilterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC77467C1848259800888915 /* PSFilterObject.m */; };
 		DC7746E41848259800888915 /* CustomSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746801848259800888915 /* CustomSwitch.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DC7746E51848259800888915 /* CustomSwitch.xib in Resources */ = {isa = PBXBuildFile; fileRef = DC7746811848259800888915 /* CustomSwitch.xib */; };
 		DC7746E61848259800888915 /* PSBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746841848259800888915 /* PSBrightness.m */; };
@@ -103,6 +102,7 @@
 		DC7746F41848259800888915 /* PSWhiteBalance.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746A01848259800888915 /* PSWhiteBalance.m */; };
 		DC7746F51848259800888915 /* PSGeneral.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746A31848259800888915 /* PSGeneral.m */; };
 		DC7746F718482B4400888915 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746F618482B4400888915 /* bg.png */; };
+		DC8F6598184CA1AB00953DBA /* PSSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +116,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC617176184C18B600F5B2D5 /* PSFilterData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSFilterData.h; path = model/PSFilterData.h; sourceTree = "<group>"; };
+		DC617177184C18B600F5B2D5 /* PSFilterData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSFilterData.m; path = model/PSFilterData.m; sourceTree = "<group>"; };
 		DC7746011848208200888915 /* PhoneSkope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhoneSkope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC7746041848208200888915 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DC7746061848208200888915 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -133,7 +135,6 @@
 		DC7746271848208300888915 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DC7746291848208300888915 /* PhoneSkopeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhoneSkopeTests.m; sourceTree = "<group>"; };
 		DC7746331848250200888915 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GPUImage.framework; sourceTree = "<group>"; };
-		DC7746371848259800888915 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GPUImage.framework; sourceTree = "<group>"; };
 		DC7746391848259800888915 /* PSCustomCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSCustomCell.h; sourceTree = "<group>"; };
 		DC77463A1848259800888915 /* PSCustomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSCustomCell.m; sourceTree = "<group>"; };
 		DC77463B1848259800888915 /* PSCustomCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PSCustomCell.xib; sourceTree = "<group>"; };
@@ -198,8 +199,6 @@
 		DC7746771848259800888915 /* zoom_normal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zoom_normal@2x.png"; sourceTree = "<group>"; };
 		DC7746781848259800888915 /* zoom_out@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zoom_out@2x.png"; sourceTree = "<group>"; };
 		DC7746791848259800888915 /* zoom_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zoom_selected@2x.png"; sourceTree = "<group>"; };
-		DC77467B1848259800888915 /* PSFilterObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSFilterObject.h; sourceTree = "<group>"; };
-		DC77467C1848259800888915 /* PSFilterObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSFilterObject.m; sourceTree = "<group>"; };
 		DC77467F1848259800888915 /* CustomSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSwitch.h; sourceTree = "<group>"; };
 		DC7746801848259800888915 /* CustomSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSwitch.m; sourceTree = "<group>"; };
 		DC7746811848259800888915 /* CustomSwitch.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomSwitch.xib; sourceTree = "<group>"; };
@@ -237,6 +236,8 @@
 		DC7746A21848259800888915 /* PSGeneral.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSGeneral.h; sourceTree = "<group>"; };
 		DC7746A31848259800888915 /* PSGeneral.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSGeneral.m; sourceTree = "<group>"; };
 		DC7746F618482B4400888915 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		DC8F6596184CA1AB00953DBA /* PSSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSegmentControl.h; sourceTree = "<group>"; };
+		DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSegmentControl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,7 +246,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC7746341848250200888915 /* GPUImage.framework in Frameworks */,
-				DC7746A41848259800888915 /* GPUImage.framework in Frameworks */,
 				DC7746071848208200888915 /* CoreGraphics.framework in Frameworks */,
 				DC7746091848208200888915 /* UIKit.framework in Frameworks */,
 				DC7746051848208200888915 /* Foundation.framework in Frameworks */,
@@ -265,6 +265,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC617172184B987A00F5B2D5 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				DC617176184C18B600F5B2D5 /* PSFilterData.h */,
+				DC617177184C18B600F5B2D5 /* PSFilterData.m */,
+			);
+			name = model;
+			sourceTree = "<group>";
+		};
 		DC7745F81848208200888915 = {
 			isa = PBXGroup;
 			children = (
@@ -299,7 +308,7 @@
 		DC77460A1848208200888915 /* PhoneSkope */ = {
 			isa = PBXGroup;
 			children = (
-				DC7746351848259800888915 /* libs */,
+				DC617172184B987A00F5B2D5 /* model */,
 				DC7746381848259800888915 /* CustomCell */,
 				DC77463C1848259800888915 /* PSCameraViewController.h */,
 				DC77463D1848259800888915 /* PSCameraViewController.m */,
@@ -307,7 +316,6 @@
 				DC7746A11848259800888915 /* PSFilterManager.h */,
 				DC77463F1848259800888915 /* PSFilterManager.m */,
 				DC7746401848259800888915 /* resources */,
-				DC77467A1848259800888915 /* VideoObject */,
 				DC77467D1848259800888915 /* CustomView */,
 				DC7746821848259800888915 /* Filter */,
 				DC7746A21848259800888915 /* PSGeneral.h */,
@@ -347,22 +355,6 @@
 				DC7746261848208300888915 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		DC7746351848259800888915 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				DC7746361848259800888915 /* CustonSwitch */,
-				DC7746371848259800888915 /* GPUImage.framework */,
-			);
-			path = libs;
-			sourceTree = "<group>";
-		};
-		DC7746361848259800888915 /* CustonSwitch */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = CustonSwitch;
 			sourceTree = "<group>";
 		};
 		DC7746381848259800888915 /* CustomCell */ = {
@@ -440,19 +432,12 @@
 			path = resources;
 			sourceTree = "<group>";
 		};
-		DC77467A1848259800888915 /* VideoObject */ = {
-			isa = PBXGroup;
-			children = (
-				DC77467B1848259800888915 /* PSFilterObject.h */,
-				DC77467C1848259800888915 /* PSFilterObject.m */,
-			);
-			path = VideoObject;
-			sourceTree = "<group>";
-		};
 		DC77467D1848259800888915 /* CustomView */ = {
 			isa = PBXGroup;
 			children = (
 				DC77467E1848259800888915 /* CustonSwitch */,
+				DC8F6596184CA1AB00953DBA /* PSSegmentControl.h */,
+				DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -671,7 +656,6 @@
 				DC7746A71848259800888915 /* PSCameraViewController.m in Sources */,
 				DC7746EC1848259800888915 /* PSFocusMode.m in Sources */,
 				DC7746ED1848259800888915 /* PSMotionDetector.m in Sources */,
-				DC7746E31848259800888915 /* PSFilterObject.m in Sources */,
 				DC7746E91848259800888915 /* PSExposureCompensation.m in Sources */,
 				DC7746EA1848259800888915 /* PSExposureMode.m in Sources */,
 				DC7746E61848259800888915 /* PSBrightness.m in Sources */,
@@ -680,7 +664,9 @@
 				DC7746EF1848259800888915 /* PSSaturation.m in Sources */,
 				DC7746A51848259800888915 /* PSCustomCell.m in Sources */,
 				DC7746F41848259800888915 /* PSWhiteBalance.m in Sources */,
+				DC617178184C18B600F5B2D5 /* PSFilterData.m in Sources */,
 				DC7746E81848259800888915 /* PSCrop.m in Sources */,
+				DC8F6598184CA1AB00953DBA /* PSSegmentControl.m in Sources */,
 				DC7746E71848259800888915 /* PSContrast.m in Sources */,
 				DC7746F11848259800888915 /* PSSharpness.m in Sources */,
 				DC7746F21848259800888915 /* PSTransform_2D.m in Sources */,
@@ -904,6 +890,7 @@
 				DC77462F1848208300888915 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DC7746301848208300888915 /* Build configuration list for PBXNativeTarget "PhoneSkopeTests" */ = {
 			isa = XCConfigurationList;
@@ -912,6 +899,7 @@
 				DC7746321848208300888915 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
