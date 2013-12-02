@@ -5,7 +5,7 @@
 #import "PSFilterManager.h"
 #import "PSCustomCell.h"
 
-@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, SwitchChangeDelegate, UIGestureRecognizerDelegate>
+@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *thumbPhotoImage;
 @property (weak, nonatomic) IBOutlet UIView *captureView;
 

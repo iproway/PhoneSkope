@@ -43,7 +43,9 @@
         if (data.switchValue != -1) {
             self.switchBtn.hidden = NO;
             [self.switchBtn setData:data];
-//            [self.switchBtn setStatus:data.switchValue];
+                        
+            [self.switchBtn setStatus:data.switchValue];
+            
             self.arrowBtn.hidden = YES;
         } else {
             self.switchBtn.hidden = YES;
@@ -63,7 +65,6 @@
         } else {
             self.checkBtn.hidden = YES;
         }
-        
     }
 }
 

@@ -2,7 +2,6 @@
 
 #import <Foundation/Foundation.h>
 #import "PSFilterData.h"
-#import "PSFilterObject.h"
 #import "PSWhiteBalance.h"
 #import "PSSceneMode.h"
 #import "PSExposureMode.h"

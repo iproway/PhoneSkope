@@ -88,9 +88,7 @@
     
     _status = status;
     
-
-    [self.data setSwitchValue:CustomSwitchStatusOn];
-    
+    [self.data setSwitchValue:_status];
     
     if ([_delegate respondsToSelector:@selector(customSwitchSetStatus:atIndex:)]) {
         [_delegate customSwitchSetStatus:_status atIndex:(int)self.tag];

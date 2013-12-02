@@ -499,7 +499,6 @@
         cell.switchBtn.arrange = CustomSwitchArrangeONLeftOFFRight;
         cell.switchBtn.onImage = [UIImage imageNamed:@"switchOne_on.png"];
         cell.switchBtn.offImage = [UIImage imageNamed:@"switchOne_off.png"];
-        cell.switchDelegate = self;
         cell.switchBtn.status = CustomSwitchStatusOff;
         cell.titleLabel.textColor = [UIColor whiteColor];
         cell.detailLabel.textColor = [UIColor whiteColor];
@@ -607,34 +606,6 @@
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
-}
-
-
-
--(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
-{    
-//    if (_currentSessionFilter != ChildSetting) {
-//        PSFilterObject* object;
-//        switch (_currentSessionFilter) {
-//            case CameraSetting:
-//                object = [_arrayCamera objectAtIndex:index];
-//                break;
-//            case OtherSetting:
-//                object = [_arrayOther objectAtIndex:index];
-//                break;
-//            case PhotoSetting:
-//                object = [_arrayPhoto objectAtIndex:index];
-//                break;
-//            case VideoSetting:
-//                object = [_arrayVideo objectAtIndex:index];
-//                break;
-//            case ChildSetting:
-//                object = [_arrayFilterChildElement objectAtIndex:index];
-//                break;
-//        }
-//        
-//        object.isChecked = status;
-//    }
 }
 
 @end

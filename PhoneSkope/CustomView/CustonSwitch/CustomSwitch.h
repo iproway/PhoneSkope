@@ -5,8 +5,8 @@
 
 typedef NS_ENUM(NSUInteger, CustomSwitchStatus)
 {
-    CustomSwitchStatusOn = 0,
-    CustomSwitchStatusOff = 1
+    CustomSwitchStatusOn = 1,
+    CustomSwitchStatusOff = 0
 };
 
 typedef NS_ENUM(NSUInteger, CustomSwitchArrange)
@@ -33,5 +33,5 @@ typedef NS_ENUM(NSUInteger, CustomSwitchArrange)
 @property(nonatomic,retain) IBOutlet id<CustomSwitchDelegate> delegate;
 @property(nonatomic) CustomSwitchArrange arrange;
 @property(nonatomic) CustomSwitchStatus status;
-@property(nonatomic, strong) PSFilterData *data;
+@property(nonatomic,assign) PSFilterData *data;
 @end
