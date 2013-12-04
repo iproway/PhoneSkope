@@ -1,21 +1,27 @@
-//
-//  PSFocusMode.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSFocusMode.h"
 
+@interface PSFocusMode()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSFocusMode
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6",nil];
 }
+
 -(GPUImageTiltShiftFilter*)getFocusMode:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageTiltShiftFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageTiltShiftFilter alloc] init];
+    }
+    
     switch (value) {
         case 0:
             [(GPUImageTiltShiftFilter *)filter setTopFocusLevel:0.1];
@@ -53,10 +59,14 @@
 }
 -(GPUImageTiltShiftFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageTiltShiftFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageTiltShiftFilter alloc] init];
+    }
+    
     [(GPUImageTiltShiftFilter *)filter setTopFocusLevel:0.4];
     [(GPUImageTiltShiftFilter *)filter setBottomFocusLevel:0.6];
     [(GPUImageTiltShiftFilter *)filter setFocusFallOffRate:0.2];
+    
     return (GPUImageTiltShiftFilter *)filter;
 }
 @end

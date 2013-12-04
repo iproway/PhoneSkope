@@ -1,21 +1,25 @@
-//
-//  PSSceneMode.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSSceneMode.h"
+
+@interface PSSceneMode()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
 
 @implementation PSSceneMode
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"Auto", @"landscape", @"snow", @"beach", @"sunset", @"night", @"portrait", @"backlight", @"sports", @"steadyphoto", @"flowers", @"candlelight", @"fireworks", @"party", @"night-portrait", @"theatre", @"action", nil];
 }
+
 -(GPUImageRGBFilter*)getRGB:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageRGBFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageRGBFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -75,10 +79,15 @@
     
     return (GPUImageRGBFilter *)filter;
 }
+
 -(GPUImageRGBFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageRGBFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageRGBFilter alloc] init];
+    }
+
     [(GPUImageRGBFilter *)filter setGreen:1.0];
     return (GPUImageRGBFilter *)filter;
 }
+
 @end

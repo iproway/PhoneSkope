@@ -1,10 +1,4 @@
-//
-//  PSWhiteBalance.h
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import <Foundation/Foundation.h>
 #import <GPUImage/GPUImage.h>
@@ -15,9 +9,12 @@ typedef enum
     WhiteBlanceFluorescent = 2,
     WhiteBlanceDaylight = 3,
     WhiteBlanceCloudyDaylight = 4
-}WhiteBlanceType;
+} WhiteBlanceType;
+
 @interface PSWhiteBalance : NSObject
+
 -(NSArray*)getArray;
 -(GPUImageWhiteBalanceFilter*)getDefaultValue;
 -(GPUImageWhiteBalanceFilter *)getWhiteblance:(WhiteBlanceType)type;
+
 @end

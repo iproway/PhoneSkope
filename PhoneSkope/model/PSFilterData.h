@@ -56,6 +56,14 @@ typedef enum{
     PhotoStabilizer = 6
 } PhotoType;
 
+typedef enum
+{
+    FlashLightAuto = 0,
+    FlashLightOff = 1,
+    FlashLightOn = 2,
+    FlashLightSound = 3
+} FlashLightType;
+
 @interface PSFilterData : NSObject
 
 @property(nonatomic,strong) NSString* filterTitle;

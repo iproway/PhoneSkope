@@ -1,21 +1,26 @@
-//
-//  PSRGB.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSRGB.h"
 
+@interface PSRGB()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSRGB
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"Red-1", @"Red-2", @"Red-3", @"Red-4", @"Red-5", @"Blue-1", @"Blue-2", @"Blue-3", @"Blue-4", @"Blue-5",@"Green-1", @"Green-2", @"Green-3", @"Green-4", @"Green-5", nil];
 }
+
 -(GPUImageRGBFilter*)getRGB:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageRGBFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageRGBFilter alloc] init];
+    }
 
     switch (value) {
         case 0:
@@ -69,10 +74,15 @@
 
     return (GPUImageRGBFilter *)filter;
 }
+
 -(GPUImageRGBFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageRGBFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageRGBFilter alloc] init];
+    }
+
     [(GPUImageRGBFilter *)filter setGreen:1.0];
     return (GPUImageRGBFilter *)filter;
 }
+
 @end

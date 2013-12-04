@@ -4,6 +4,7 @@
 #import "PSGeneral.h"
 #import "PSFilterManager.h"
 #import "PSCustomCell.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *thumbPhotoImage;
@@ -22,6 +23,8 @@
 @property (weak, nonatomic) IBOutlet UIButton* flAlwayBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flNoneBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flSoundBtn;
+
 - (IBAction)openPhotoGallery:(id)sender;
+- (IBAction)captureAction:(id)sender;
 
 @end

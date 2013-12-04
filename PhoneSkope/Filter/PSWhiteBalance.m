@@ -1,14 +1,25 @@
-//
-//  PSWhiteBalance.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSWhiteBalance.h"
 
+@interface PSWhiteBalance()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSWhiteBalance
+
+- (id)init;
+{
+    self = [super init];
+    if (self) {
+        // Initialization code
+        filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    }
+    return self;
+}
 
 -(NSArray*)getArray
 {
@@ -17,7 +28,10 @@
 
 -(GPUImageWhiteBalanceFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    }
+    
     [(GPUImageWhiteBalanceFilter *)filter setTemperature:5000];
     return (GPUImageWhiteBalanceFilter *)filter;
 }
@@ -25,7 +39,9 @@
 -(GPUImageWhiteBalanceFilter *)getWhiteblance:(WhiteBlanceType)type;
 {
     
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageWhiteBalanceFilter alloc] init];
+    }
     
     switch (type) {
         case WhiteBlanceAuto:

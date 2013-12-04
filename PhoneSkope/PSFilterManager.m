@@ -52,9 +52,221 @@
     self = [super init];
     if (self) {
         // init data
+        if (!self.filterGroup)
+            self.filterGroup = [[GPUImageFilterGroup alloc] init];
+        
         [self initDataFilter];
     }
     return self;
+}
+
+-(void)resetFilterGroup;
+{
+    if (self.filterGroup) {
+        [self.filterGroup removeAllTargets];
+    }
+}
+
+-(void)filterFor:(GPUImageStillCamera*) stillCameraFilter andValue:(int)value;
+{
+    switch (value) {
+        case 0:
+        {
+            GPUImageVignetteFilter *vignetteFilter = [[GPUImageVignetteFilter alloc] init];
+            [vignetteFilter setVignetteEnd:0.7];
+            [stillCameraFilter addTarget:vignetteFilter];
+        }
+            break;
+        case 1:
+        {
+            GPUImageExposureFilter *exposureFilter = [[GPUImageExposureFilter alloc] init];
+            [exposureFilter setExposure:0.3];
+            [stillCameraFilter addTarget:exposureFilter];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+-(void)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
+{
+    switch (type) {
+        case FilterTypeWhiteBlance:
+        {
+            [self.filterGroup addTarget:[whiteBalanceObj getWhiteblance:value]];
+//            GPUImageVignetteFilter *vignetteFilter = [[GPUImageVignetteFilter alloc] init];
+//            [vignetteFilter setVignetteEnd:0.7];
+//            [self.filterGroup addTarget:vignetteFilter];
+        }
+            break;
+        case FilterTypeSceneMode:
+        {
+            [self.filterGroup addTarget:[sceneModeObj getRGB:value]];
+//            GPUImageExposureFilter *exposureFilter = [[GPUImageExposureFilter alloc] init];
+//            [exposureFilter setExposure:0.3];
+//            [self.filterGroup addTarget:exposureFilter];
+        }
+            break;
+        case FilterTypeExposureMode:
+        {
+            [self.filterGroup addTarget:[exposureModeObj getExposureMode:value]];
+        }
+            break;
+        case FilterTypeExposureCompensation:
+        {
+            [self.filterGroup addTarget:[exposureCompensationObj getExposureCompensation:value]];
+        }
+            break;
+        case FilterTypeFocusMode:
+        {
+            [self.filterGroup addTarget:[focusModeObj getFocusMode:value]];
+        }
+            break;
+        case FilterTypeBrightness:
+        {
+            [self.filterGroup addTarget:[brightnessObj getBrightness:value]];
+        }
+            break;
+        case FilterTypeContrast:
+        {
+            [self.filterGroup addTarget:[contrastObj getContrast:value]];
+        }
+            break;
+        case FilterTypeSaturation:
+        {
+            [self.filterGroup addTarget:[saturationObj getSaturation:value]];
+        }
+            break;
+        case FilterTypeSharpness:
+        {
+            [self.filterGroup addTarget:[sharpnessObj getSharpness:value]];
+        }
+            break;
+        case FilterTypeRGB:
+        {
+            [self.filterGroup addTarget:[rgbObj getRGB:value]];
+        }
+            break;
+        case FilterTypeTransform_2D:
+        {
+            [self.filterGroup addTarget:[transform_2DObj getTransform_2D:value]];
+        }
+            break;
+        case FilterTypeTransform_3D:
+        {
+            [self.filterGroup addTarget:[transform_3DObj getTransform_3D:value]];
+        }
+            break;
+        case FilterTypeCrop:
+        {
+            [self.filterGroup addTarget:[cropObj getCrop:value]];
+        }
+            break;
+        case FilterTypeMotionDetector:
+        {
+//            [self.filterGroup addTarget:[motionDetectorObj getMotionDetector:value]];
+        }
+            break;
+        case FilterTypeFaceDetection:
+        {
+            
+        }
+            break;
+    }
+}
+
+-(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
+{
+    switch (type) {
+        case PhotoResolution:
+        {
+            
+        }
+            break;
+        case PhotoJPEGQuanlity:
+        {
+            
+        }
+            break;
+        case PhotoSaveGPS:
+        {
+            
+        }
+            break;
+        case PhotoOverlay:
+        {
+            
+        }
+            break;
+        case PhotoDelayJPEG:
+        {
+            
+        }
+            break;
+        case PhotoSelfTimer:
+        {
+            
+        }
+            break;
+        case PhotoStabilizer:
+        {
+            
+        }
+            break;
+    }
+}
+
+-(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
+{
+    switch (type) {
+        case RotateVideoResolution:
+        {
+            
+        }
+            break;
+        case RotateVideoFileFormat:
+        {
+            
+        }
+            break;
+        case RotateAutoRotateVideo:
+        {
+            
+        }
+            break;
+    }
+}
+
+-(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
+{
+    switch (type) {
+        case OthersShowGrid:
+        {
+            
+        }
+            break;
+        case OthersPreviewTime:
+        {
+            
+        }
+            break;
+        case OthersVibrateButtonPress:
+        {
+            
+        }
+            break;
+        case OthersFormatFileNames:
+        {
+            
+        }
+            break;
+        case OthersFolderSavePhotoVideo:
+        {
+            
+        }
+            break;
+    }
 }
 
 -(void)getDefaultValue
@@ -250,7 +462,7 @@
                                  @"Exposure compensation",
                                  @"Focus mode",
                                  @"Brightness",
-                                 @"Constast",
+                                 @"Constrast",
                                  @"Saturation",
                                  @"Sharpness",
                                  @"RGB",

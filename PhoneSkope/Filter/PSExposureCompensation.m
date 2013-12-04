@@ -1,21 +1,25 @@
-//
-//  PSExposureCompensation.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
 
 #import "PSExposureCompensation.h"
 
+@interface PSExposureCompensation()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSExposureCompensation
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", nil];
 }
+
 -(GPUImageExposureFilter*)getExposureCompensation:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageExposureFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageExposureFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -51,10 +55,15 @@
     
     return (GPUImageExposureFilter*)filter;
 }
+
 -(GPUImageExposureFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageExposureFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageExposureFilter alloc] init];
+    }
+    
     [(GPUImageExposureFilter *)filter setExposure:0.0];
     return (GPUImageExposureFilter*)filter;
 }
+
 @end

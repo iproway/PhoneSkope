@@ -1,21 +1,26 @@
-//
-//  PSSaturation.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSSaturation.h"
 
+@interface PSSaturation()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSSaturation
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6", nil];
 }
+
 -(GPUImageSaturationFilter*)getSaturation:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageSaturationFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageSaturationFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -45,9 +50,13 @@
     
     return (GPUImageSaturationFilter*)filter;
 }
+
 -(GPUImageSaturationFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageSaturationFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageSaturationFilter alloc] init];
+    }
+    
     [(GPUImageSaturationFilter *)filter setSaturation:1];
     return (GPUImageSaturationFilter*)filter;
 }

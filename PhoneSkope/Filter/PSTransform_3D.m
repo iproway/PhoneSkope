@@ -1,22 +1,27 @@
-//
-//  PSTransform_3D.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSTransform_3D.h"
 
+@interface PSTransform_3D()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSTransform_3D
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"10", @"11", @"12", @"13", @"14", @"15", @"16", nil];
 }
+
 -(GPUImageTransformFilter*)getTransform_3D:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageTransformFilter alloc] init];
-    filter = [[GPUImageTransformFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageTransformFilter alloc] init];
+    }
+
     CATransform3D perspectiveTransform = CATransform3DIdentity;
     
     switch (value) {
@@ -144,15 +149,21 @@
     
     return (GPUImageTransformFilter*)filter;
 }
+
 -(GPUImageTransformFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageTransformFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageTransformFilter alloc] init];
+    }
+    
     CATransform3D perspectiveTransform = CATransform3DIdentity;
     perspectiveTransform.m34 = 0.4;
     perspectiveTransform.m33 = 0.4;
     perspectiveTransform = CATransform3DScale(perspectiveTransform, 0, 0, 0);
     perspectiveTransform = CATransform3DRotate(perspectiveTransform, 0.0, 0.0, 1.0, 0.0);
     [(GPUImageTransformFilter *)filter setTransform3D:perspectiveTransform];
+    
     return (GPUImageTransformFilter*)filter;
 }
+
 @end

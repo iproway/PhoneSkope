@@ -1,21 +1,25 @@
-//
-//  PSSharpness.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSSharpness.h"
+
+@interface PSSharpness()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
 
 @implementation PSSharpness
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6", nil];
 }
+
 -(GPUImageSharpenFilter*)getSharpness:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageSharpenFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageSharpenFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -45,10 +49,16 @@
     
     return (GPUImageSharpenFilter*)filter;
 }
+
 -(GPUImageSharpenFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageSharpenFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageSharpenFilter alloc] init];
+    }
+    
     [(GPUImageSharpenFilter *)filter setSharpness:0.0];
+    
     return (GPUImageSharpenFilter*)filter;
 }
+
 @end

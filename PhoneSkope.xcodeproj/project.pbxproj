@@ -103,6 +103,7 @@
 		DC7746F51848259800888915 /* PSGeneral.m in Sources */ = {isa = PBXBuildFile; fileRef = DC7746A31848259800888915 /* PSGeneral.m */; };
 		DC7746F718482B4400888915 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746F618482B4400888915 /* bg.png */; };
 		DC8F6598184CA1AB00953DBA /* PSSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */; };
+		DC8F659F184D757300953DBA /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC8F659E184D757300953DBA /* AssetsLibrary.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -238,6 +239,7 @@
 		DC7746F618482B4400888915 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
 		DC8F6596184CA1AB00953DBA /* PSSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSegmentControl.h; sourceTree = "<group>"; };
 		DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSegmentControl.m; sourceTree = "<group>"; };
+		DC8F659E184D757300953DBA /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,6 +247,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC8F659F184D757300953DBA /* AssetsLibrary.framework in Frameworks */,
 				DC7746341848250200888915 /* GPUImage.framework in Frameworks */,
 				DC7746071848208200888915 /* CoreGraphics.framework in Frameworks */,
 				DC7746091848208200888915 /* UIKit.framework in Frameworks */,
@@ -296,6 +299,7 @@
 		DC7746031848208200888915 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC8F659E184D757300953DBA /* AssetsLibrary.framework */,
 				DC7746331848250200888915 /* GPUImage.framework */,
 				DC7746041848208200888915 /* Foundation.framework */,
 				DC7746061848208200888915 /* CoreGraphics.framework */,
@@ -803,6 +807,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "D28CC732-A60B-4D2A-B8CB-E9F0197E197F";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -825,6 +830,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "D28CC732-A60B-4D2A-B8CB-E9F0197E197F";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

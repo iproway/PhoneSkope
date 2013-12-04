@@ -25,6 +25,14 @@
     PSFilterManager* _filterManager;
     
     BOOL _isChildFilter;
+    
+    GPUImageVideoCamera* _cameraFilter;
+    GPUImageStillCamera* _stillCameraFilter;
+    GPUImageOutput<GPUImageInput> *filter;
+    
+    FlashLightType _flashLight;
+    AVCaptureDevice *flashLight;
+    BOOL _isNoFlashLight;
 }
 
 @end
@@ -269,15 +277,40 @@
 - (IBAction)openPhotoGallery:(id)sender;
 {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    } else {
-        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    }
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     
     [self presentModalViewController:picker animated:YES];
+}
+
+- (IBAction)captureAction:(id)sender;
+{
+    
+    [sender setEnabled:NO];
+    
+    [_stillCameraFilter capturePhotoAsJPEGProcessedUpToFilter:filter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+        
+        // Save to assets library
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        
+        [library writeImageDataToSavedPhotosAlbum:processedJPEG metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
+         {
+
+             if (error2) {
+                 NSLog(@"ERROR: the image failed to be written");
+             }
+             else {
+                 NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
+             }
+			 
+             runOnMainQueueWithoutDeadlocking(^{
+
+                 [sender setEnabled:YES];
+                 
+                 [_stillCameraFilter startCameraCapture];
+             });
+         }];
+    }];
+
 }
 
 -(IBAction)actionFilterOption:(id)sender
@@ -300,6 +333,10 @@
 
 -(IBAction)showFlashMenuPress:(id)sender
 {
+    if (_isNoFlashLight) {
+        return;
+    }
+    
     [self.optionBtn setSelected:NO];
     [self.zoomBtn setSelected:NO];
     self.sliderBar.hidden = YES;
@@ -341,6 +378,15 @@
     
     [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-auto.png"]
                    forState:UIControlStateNormal];
+    
+    _flashLight = FlashLightAuto;
+    
+    BOOL success = [flashLight lockForConfiguration:nil];
+    if(success){
+        [flashLight setTorchMode:AVCaptureTorchModeAuto];
+        [flashLight setFlashMode:AVCaptureFlashModeAuto];
+        [flashLight unlockForConfiguration];
+    }
 }
 
 -(IBAction)actionAlwayFlash:(id)sender;
@@ -352,6 +398,15 @@
     
     [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash.png"]
                    forState:UIControlStateNormal];
+    
+    _flashLight = FlashLightOn;
+    
+    BOOL success = [flashLight lockForConfiguration:nil];
+    if(success){
+        [flashLight setTorchMode:AVCaptureTorchModeOn];
+        [flashLight setFlashMode:AVCaptureFlashModeOn];
+        [flashLight unlockForConfiguration];
+    }
 }
 
 -(IBAction)actionNoneFlash:(id)sender;
@@ -363,6 +418,15 @@
     
     [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-off.png"]
                    forState:UIControlStateNormal];
+    
+    _flashLight = FlashLightOff;
+    
+    BOOL success = [flashLight lockForConfiguration:nil];
+    if(success){
+        [flashLight setTorchMode:AVCaptureTorchModeOff];
+        [flashLight setFlashMode:AVCaptureFlashModeOff];
+        [flashLight unlockForConfiguration];
+    }
 }
 
 -(IBAction)actionSoundFlash:(id)sender;
@@ -374,6 +438,15 @@
     
     [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-sound.png"]
                    forState:UIControlStateNormal];
+    
+    _flashLight = FlashLightOff;
+    
+    BOOL success = [flashLight lockForConfiguration:nil];
+    if(success){
+        [flashLight setTorchMode:AVCaptureTorchModeOff];
+        [flashLight setFlashMode:AVCaptureFlashModeOff];
+        [flashLight unlockForConfiguration];
+    }
 }
 
 #pragma mark -
@@ -393,6 +466,44 @@
     [self.tableViewFilter reloadData];
 }
 
+
+#pragma mark -
+#pragma mark - Init GPUImage Filter camera and Photo
+- (void)initGPUImageToView;
+{
+    flashLight = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if ([flashLight hasTorch] || [flashLight hasFlash]) {
+        _flashLight = FlashLightAuto;
+        _isNoFlashLight = NO;
+        
+        BOOL success = [flashLight lockForConfiguration:nil];
+        if(success){
+            [flashLight setTorchMode:AVCaptureTorchModeAuto];
+            [flashLight setFlashMode:AVCaptureFlashModeAuto];
+            [flashLight unlockForConfiguration];
+        }
+        
+        [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-auto.png"]
+                       forState:UIControlStateNormal];
+        
+    } else {
+        _flashLight = FlashLightOff;
+        _isNoFlashLight = YES;
+        [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-off.png"]
+                       forState:UIControlStateNormal];
+    }
+    
+    _stillCameraFilter = [[GPUImageStillCamera alloc] init];
+    _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+
+    [_stillCameraFilter addTarget:_filterManager.filterGroup];
+
+    GPUImageView *filteredView = [[GPUImageView alloc] initWithFrame:self.captureView.bounds];
+    [self.captureView addSubview:filteredView];
+
+    [_stillCameraFilter addTarget:filteredView];
+    [_stillCameraFilter startCameraCapture];
+}
 
 #pragma mark -
 #pragma mark - ViewController Method
@@ -428,6 +539,9 @@
     [self.captureView addGestureRecognizer:tapGestureRecognize];
     [self.captureView setUserInteractionEnabled:YES];
     self.captureView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
+    
+    // Init gpuimage
+    [self initGPUImageToView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -594,6 +708,29 @@
             _currentSessionFilter = _backupFilter;
             count = _backupArray.count;
             
+            // Add filter for GPUImage
+            switch (_currentSessionFilter) {
+                case CameraSetting:
+                    [_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:indexPath.row];
+                    break;
+                case VideoSetting:
+                    [_filterManager filterVideoTypeWithFilterType:_currentParentFilterObject.videoType andValue:indexPath.row];
+                    break;
+                case PhotoSetting:
+                    [_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row];
+                    break;
+                case OtherSetting:
+                    [_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row];
+                    break;
+                default:
+                    break;
+            }
+            
+            [_stillCameraFilter removeTarget:_filterManager.filterGroup];
+            [_stillCameraFilter addTarget:_filterManager.filterGroup];
+            
+            
+//            [_filterManager filterFor:_stillCameraFilter andValue:indexPath.row];
         }
             break;
     }

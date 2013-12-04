@@ -1,21 +1,26 @@
-//
-//  PSBrightness.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSBrightness.h"
 
+@interface PSBrightness()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
+
 @implementation PSBrightness
+
 -(NSArray*)getArray
 {
     return [NSArray arrayWithObjects:@"0", @"1", @"2", @"3", @"4", @"5", @"6", nil];
 }
+
 -(GPUImageBrightnessFilter*)getBrightness:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageBrightnessFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageBrightnessFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -45,10 +50,16 @@
     
     return (GPUImageBrightnessFilter*)filter;
 }
+
 -(GPUImageBrightnessFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageBrightnessFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageBrightnessFilter alloc] init];
+    }
+    
     [(GPUImageBrightnessFilter *)filter setBrightness:0];
+    
     return (GPUImageBrightnessFilter*)filter;
 }
+
 @end

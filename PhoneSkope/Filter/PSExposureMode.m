@@ -1,12 +1,13 @@
-//
-//  PSExposureMode.m
-//  PhoneSkope
-//
-//  Created by Phu Phan on 11/11/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import "PSExposureMode.h"
+
+@interface PSExposureMode()
+{
+    GPUImageOutput<GPUImageInput>* filter;
+}
+
+@end
 
 @implementation PSExposureMode
 -(NSArray*)getArray
@@ -15,7 +16,9 @@
 }
 -(GPUImageExposureFilter*)getExposureMode:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageExposureFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageExposureFilter alloc] init];
+    }
     
     switch (value) {
         case 0:
@@ -51,10 +54,16 @@
     
     return (GPUImageExposureFilter*)filter;
 }
+
 -(GPUImageExposureFilter*)getDefaultValue
 {
-    GPUImageOutput<GPUImageInput>* filter = [[GPUImageExposureFilter alloc] init];
+    if (!filter) {
+        filter = [[GPUImageExposureFilter alloc] init];
+    }
+    
     [(GPUImageExposureFilter *)filter setExposure:0.0];
+    
     return (GPUImageExposureFilter*)filter;
 }
+
 @end
