@@ -17,7 +17,7 @@ typedef NS_ENUM(NSUInteger, CustomSwitchArrange)
 
 @protocol CustomSwitchDelegate <NSObject>
 
--(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status filterData:(PSFilterData *)data atIndex:(int)index;
 @end
 
 @interface CustomSwitch : UIControl

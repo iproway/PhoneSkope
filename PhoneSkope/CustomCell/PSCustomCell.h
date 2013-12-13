@@ -6,7 +6,7 @@
 
 @protocol SwitchChangeDelegate <NSObject>
 
--(void)changeSwitchStatus:(BOOL)status atIndex:(int)index;
+-(void)changeSwitchStatus:(BOOL)status filterData:(PSFilterData *)data atIndex:(int)index;
 
 @end
 

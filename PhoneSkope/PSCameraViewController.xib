@@ -8,16 +8,19 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PSCameraViewController">
             <connections>
                 <outlet property="captureView" destination="cMV-ce-uJj" id="9qV-tj-N9g"/>
+                <outlet property="filterTitle" destination="wlo-uW-2eV" id="Cnf-Lv-q9r"/>
+                <outlet property="filterValue" destination="BEm-hn-it8" id="Fmb-kT-QqJ"/>
                 <outlet property="filterView" destination="Dnq-hE-ump" id="BeO-rc-Guy"/>
                 <outlet property="flAlwayBtn" destination="PiI-Gb-wYD" id="q7u-Rd-CZd"/>
                 <outlet property="flAutoBtn" destination="XQE-oU-Jll" id="gfv-9y-7SD"/>
                 <outlet property="flNoneBtn" destination="6FJ-On-1PC" id="Und-MG-FdQ"/>
-                <outlet property="flSoundBtn" destination="wGQ-hP-5Pk" id="nzH-i3-kJo"/>
                 <outlet property="flashBtn" destination="ATh-Es-IKT" id="quo-9U-xdi"/>
                 <outlet property="flashMenu" destination="k6g-qW-fbS" id="gGH-av-ChJ"/>
                 <outlet property="optionBtn" destination="Ypk-xU-36I" id="x6X-4H-riY"/>
+                <outlet property="scaledSlider" destination="6qG-zU-UNk" id="j8M-oU-aVy"/>
                 <outlet property="segmentControlFilter" destination="LL9-TK-eGm" id="UaE-5G-lvt"/>
                 <outlet property="sliderBar" destination="Tev-bb-cuN" id="JLt-sF-jOC"/>
+                <outlet property="sliderView" destination="90h-bb-NWp" id="u2w-RJ-e4z"/>
                 <outlet property="tableViewFilter" destination="lm0-xi-Phg" id="MVl-5g-ifX"/>
                 <outlet property="thumbPhotoImage" destination="KHv-1p-2BA" id="axa-GM-EqH"/>
                 <outlet property="view" destination="1" id="3"/>
@@ -133,11 +136,52 @@
                                 <outlet property="delegate" destination="-1" id="8mI-KE-U2F"/>
                             </connections>
                         </tableView>
+                        <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="Tev-bb-cuN">
+                            <rect key="frame" x="130" y="128" width="300" height="29"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                        </slider>
+                        <view alpha="0.69999999999999973" contentMode="scaleToFill" id="90h-bb-NWp">
+                            <rect key="frame" x="0.0" y="44" width="280" height="155"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" id="6qG-zU-UNk" customClass="TVCalibratedSlider">
+                                    <rect key="frame" x="10" y="50" width="260" height="76"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </view>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Filter" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wlo-uW-2eV">
+                                    <rect key="frame" x="10" y="5" width="260" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="16"/>
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="BEm-hn-it8">
+                                    <rect key="frame" x="115" y="29" width="50" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="17"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="STb-wP-ajF">
+                                    <rect key="frame" x="251" y="3" width="24" height="24"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <state key="normal" backgroundImage="close-icon.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="closeFilterChildren:" destination="-1" eventType="touchUpInside" id="qzP-1O-QJS"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view clipsSubviews="YES" contentMode="scaleToFill" id="k6g-qW-fbS">
-                    <rect key="frame" x="17" y="36" width="183" height="30"/>
+                    <rect key="frame" x="17" y="36" width="137" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="XQE-oU-Jll">
@@ -179,26 +223,9 @@
                                 <action selector="actionNoneFlash:" destination="-1" eventType="touchUpInside" id="zgf-Tv-d6L"/>
                             </connections>
                         </button>
-                        <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="wGQ-hP-5Pk">
-                            <rect key="frame" x="138" y="0.0" width="45" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.31521739129999998" green="0.31521739129999998" blue="0.31521739129999998" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                            <state key="normal">
-                                <color key="titleColor" red="0.31521739129999998" green="0.31521739129999998" blue="0.31521739129999998" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" red="0.42391304349999998" green="0.42391304349999998" blue="0.42391304349999998" alpha="1" colorSpace="calibratedRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="actionSoundFlash:" destination="-1" eventType="touchUpInside" id="Jq1-bI-rtF"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.21960785984992981" blue="0.32156863808631897" alpha="1" colorSpace="deviceRGB"/>
                 </view>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="Tev-bb-cuN">
-                    <rect key="frame" x="150" y="195" width="300" height="29"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                </slider>
             </subviews>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
         </view>
@@ -206,6 +233,7 @@
     <resources>
         <image name="buttom_bar.png" width="320" height="85"/>
         <image name="camera_icon.png" width="45" height="45"/>
+        <image name="close-icon.png" width="24" height="24"/>
         <image name="imagestest.jpeg" width="275" height="183"/>
         <image name="optionButton.png" width="132" height="33"/>
         <image name="video_capture_icon.png" width="41" height="41"/>

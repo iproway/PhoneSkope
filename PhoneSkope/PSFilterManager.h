@@ -33,11 +33,22 @@
 -(NSArray*)getMenuOtherArray:(OtherType)type;
 
 -(void)resetFilterGroup;
--(void)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
--(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
--(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
--(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
+//-(void)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
+//-(void)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value withStillCamera:(GPUImageStillCamera* )stillCameraFilter;
+//-(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
+//-(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
+//-(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
 
 -(void)filterFor:(GPUImageStillCamera*) stillCameraFilter andValue:(int)value;
+
+- (id)initWithView:(UIView *)view;
+
+-(void)addFaceDetectWithFiter:(GPUImageVideoCamera *)camera withView:(UIView *)view;
+
+-(GPUImageOutput<GPUImageInput> *)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
+
 
 @end

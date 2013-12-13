@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC4DCD77185A2073003C8EE0 /* close-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC4DCD75185A2073003C8EE0 /* close-icon.png */; };
+		DC4DCD78185A2073003C8EE0 /* close-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC4DCD76185A2073003C8EE0 /* close-icon@2x.png */; };
 		DC617178184C18B600F5B2D5 /* PSFilterData.m in Sources */ = {isa = PBXBuildFile; fileRef = DC617177184C18B600F5B2D5 /* PSFilterData.m */; };
 		DC7746051848208200888915 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746041848208200888915 /* Foundation.framework */; };
 		DC7746071848208200888915 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7746061848208200888915 /* CoreGraphics.framework */; };
@@ -104,6 +106,18 @@
 		DC7746F718482B4400888915 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = DC7746F618482B4400888915 /* bg.png */; };
 		DC8F6598184CA1AB00953DBA /* PSSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */; };
 		DC8F659F184D757300953DBA /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC8F659E184D757300953DBA /* AssetsLibrary.framework */; };
+		DC964E2A18577AC700E740FF /* TVCalibratedSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = DC964E2718577AC600E740FF /* TVCalibratedSlider.m */; };
+		DC964E2B18577AC700E740FF /* TVSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = DC964E2918577AC600E740FF /* TVSlider.m */; };
+		DC964E3618577F8F00E740FF /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E2C18577F8F00E740FF /* marker.png */; };
+		DC964E3718577F8F00E740FF /* marker@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E2D18577F8F00E740FF /* marker@2x.png */; };
+		DC964E3818577F8F00E740FF /* slider_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E2E18577F8F00E740FF /* slider_blue.png */; };
+		DC964E3918577F8F00E740FF /* slider_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E2F18577F8F00E740FF /* slider_blue@2x.png */; };
+		DC964E3A18577F8F00E740FF /* slider_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3018577F8F00E740FF /* slider_gray.png */; };
+		DC964E3B18577F8F00E740FF /* slider_gray@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3118577F8F00E740FF /* slider_gray@2x.png */; };
+		DC964E3C18577F8F00E740FF /* slider_hover.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3218577F8F00E740FF /* slider_hover.png */; };
+		DC964E3D18577F8F00E740FF /* slider_hover@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3318577F8F00E740FF /* slider_hover@2x.png */; };
+		DC964E3E18577F8F00E740FF /* slider_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3418577F8F00E740FF /* slider_normal.png */; };
+		DC964E3F18577F8F00E740FF /* slider_normal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC964E3518577F8F00E740FF /* slider_normal@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +131,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC4DCD75185A2073003C8EE0 /* close-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close-icon.png"; sourceTree = "<group>"; };
+		DC4DCD76185A2073003C8EE0 /* close-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close-icon@2x.png"; sourceTree = "<group>"; };
 		DC617176184C18B600F5B2D5 /* PSFilterData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSFilterData.h; path = model/PSFilterData.h; sourceTree = "<group>"; };
 		DC617177184C18B600F5B2D5 /* PSFilterData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSFilterData.m; path = model/PSFilterData.m; sourceTree = "<group>"; };
 		DC7746011848208200888915 /* PhoneSkope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhoneSkope.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -240,6 +256,20 @@
 		DC8F6596184CA1AB00953DBA /* PSSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSegmentControl.h; sourceTree = "<group>"; };
 		DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSegmentControl.m; sourceTree = "<group>"; };
 		DC8F659E184D757300953DBA /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		DC964E2618577AC600E740FF /* TVCalibratedSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCalibratedSlider.h; sourceTree = "<group>"; };
+		DC964E2718577AC600E740FF /* TVCalibratedSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCalibratedSlider.m; sourceTree = "<group>"; };
+		DC964E2818577AC600E740FF /* TVSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVSlider.h; sourceTree = "<group>"; };
+		DC964E2918577AC600E740FF /* TVSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVSlider.m; sourceTree = "<group>"; };
+		DC964E2C18577F8F00E740FF /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
+		DC964E2D18577F8F00E740FF /* marker@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "marker@2x.png"; sourceTree = "<group>"; };
+		DC964E2E18577F8F00E740FF /* slider_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider_blue.png; sourceTree = "<group>"; };
+		DC964E2F18577F8F00E740FF /* slider_blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_blue@2x.png"; sourceTree = "<group>"; };
+		DC964E3018577F8F00E740FF /* slider_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider_gray.png; sourceTree = "<group>"; };
+		DC964E3118577F8F00E740FF /* slider_gray@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_gray@2x.png"; sourceTree = "<group>"; };
+		DC964E3218577F8F00E740FF /* slider_hover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider_hover.png; sourceTree = "<group>"; };
+		DC964E3318577F8F00E740FF /* slider_hover@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_hover@2x.png"; sourceTree = "<group>"; };
+		DC964E3418577F8F00E740FF /* slider_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider_normal.png; sourceTree = "<group>"; };
+		DC964E3518577F8F00E740FF /* slider_normal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slider_normal@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,6 +404,18 @@
 		DC7746401848259800888915 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				DC4DCD75185A2073003C8EE0 /* close-icon.png */,
+				DC4DCD76185A2073003C8EE0 /* close-icon@2x.png */,
+				DC964E2C18577F8F00E740FF /* marker.png */,
+				DC964E2D18577F8F00E740FF /* marker@2x.png */,
+				DC964E2E18577F8F00E740FF /* slider_blue.png */,
+				DC964E2F18577F8F00E740FF /* slider_blue@2x.png */,
+				DC964E3018577F8F00E740FF /* slider_gray.png */,
+				DC964E3118577F8F00E740FF /* slider_gray@2x.png */,
+				DC964E3218577F8F00E740FF /* slider_hover.png */,
+				DC964E3318577F8F00E740FF /* slider_hover@2x.png */,
+				DC964E3418577F8F00E740FF /* slider_normal.png */,
+				DC964E3518577F8F00E740FF /* slider_normal@2x.png */,
 				DC7746F618482B4400888915 /* bg.png */,
 				DC7746411848259800888915 /* A_letter@2x.png */,
 				DC7746421848259800888915 /* bg-btn-no-select.png */,
@@ -439,6 +481,7 @@
 		DC77467D1848259800888915 /* CustomView */ = {
 			isa = PBXGroup;
 			children = (
+				DC964E2518577A9700E740FF /* SliderBar */,
 				DC77467E1848259800888915 /* CustonSwitch */,
 				DC8F6596184CA1AB00953DBA /* PSSegmentControl.h */,
 				DC8F6597184CA1AB00953DBA /* PSSegmentControl.m */,
@@ -491,6 +534,17 @@
 				DC7746A01848259800888915 /* PSWhiteBalance.m */,
 			);
 			path = Filter;
+			sourceTree = "<group>";
+		};
+		DC964E2518577A9700E740FF /* SliderBar */ = {
+			isa = PBXGroup;
+			children = (
+				DC964E2618577AC600E740FF /* TVCalibratedSlider.h */,
+				DC964E2718577AC600E740FF /* TVCalibratedSlider.m */,
+				DC964E2818577AC600E740FF /* TVSlider.h */,
+				DC964E2918577AC600E740FF /* TVSlider.m */,
+			);
+			name = SliderBar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -571,10 +625,12 @@
 			files = (
 				DC7746DD1848259800888915 /* switchTwo_on@2x.png in Resources */,
 				DC7746D81848259800888915 /* switch_off@2x.png in Resources */,
+				DC964E3718577F8F00E740FF /* marker@2x.png in Resources */,
 				DC7746B51848259800888915 /* camera_rotate_image@2x.png in Resources */,
 				DC7746C41848259800888915 /* infor_leftbutton@2x.png in Resources */,
 				DC7746CA1848259800888915 /* optionbutton_highlight@2x.png in Resources */,
 				DC7746C31848259800888915 /* infor@2x.png in Resources */,
+				DC964E3E18577F8F00E740FF /* slider_normal.png in Resources */,
 				DC7746DE1848259800888915 /* textboxSplit@2x.png in Resources */,
 				DC7746BD1848259800888915 /* icon-flash-off-focus@2x.png in Resources */,
 				DC7746C11848259800888915 /* icon-flash@2x.png in Resources */,
@@ -592,7 +648,9 @@
 				DC7746B21848259800888915 /* camera_background@2x.png in Resources */,
 				DC7746DF1848259800888915 /* video_capture_icon@2x.png in Resources */,
 				DC7746AC1848259800888915 /* bg-btn-no-select@2x.png in Resources */,
+				DC964E3818577F8F00E740FF /* slider_blue.png in Resources */,
 				DC7746CF1848259800888915 /* rectImage@2x.png in Resources */,
+				DC4DCD77185A2073003C8EE0 /* close-icon.png in Resources */,
 				DC7746DA1848259800888915 /* switchOne_off@2x.png in Resources */,
 				DC7746C01848259800888915 /* icon-flash-sound@2x.png in Resources */,
 				DC7746E01848259800888915 /* zoom_normal@2x.png in Resources */,
@@ -602,7 +660,11 @@
 				DC7746D41848259800888915 /* segment_divider.png in Resources */,
 				DC7746DC1848259800888915 /* switchTwo_off@2x.png in Resources */,
 				DC77460F1848208200888915 /* InfoPlist.strings in Resources */,
+				DC964E3A18577F8F00E740FF /* slider_gray.png in Resources */,
+				DC4DCD78185A2073003C8EE0 /* close-icon@2x.png in Resources */,
 				DC7746E11848259800888915 /* zoom_out@2x.png in Resources */,
+				DC964E3F18577F8F00E740FF /* slider_normal@2x.png in Resources */,
+				DC964E3918577F8F00E740FF /* slider_blue@2x.png in Resources */,
 				DC7746D01848259800888915 /* segment_1px_no_select.png in Resources */,
 				DC7746B91848259800888915 /* flash_select@2x.png in Resources */,
 				DC7746B71848259800888915 /* check-icon@2x.png in Resources */,
@@ -611,6 +673,7 @@
 				DC7746DB1848259800888915 /* switchOne_on@2x.png in Resources */,
 				DC7746A61848259800888915 /* PSCustomCell.xib in Resources */,
 				DC7746B11848259800888915 /* buttom_bar@2x.png in Resources */,
+				DC964E3B18577F8F00E740FF /* slider_gray@2x.png in Resources */,
 				DC7746C81848259800888915 /* next@2x.png in Resources */,
 				DC7746E51848259800888915 /* CustomSwitch.xib in Resources */,
 				DC7746A81848259800888915 /* PSCameraViewController.xib in Resources */,
@@ -621,8 +684,10 @@
 				DC7746C71848259800888915 /* menulist_icon_highlight@2x.png in Resources */,
 				DC7746AD1848259800888915 /* bg-btn-selected.png in Resources */,
 				DC7746CC1848259800888915 /* other_menu_icon@2x.png in Resources */,
+				DC964E3D18577F8F00E740FF /* slider_hover@2x.png in Resources */,
 				DC7746171848208200888915 /* Images.xcassets in Resources */,
 				DC7746D71848259800888915 /* split_round@2x.png in Resources */,
+				DC964E3C18577F8F00E740FF /* slider_hover.png in Resources */,
 				DC7746BB1848259800888915 /* icon-flash-auto@2x.png in Resources */,
 				DC7746D21848259800888915 /* segment_1px_selected.png in Resources */,
 				DC7746BA1848259800888915 /* icon-flash-auto-focus@2x.png in Resources */,
@@ -632,6 +697,7 @@
 				DC7746AE1848259800888915 /* bg-btn-selected@2x.png in Resources */,
 				DC7746CB1848259800888915 /* other_background@2x.png in Resources */,
 				DC7746D11848259800888915 /* segment_1px_no_select@2x.png in Resources */,
+				DC964E3618577F8F00E740FF /* marker.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -658,6 +724,7 @@
 				DC7746151848208200888915 /* PSAppDelegate.m in Sources */,
 				DC7746E41848259800888915 /* CustomSwitch.m in Sources */,
 				DC7746A71848259800888915 /* PSCameraViewController.m in Sources */,
+				DC964E2B18577AC700E740FF /* TVSlider.m in Sources */,
 				DC7746EC1848259800888915 /* PSFocusMode.m in Sources */,
 				DC7746ED1848259800888915 /* PSMotionDetector.m in Sources */,
 				DC7746E91848259800888915 /* PSExposureCompensation.m in Sources */,
@@ -665,6 +732,7 @@
 				DC7746E61848259800888915 /* PSBrightness.m in Sources */,
 				DC7746EB1848259800888915 /* PSFaceDetection.m in Sources */,
 				DC7746A91848259800888915 /* PSFilterManager.m in Sources */,
+				DC964E2A18577AC700E740FF /* TVCalibratedSlider.m in Sources */,
 				DC7746EF1848259800888915 /* PSSaturation.m in Sources */,
 				DC7746A51848259800888915 /* PSCustomCell.m in Sources */,
 				DC7746F41848259800888915 /* PSWhiteBalance.m in Sources */,

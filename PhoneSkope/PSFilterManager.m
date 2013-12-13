@@ -40,14 +40,19 @@
     GPUImageOutput<GPUImageInput>* faceDetectorFilter;
     
     GPUImageTransformFilter *transformFilter;
-
+    GPUImageMotionDetector *filterMotionDetector;
+    GPUImageSaturationFilter *filterSaturation;
+    PSFaceDetection *faceDetect;
+    
+    UIView *faceView;
+    UIView *mainView;;
 }
 
 @end
 
 @implementation PSFilterManager
 
-- (id)init
+- (id)initWithView:(UIView *)view;
 {
     self = [super init];
     if (self) {
@@ -55,7 +60,8 @@
         if (!self.filterGroup)
             self.filterGroup = [[GPUImageFilterGroup alloc] init];
         
-        [self initDataFilter];
+        mainView = view;
+        [self initDataFilterWithView:view];
     }
     return self;
 }
@@ -67,105 +73,117 @@
     }
 }
 
--(void)filterFor:(GPUImageStillCamera*) stillCameraFilter andValue:(int)value;
+-(void)addFaceDetectWithFiter:(GPUImageVideoCamera *)camera withView:(UIView *)view;
 {
-    switch (value) {
-        case 0:
-        {
-            GPUImageVignetteFilter *vignetteFilter = [[GPUImageVignetteFilter alloc] init];
-            [vignetteFilter setVignetteEnd:0.7];
-            [stillCameraFilter addTarget:vignetteFilter];
-        }
-            break;
-        case 1:
-        {
-            GPUImageExposureFilter *exposureFilter = [[GPUImageExposureFilter alloc] init];
-            [exposureFilter setExposure:0.3];
-            [stillCameraFilter addTarget:exposureFilter];
-        }
-            break;
-        default:
-            break;
+    if (!faceDetect) {
+        faceDetect = [[PSFaceDetection alloc] initWithView:view Camera:camera];
+    
+    [faceDetect getFaceDection];
     }
 }
 
--(void)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterCameraTypeWithFilterType:(CameraType)type andValue:(int)value;
 {
     switch (type) {
         case FilterTypeWhiteBlance:
         {
-            [self.filterGroup addTarget:[whiteBalanceObj getWhiteblance:value]];
-//            GPUImageVignetteFilter *vignetteFilter = [[GPUImageVignetteFilter alloc] init];
-//            [vignetteFilter setVignetteEnd:0.7];
-//            [self.filterGroup addTarget:vignetteFilter];
+            return [whiteBalanceObj getWhiteblance:value];
         }
             break;
         case FilterTypeSceneMode:
         {
-            [self.filterGroup addTarget:[sceneModeObj getRGB:value]];
-//            GPUImageExposureFilter *exposureFilter = [[GPUImageExposureFilter alloc] init];
-//            [exposureFilter setExposure:0.3];
-//            [self.filterGroup addTarget:exposureFilter];
+            return [sceneModeObj getRGB:value];
+
         }
             break;
         case FilterTypeExposureMode:
         {
-            [self.filterGroup addTarget:[exposureModeObj getExposureMode:value]];
+            return [exposureModeObj getExposureMode:value];
         }
             break;
         case FilterTypeExposureCompensation:
         {
-            [self.filterGroup addTarget:[exposureCompensationObj getExposureCompensation:value]];
+            return [exposureCompensationObj getExposureCompensation:value];
         }
             break;
         case FilterTypeFocusMode:
         {
-            [self.filterGroup addTarget:[focusModeObj getFocusMode:value]];
+            return [focusModeObj getFocusMode:value];
         }
             break;
         case FilterTypeBrightness:
         {
-            [self.filterGroup addTarget:[brightnessObj getBrightness:value]];
+            return [brightnessObj getBrightness:value];
         }
             break;
         case FilterTypeContrast:
         {
-            [self.filterGroup addTarget:[contrastObj getContrast:value]];
+            return [contrastObj getContrast:value];
         }
             break;
         case FilterTypeSaturation:
         {
-            [self.filterGroup addTarget:[saturationObj getSaturation:value]];
+            return [saturationObj getSaturation:value];
         }
             break;
         case FilterTypeSharpness:
         {
-            [self.filterGroup addTarget:[sharpnessObj getSharpness:value]];
+            return [sharpnessObj getSharpness:value];
         }
             break;
         case FilterTypeRGB:
         {
-            [self.filterGroup addTarget:[rgbObj getRGB:value]];
+            return [rgbObj getRGB:value];
         }
             break;
         case FilterTypeTransform_2D:
         {
-            [self.filterGroup addTarget:[transform_2DObj getTransform_2D:value]];
+            return [transform_2DObj getTransform_2D:value];
         }
             break;
         case FilterTypeTransform_3D:
         {
-            [self.filterGroup addTarget:[transform_3DObj getTransform_3D:value]];
+            return [transform_3DObj getTransform_3D:value];
         }
             break;
         case FilterTypeCrop:
         {
-            [self.filterGroup addTarget:[cropObj getCrop:value]];
+            return [cropObj getCrop:value];
         }
             break;
         case FilterTypeMotionDetector:
         {
-//            [self.filterGroup addTarget:[motionDetectorObj getMotionDetector:value]];
+            if (filterMotionDetector) {
+                [(GPUImageMotionDetector *)filterMotionDetector setLowPassFilterStrength:value];
+            }
+            
+            
+            
+            if (!filterMotionDetector) {
+                filterMotionDetector = [[GPUImageMotionDetector alloc] init];
+            }
+            
+            [(GPUImageMotionDetector *) filterMotionDetector setMotionDetectionBlock:^(CGPoint motionCentroid, CGFloat motionIntensity, CMTime frameTime) {
+                if (motionIntensity > 0.01)
+                {
+                    CGFloat motionBoxWidth = 1500.0 * motionIntensity;
+                    CGSize viewBounds = mainView.bounds.size;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        faceView.frame = CGRectMake(round(viewBounds.width * motionCentroid.x - motionBoxWidth / 2.0), round(viewBounds.height * motionCentroid.y - motionBoxWidth / 2.0), motionBoxWidth, motionBoxWidth);
+                        faceView.hidden = NO;
+                    });
+                    
+                }
+                else
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        faceView.hidden = YES;
+                    });
+                }
+                
+            }];
+            
+            return filterMotionDetector;
         }
             break;
         case FilterTypeFaceDetection:
@@ -174,102 +192,165 @@
         }
             break;
     }
+    return nil;
 }
 
--(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
 {
     switch (type) {
         case PhotoResolution:
-        {
             
-        }
             break;
         case PhotoJPEGQuanlity:
-        {
             
-        }
             break;
         case PhotoSaveGPS:
-        {
             
-        }
             break;
         case PhotoOverlay:
-        {
             
-        }
             break;
         case PhotoDelayJPEG:
-        {
             
-        }
             break;
         case PhotoSelfTimer:
-        {
             
-        }
             break;
         case PhotoStabilizer:
-        {
             
-        }
+            break;
+        default:
             break;
     }
+    
+     return nil;
 }
 
--(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
 {
-    switch (type) {
-        case RotateVideoResolution:
-        {
-            
-        }
-            break;
-        case RotateVideoFileFormat:
-        {
-            
-        }
-            break;
-        case RotateAutoRotateVideo:
-        {
-            
-        }
-            break;
-    }
+     return nil;
 }
 
--(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
+-(GPUImageOutput<GPUImageInput> *)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
 {
     switch (type) {
         case OthersShowGrid:
-        {
             
-        }
             break;
         case OthersPreviewTime:
-        {
             
-        }
             break;
         case OthersVibrateButtonPress:
-        {
             
-        }
             break;
         case OthersFormatFileNames:
-        {
             
-        }
             break;
         case OthersFolderSavePhotoVideo:
-        {
             
-        }
+            break;
+        default:
             break;
     }
+    
+    return nil;
 }
 
--(void)getDefaultValue
+
+//-(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
+//{
+//    switch (type) {
+//        case PhotoResolution:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoJPEGQuanlity:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoSaveGPS:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoOverlay:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoDelayJPEG:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoSelfTimer:
+//        {
+//            
+//        }
+//            break;
+//        case PhotoStabilizer:
+//        {
+//            
+//        }
+//            break;
+//    }
+//}
+//
+//-(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
+//{
+//    switch (type) {
+//        case RotateVideoResolution:
+//        {
+//            
+//        }
+//            break;
+//        case RotateVideoFileFormat:
+//        {
+//            
+//        }
+//            break;
+//        case RotateAutoRotateVideo:
+//        {
+//            
+//        }
+//            break;
+//    }
+//}
+//
+//-(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
+//{
+//    switch (type) {
+//        case OthersShowGrid:
+//        {
+//            
+//        }
+//            break;
+//        case OthersPreviewTime:
+//        {
+//            
+//        }
+//            break;
+//        case OthersVibrateButtonPress:
+//        {
+//            
+//        }
+//            break;
+//        case OthersFormatFileNames:
+//        {
+//            
+//        }
+//            break;
+//        case OthersFolderSavePhotoVideo:
+//        {
+//            
+//        }
+//            break;
+//    }
+//}
+
+-(void)getDefaultValueWithView:(UIView *)view
 {
     
     transformFilter = [[GPUImageTransformFilter alloc] init];
@@ -313,6 +394,17 @@
     
     cropObj                     = [[PSCrop alloc]init];
     cropFilter                  = [cropObj getDefaultValue];
+    
+    // Motion detect
+    faceView = [[UIView alloc] initWithFrame:CGRectMake(100.0, 100.0, 100.0, 100.0)];
+    faceView.layer.borderWidth = 1;
+    faceView.layer.borderColor = [[UIColor redColor] CGColor];
+    [view addSubview:faceView];
+    faceView.hidden = YES;
+    
+    // FaceDetect
+    filterSaturation = [[GPUImageSaturationFilter alloc] init];
+    
 //    if (isMotionDetectorOpened) {
 //        motionDetectorObj           = [[PSMotionDetector alloc]init];
 //        montionDetectorFilter       = [motionDetectorObj getDefaultValue];
@@ -451,9 +543,9 @@
 }
 
 
-- (void)initDataFilter;
+- (void)initDataFilterWithView:(UIView *)view;
 {
-    [self getDefaultValue];
+    [self getDefaultValueWithView:view];
     
     NSArray *arrCameraSetting = [[NSArray alloc] initWithObjects:
                                  @"White blance",

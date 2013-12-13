@@ -4,7 +4,7 @@
 
 @interface PSCrop()
 {
-    
+    GPUImageOutput<GPUImageInput>* filter;
 }
 
 @end
@@ -17,22 +17,31 @@
 }
 -(GPUImageCropFilter*)getCrop:(int)value
 {
-    GPUImageOutput<GPUImageInput>* filter;
+    if (!filter) {
+        filter = [[GPUImageCropFilter alloc] init];
+    }
+    
     switch (value) {
         case 0:
-            filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.2)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.2)];
             break;
         case 1:
-            filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.4)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.35)];
             break;
         case 2:
-            filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.6)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.5)];
             break;
         case 3:
-            filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.8)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.65)];
             break;
         case 4:
-            filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.8)];
+            break;
+        case 5:
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.9)];
+            break;
+        case 6:
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
             break;
         default:
             break;
@@ -41,6 +50,6 @@
 }
 -(GPUImageCropFilter*)getDefaultValue
 {
-    return [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+    return [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.25)];
 }
 @end

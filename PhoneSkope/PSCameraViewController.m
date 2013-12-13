@@ -29,10 +29,19 @@
     GPUImageVideoCamera* _cameraFilter;
     GPUImageStillCamera* _stillCameraFilter;
     GPUImageOutput<GPUImageInput> *filter;
+    GPUImageFilterGroup *_filterGroup;
+    GPUImageOutput<GPUImageInput> *_currentFilterInput, *_firstFilterInput;
+    GPUImageView *_filteredView;
+    
+    NSMutableArray *_currentFilterArray;
     
     FlashLightType _flashLight;
     AVCaptureDevice *flashLight;
     BOOL _isNoFlashLight;
+    BOOL faceThinking;
+    UIView *faceView;
+    int _indexTest;
+    GPUImageMotionDetector *filterMotionDetector;
 }
 
 @end
@@ -198,6 +207,9 @@
     _isChildFilter = NO;
     UISegmentedControl * control = sender;
     
+    [self.sliderView setHidden:YES];
+    [self.tableViewFilter setHidden:NO];
+    
     int selectedIndex = [control selectedSegmentIndex];
     
     switch (selectedIndex) {
@@ -265,29 +277,101 @@
 
 - (IBAction)backgroundGestureAction:(id)sender;
 {
-    NSLog(@"backgroundGestureAction");
     self.flashMenu.hidden = YES;
     self.filterView.hidden = YES;
     self.sliderBar.hidden = YES;
     [self.flashBtn setSelected:NO];
     [self.zoomBtn setSelected:NO];
     [self.optionBtn setSelected:NO];
+    
+    _isChildFilter = NO;
+    
+    [self.sliderView setHidden:YES];
+    [self.tableViewFilter setHidden:NO];
+    
+    _currentSessionFilter = _backupFilter;
+    
+    [self.tableViewFilter reloadData];
+    
+    int height = 0, count = 0;
+    
+    switch (_currentSessionFilter) {
+        case CameraSetting:
+        {
+            count = _arrayCamera.count;
+            _backupArray = _arrayCamera;
+        }
+            break;
+        case OtherSetting:
+        {
+            count = _arrayOther.count;
+            _backupArray = _arrayOther;
+        }
+            break;
+        case PhotoSetting:
+        {
+            count = _arrayPhoto.count;
+            _backupArray = _arrayPhoto;
+        }
+            break;
+        case VideoSetting:
+        {
+            count = _arrayVideo.count;
+            _backupArray = _arrayVideo;
+        }
+            break;
+        case ChildSetting:
+            count = _arrayFilterChildElement.count;
+            break;
+    }
+    
+    if (count > MAX_ITEM_COUNT)
+        count = MAX_ITEM_COUNT;
+    
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
+
 }
 
 - (IBAction)openPhotoGallery:(id)sender;
 {
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+//    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+//    
+//    [self presentModalViewController:picker animated:YES];
     
-    [self presentModalViewController:picker animated:YES];
+    
+    if([UIImagePickerController isSourceTypeAvailable:
+        UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+        
+        UIImagePickerController *picker= [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+//        picker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
+        
+        [self presentModalViewController:picker animated:YES];
+    }
 }
+
+
+#pragma mark -
+#pragma mark UIImagePickerControllerDelegate
+
+- (void) imagePickerController:(UIImagePickerController *)picker
+         didFinishPickingImage:(UIImage *)image
+                   editingInfo:(NSDictionary *)editingInfo
+{
+//    [self dismissModalViewControllerAnimated:YES];
+}
+
 
 - (IBAction)captureAction:(id)sender;
 {
     
     [sender setEnabled:NO];
     
-    [_stillCameraFilter capturePhotoAsJPEGProcessedUpToFilter:filter withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+    [_stillCameraFilter capturePhotoAsJPEGProcessedUpToFilter:_filterGroup withCompletionHandler:^(NSData *processedJPEG, NSError *error){
         
         // Save to assets library
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
@@ -306,12 +390,63 @@
 
                  [sender setEnabled:YES];
                  
-                 [_stillCameraFilter startCameraCapture];
+//                 [_stillCameraFilter startCameraCapture];
              });
          }];
     }];
 
 }
+
+- (IBAction)closeFilterChildren:(id)sender {
+    _isChildFilter = NO;
+    
+    [self.sliderView setHidden:YES];
+    [self.tableViewFilter setHidden:NO];
+    
+    _currentSessionFilter = _backupFilter;
+    
+    [self.tableViewFilter reloadData];
+    
+    int height = 0, count = 0;
+    
+    switch (_currentSessionFilter) {
+        case CameraSetting:
+        {
+            count = _arrayCamera.count;
+            _backupArray = _arrayCamera;
+        }
+            break;
+        case OtherSetting:
+        {
+            count = _arrayOther.count;
+            _backupArray = _arrayOther;
+        }
+            break;
+        case PhotoSetting:
+        {
+            count = _arrayPhoto.count;
+            _backupArray = _arrayPhoto;
+        }
+            break;
+        case VideoSetting:
+        {
+            count = _arrayVideo.count;
+            _backupArray = _arrayVideo;
+        }
+            break;
+        case ChildSetting:
+            count = _arrayFilterChildElement.count;
+            break;
+    }
+    
+    if (count > MAX_ITEM_COUNT)
+        count = MAX_ITEM_COUNT;
+    
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
+}
+
 
 -(IBAction)actionFilterOption:(id)sender
 {
@@ -326,6 +461,55 @@
         [self.optionBtn setSelected:YES];
     }
     else {
+        
+        _isChildFilter = NO;
+        
+        [self.sliderView setHidden:YES];
+        [self.tableViewFilter setHidden:NO];
+        
+        _currentSessionFilter = _backupFilter;
+        
+        [self.tableViewFilter reloadData];
+        
+        int height = 0, count = 0;
+        
+        switch (_currentSessionFilter) {
+            case CameraSetting:
+            {
+                count = _arrayCamera.count;
+                _backupArray = _arrayCamera;
+            }
+                break;
+            case OtherSetting:
+            {
+                count = _arrayOther.count;
+                _backupArray = _arrayOther;
+            }
+                break;
+            case PhotoSetting:
+            {
+                count = _arrayPhoto.count;
+                _backupArray = _arrayPhoto;
+            }
+                break;
+            case VideoSetting:
+            {
+                count = _arrayVideo.count;
+                _backupArray = _arrayVideo;
+            }
+                break;
+            case ChildSetting:
+                count = _arrayFilterChildElement.count;
+                break;
+        }
+        
+        if (count > MAX_ITEM_COUNT)
+            count = MAX_ITEM_COUNT;
+        
+        height = count * TABLE_HEIGHT;
+        self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                                self.tableViewFilter.frame.size.width, height);
+        
         [self.optionBtn setSelected:NO];
         self.filterView.hidden = YES;
     }
@@ -455,7 +639,7 @@
 -(void)initListFilterData;
 {
     if (!_filterManager) {
-        _filterManager = [[PSFilterManager alloc] init];
+        _filterManager = [[PSFilterManager alloc] initWithView:self.captureView];
     }
     
     _arrayCamera = _filterManager.arrayCameraSetting;
@@ -493,17 +677,64 @@
                        forState:UIControlStateNormal];
     }
     
+    // Config screen for FilterView
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    self.captureView.frame = CGRectMake(0, 0, screenRect.size.width, screenRect.size.height);
+    _filteredView = [[GPUImageView alloc] initWithFrame:screenRect];
+    [_filteredView setFillMode:kGPUImageFillModeStretch];
+    
+    // Init filter for still camera
     _stillCameraFilter = [[GPUImageStillCamera alloc] init];
     _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+    
+    _filterGroup = [[GPUImageFilterGroup alloc] init];
+    
+    GPUImageOutput<GPUImageInput> *ExposureFilter = [[GPUImageExposureFilter alloc] init];
+    [(GPUImageExposureFilter *)ExposureFilter setExposure:0];
 
-    [_stillCameraFilter addTarget:_filterManager.filterGroup];
-
-    GPUImageView *filteredView = [[GPUImageView alloc] initWithFrame:self.captureView.bounds];
-    [self.captureView addSubview:filteredView];
-
-    [_stillCameraFilter addTarget:filteredView];
+    _currentFilterInput = ExposureFilter;
+    _firstFilterInput = ExposureFilter;
+    
+    _currentFilterArray = [[NSMutableArray alloc] init];
+    [_currentFilterArray addObject:ExposureFilter];
+    [(GPUImageFilterGroup *)_filterGroup addTarget:_currentFilterInput];
+    
+    [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:_firstFilterInput]];
+    [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:_currentFilterInput];
+    [_filterGroup prepareForImageCapture];
+    
+    [_stillCameraFilter addTarget:_currentFilterInput];
+    
+    [_filterGroup addTarget:_filteredView];
+    
+    
+    // Add filterview and start camera
+    [self.captureView addSubview:_filteredView];
     [_stillCameraFilter startCameraCapture];
+
+    
+
+    
+    // Init filter for camera
+//    _stillCameraFilter = [[GPUImageVideoCamera alloc]
+//                                        initWithSessionPreset:AVCaptureSessionPreset640x480
+//                                        cameraPosition:AVCaptureDevicePositionBack];
+//    
+//    _stillCameraFilter = [[GPUImageStillCamera alloc] init];
+//    _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+//    
+//    GPUImageOutput<GPUImageInput> *filteraa = [[GPUImageSketchFilter alloc] init];
+//    
+//    [_stillCameraFilter addTarget:filteraa];
+//    
+//    GPUImageView *filteredVideoView = [[GPUImageView alloc] initWithFrame:self.view.bounds];
+//    [filteraa addTarget:filteredVideoView];
+//    [self.captureView addSubview:filteredVideoView];
+//    
+//    [_stillCameraFilter startCameraCapture];
+
 }
+
 
 #pragma mark -
 #pragma mark - ViewController Method
@@ -540,14 +771,72 @@
     [self.captureView setUserInteractionEnabled:YES];
     self.captureView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
     
+    if ([GPUImageContext supportsFastTextureUpload])
+    {
+        NSDictionary *detectorOptions = [[NSDictionary alloc] initWithObjectsAndKeys:CIDetectorAccuracyLow, CIDetectorAccuracy, nil];
+        self.faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions];
+        faceThinking = NO;
+    }
+    
     // Init gpuimage
     [self initGPUImageToView];
+    
+    TVCalibratedSliderRange range;
+    range.maximumValue = 5;
+    range.minimumValue = 1;
+    
+    [self.scaledSlider setRange:range];
+    [self.scaledSlider setValue:1];
+    [self.scaledSlider setTextColorForHighlightedState:[UIColor whiteColor]];
+    [self.scaledSlider setStyle:TavicsaStyle];
+
+    // UISlider update value filter
+    self.scaledSlider.tvSliderValueChangedBlock = ^(id sender){
+        
+        float value = [(TVCalibratedSlider *)sender value];
+        
+        _currentParentFilterObject.indexValue = value;
+        self.filterValue.text = [NSString stringWithFormat:@"%1.0f", value];
+        
+        if (_currentParentFilterObject.cameraType == FilterTypeMotionDetector) {
+            if (!filterMotionDetector) {
+                filterMotionDetector = [[GPUImageMotionDetector alloc] init];
+            }
+            
+            [(GPUImageMotionDetector *)filterMotionDetector setLowPassFilterStrength:value/10];
+            [self motionDetectFilter];
+            return;
+        }
+        
+        [self addFilterForCaptureStillCameraWith:[_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:value]];
+    };
+    
+    self.filterValue.layer.cornerRadius = 5.0f;
+    self.filterValue.layer.borderWidth = 1.5f;
+    self.filterValue.layer.borderColor = [[UIColor blueColor] CGColor];
+    
+    [self.sliderView setHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    // Note: I needed to stop camera capture before the view went off the screen in order to prevent a crash from the camera still sending frames
+//    if (_cameraFilter) {
+//        [_cameraFilter stopCameraCapture];
+//    }
+//    
+//    if (_stillCameraFilter) {
+//        [_stillCameraFilter stopCameraCapture];
+//    }
+    
+    
+    [super viewWillDisappear:animated];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -616,6 +905,7 @@
         cell.switchBtn.status = CustomSwitchStatusOff;
         cell.titleLabel.textColor = [UIColor whiteColor];
         cell.detailLabel.textColor = [UIColor whiteColor];
+        cell.switchDelegate = self;
     }
     
     cell.isChild = NO;
@@ -664,6 +954,83 @@
             _backupArray = _arrayCamera;
             _currentSessionFilter = ChildSetting;
             count = _currentParentFilterObject.arrayValue.count;
+            
+            PSFilterData* object = [_arrayCamera objectAtIndex:indexPath.row];
+            // Check filter type camera
+            switch (object.cameraType) {
+                case FilterTypeExposureMode:
+                case FilterTypeExposureCompensation:
+                case FilterTypeMotionDetector:
+                {
+                    [self.sliderView setHidden:NO];
+                    [self.tableViewFilter setHidden:YES];
+                    
+                    self.filterTitle.text = object.filterTitle;
+                    if (object.indexValue < 0) {
+                        object.indexValue = 0;
+                    }
+                    self.filterValue.text = [NSString stringWithFormat:@"%d", object.indexValue];
+                    
+                    TVCalibratedSliderRange range;
+                    range.maximumValue = 8;
+                    range.minimumValue = 0;
+                    
+                    [self.scaledSlider setRange:range];
+                    [self.scaledSlider setValue:object.indexValue];
+
+                }
+                    break;
+                case FilterTypeFocusMode:
+                case FilterTypeBrightness:
+                case FilterTypeContrast:
+                case FilterTypeSaturation:
+                case FilterTypeSharpness:
+                case FilterTypeCrop:
+                {
+                    [self.sliderView setHidden:NO];
+                    [self.tableViewFilter setHidden:YES];
+                    
+                    self.filterTitle.text = object.filterTitle;
+                    if (object.indexValue < 0) {
+                        object.indexValue = 0;
+                    }
+                    self.filterValue.text = [NSString stringWithFormat:@"%d", object.indexValue];
+                    
+                    TVCalibratedSliderRange range;
+                    range.maximumValue = 6;
+                    range.minimumValue = 0;
+                    
+                    [self.scaledSlider setRange:range];
+                    [self.scaledSlider setValue:object.indexValue];
+                    
+                }
+                    break;
+                    
+                case FilterTypeTransform_2D:
+                case FilterTypeTransform_3D:
+                {
+                    [self.sliderView setHidden:NO];
+                    [self.tableViewFilter setHidden:YES];
+                    
+                    self.filterTitle.text = object.filterTitle;
+                    if (object.indexValue < 0) {
+                        object.indexValue = 0;
+                    }
+                    self.filterValue.text = [NSString stringWithFormat:@"%d", object.indexValue];
+                    
+                    TVCalibratedSliderRange range;
+                    range.maximumValue = 16;
+                    range.minimumValue = 0;
+                    
+                    [self.scaledSlider setRange:range];
+                    [self.scaledSlider setValue:object.indexValue];
+                    
+                }
+                    break;
+                    
+                default:
+                    break;
+            }
         }
             break;
         case VideoSetting:
@@ -688,6 +1055,33 @@
             _backupArray = _arrayPhoto;
             _currentSessionFilter = ChildSetting;
             count = _currentParentFilterObject.arrayValue.count;
+            
+            PSFilterData* object = [_arrayPhoto objectAtIndex:indexPath.row];
+            // Check filter type photo
+            switch (object.photoType) {
+                case PhotoJPEGQuanlity:
+                {
+                    [self.sliderView setHidden:NO];
+                    [self.tableViewFilter setHidden:YES];
+                    
+                    self.filterTitle.text = object.filterTitle;
+                    if (object.indexValue < 0) {
+                        object.indexValue = 1;
+                    }
+                    self.filterValue.text = [NSString stringWithFormat:@"%d", object.indexValue];
+                    
+                    TVCalibratedSliderRange range;
+                    range.maximumValue = 10;
+                    range.minimumValue = 1;
+                    
+                    [self.scaledSlider setRange:range];
+                    [self.scaledSlider setValue:object.indexValue];
+                    
+                }
+                    break;
+                default:
+                    break;
+            }
         }
             break;
         case OtherSetting:
@@ -700,37 +1094,42 @@
             _backupArray = _arrayOther;
             _currentSessionFilter = ChildSetting;
             count = _currentParentFilterObject.arrayValue.count;
+            
         }
             break;
         case ChildSetting:
         {
+            [self.sliderView setHidden:YES];
+            [self.tableViewFilter setHidden:NO];
+            
             _currentParentFilterObject.indexValue = indexPath.row;
             _currentSessionFilter = _backupFilter;
             count = _backupArray.count;
             
+            GPUImageOutput<GPUImageInput> *filtera = [[GPUImageSketchFilter alloc] init];
+            [_stillCameraFilter addTarget:filtera];
+            
             // Add filter for GPUImage
             switch (_currentSessionFilter) {
                 case CameraSetting:
-                    [_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:indexPath.row];
+                    
+                    [self addFilterForCaptureStillCameraWith:[_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:indexPath.row]];
+                    
                     break;
                 case VideoSetting:
-                    [_filterManager filterVideoTypeWithFilterType:_currentParentFilterObject.videoType andValue:indexPath.row];
+//                    [_filterManager filterVideoTypeWithFilterType:_currentParentFilterObject.videoType andValue:indexPath.row];
                     break;
                 case PhotoSetting:
-                    [_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row];
+//                    [_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row];
+                    [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
                     break;
                 case OtherSetting:
-                    [_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row];
+//                    [_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row];
+                    [self addFilterForCaptureStillCameraWith:[_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row]];
                     break;
                 default:
                     break;
             }
-            
-            [_stillCameraFilter removeTarget:_filterManager.filterGroup];
-            [_stillCameraFilter addTarget:_filterManager.filterGroup];
-            
-            
-//            [_filterManager filterFor:_stillCameraFilter andValue:indexPath.row];
         }
             break;
     }
@@ -743,6 +1142,258 @@
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+}
+
+- (void)addFilterForCaptureStillCameraWith:(GPUImageOutput<GPUImageInput> *)filterAdded;
+{
+    if (!filterAdded)
+        return;
+    
+    if ([_currentFilterArray containsObject:filterAdded]) {
+        return;
+    }
+    
+    // Save list filter
+    [_currentFilterArray addObject:filterAdded];
+    
+    [_filterGroup removeAllTargets];
+    [_stillCameraFilter removeAllTargets];
+    
+    [_filterGroup addTarget:filterAdded];
+    
+    [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:_firstFilterInput]];
+    [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:filterAdded];
+    
+    _currentFilterInput = filterAdded;
+    
+    [_filterGroup prepareForImageCapture];
+    
+    [_filterGroup addTarget:_filteredView];
+    
+    [_stillCameraFilter addTarget:_filterGroup];
+}
+
+-(void)changeSwitchStatus:(BOOL)status filterData:(PSFilterData *)data atIndex:(int)index;
+{
+    switch (_currentSessionFilter) {
+        case CameraSetting:
+        {
+            if (data.cameraType == FilterTypeFaceDetection) {
+                
+                if (!status) {
+                    
+                    [_stillCameraFilter setDelegate:nil];
+                    if (faceView) {
+                        [faceView removeFromSuperview];
+                        faceView = nil;
+                    }
+                } else {
+                    
+                    [_stillCameraFilter setDelegate:self];
+                    
+                }
+            }
+        }
+            break;
+        case OtherSetting:
+
+            break;
+        case PhotoSetting:
+
+            break;
+        case VideoSetting:
+
+            break;
+        case ChildSetting:
+            break;
+    }
+}
+
+#pragma mark -
+#pragma mark - Face Detection Delegate Callback
+- (void)willOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    
+    if (!faceThinking) {
+        CFAllocatorRef allocator = CFAllocatorGetDefault();
+        CMSampleBufferRef sbufCopyOut;
+        CMSampleBufferCreateCopy(allocator,sampleBuffer,&sbufCopyOut);
+        [self performSelectorInBackground:@selector(grepFacesForSampleBuffer:) withObject:CFBridgingRelease(sbufCopyOut)];
+    }
+}
+
+- (void)grepFacesForSampleBuffer:(CMSampleBufferRef)sampleBuffer{
+    faceThinking = TRUE;
+    NSLog(@"Faces thinking");
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+	CFDictionaryRef attachments = CMCopyDictionaryOfAttachments(kCFAllocatorDefault, sampleBuffer, kCMAttachmentMode_ShouldPropagate);
+	CIImage *convertedImage = [[CIImage alloc] initWithCVPixelBuffer:pixelBuffer options:(__bridge NSDictionary *)attachments];
+    
+	if (attachments)
+		CFRelease(attachments);
+	NSDictionary *imageOptions = nil;
+	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
+	int exifOrientation;
+	
+    /* kCGImagePropertyOrientation values
+     The intended display orientation of the image. If present, this key is a CFNumber value with the same value as defined
+     by the TIFF and EXIF specifications -- see enumeration of integer constants.
+     The value specified where the origin (0,0) of the image is located. If not present, a value of 1 is assumed.
+     
+     used when calling featuresInImage: options: The value for this key is an integer NSNumber from 1..8 as found in kCGImagePropertyOrientation.
+     If present, the detection will be done based on that orientation but the coordinates in the returned features will still be based on those of the image. */
+    
+	enum {
+		PHOTOS_EXIF_0ROW_TOP_0COL_LEFT			= 1, //   1  =  0th row is at the top, and 0th column is on the left (THE DEFAULT).
+		PHOTOS_EXIF_0ROW_TOP_0COL_RIGHT			= 2, //   2  =  0th row is at the top, and 0th column is on the right.
+		PHOTOS_EXIF_0ROW_BOTTOM_0COL_RIGHT      = 3, //   3  =  0th row is at the bottom, and 0th column is on the right.
+		PHOTOS_EXIF_0ROW_BOTTOM_0COL_LEFT       = 4, //   4  =  0th row is at the bottom, and 0th column is on the left.
+		PHOTOS_EXIF_0ROW_LEFT_0COL_TOP          = 5, //   5  =  0th row is on the left, and 0th column is the top.
+		PHOTOS_EXIF_0ROW_RIGHT_0COL_TOP         = 6, //   6  =  0th row is on the right, and 0th column is the top.
+		PHOTOS_EXIF_0ROW_RIGHT_0COL_BOTTOM      = 7, //   7  =  0th row is on the right, and 0th column is the bottom.
+		PHOTOS_EXIF_0ROW_LEFT_0COL_BOTTOM       = 8  //   8  =  0th row is on the left, and 0th column is the bottom.
+	};
+	BOOL isUsingFrontFacingCamera = FALSE;
+    AVCaptureDevicePosition currentCameraPosition = [_stillCameraFilter cameraPosition];
+    
+    if (currentCameraPosition != AVCaptureDevicePositionBack)
+    {
+        isUsingFrontFacingCamera = TRUE;
+    }
+    
+	switch (curDeviceOrientation) {
+		case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+			exifOrientation = PHOTOS_EXIF_0ROW_LEFT_0COL_BOTTOM;
+			break;
+		case UIDeviceOrientationLandscapeLeft:       // Device oriented horizontally, home button on the right
+			if (isUsingFrontFacingCamera)
+				exifOrientation = PHOTOS_EXIF_0ROW_BOTTOM_0COL_RIGHT;
+			else
+				exifOrientation = PHOTOS_EXIF_0ROW_TOP_0COL_LEFT;
+			break;
+		case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
+			if (isUsingFrontFacingCamera)
+				exifOrientation = PHOTOS_EXIF_0ROW_TOP_0COL_LEFT;
+			else
+				exifOrientation = PHOTOS_EXIF_0ROW_BOTTOM_0COL_RIGHT;
+			break;
+		case UIDeviceOrientationPortrait:            // Device oriented vertically, home button on the bottom
+		default:
+			exifOrientation = PHOTOS_EXIF_0ROW_RIGHT_0COL_TOP;
+			break;
+	}
+    
+	imageOptions = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:exifOrientation] forKey:CIDetectorImageOrientation];
+    
+//    NSLog(@"Face Detector %@", [self.faceDetector description]);
+//    NSLog(@"converted Image %@", [convertedImage description]);
+    NSArray *features = [self.faceDetector featuresInImage:convertedImage options:imageOptions];
+    
+    
+    // get the clean aperture
+    // the clean aperture is a rectangle that defines the portion of the encoded pixel dimensions
+    // that represents image data valid for display.
+    CMFormatDescriptionRef fdesc = CMSampleBufferGetFormatDescription(sampleBuffer);
+    CGRect clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, false /*originIsTopLeft == false*/);
+    
+    
+    [self GPUVCWillOutputFeatures:features forClap:clap andOrientation:curDeviceOrientation];
+    faceThinking = FALSE;
+    
+}
+
+- (void)GPUVCWillOutputFeatures:(NSArray*)featureArray forClap:(CGRect)clap
+                 andOrientation:(UIDeviceOrientation)curDeviceOrientation
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Did receive array");
+        
+        CGRect previewBox = self.view.frame;
+        
+        if (featureArray == nil && faceView) {
+            [faceView removeFromSuperview];
+            faceView = nil;
+        }
+        
+        
+        for ( CIFaceFeature *faceFeature in featureArray) {
+            
+            // find the correct position for the square layer within the previewLayer
+            // the feature box originates in the bottom left of the video frame.
+            // (Bottom right if mirroring is turned on)
+            NSLog(@"%@", NSStringFromCGRect([faceFeature bounds]));
+            
+            //Update face bounds for iOS Coordinate System
+            CGRect faceRect = [faceFeature bounds];
+            
+            // flip preview width and height
+            CGFloat temp = faceRect.size.width;
+            faceRect.size.width = faceRect.size.height;
+            faceRect.size.height = temp;
+            temp = faceRect.origin.x;
+            faceRect.origin.x = faceRect.origin.y;
+            faceRect.origin.y = temp;
+            // scale coordinates so they fit in the preview box, which may be scaled
+            CGFloat widthScaleBy = previewBox.size.width / clap.size.height;
+            CGFloat heightScaleBy = previewBox.size.height / clap.size.width;
+            faceRect.size.width *= widthScaleBy;
+            faceRect.size.height *= heightScaleBy;
+            faceRect.origin.x *= widthScaleBy;
+            faceRect.origin.y *= heightScaleBy;
+            
+            faceRect = CGRectOffset(faceRect, previewBox.origin.x, previewBox.origin.y);
+            
+            if (faceView) {
+                [faceView removeFromSuperview];
+                faceView =  nil;
+            }
+            
+            // create a UIView using the bounds of the face
+            faceView = [[UIView alloc] initWithFrame:faceRect];
+            
+            // add a border around the newly created UIView
+            faceView.layer.borderWidth = 1;
+            faceView.layer.borderColor = [[UIColor redColor] CGColor];
+            
+            // add the new view to create a box around the face
+            [self.view addSubview:faceView];
+            
+        }
+    });
+    
+}
+
+-(void)motionDetectFilter;
+{
+    if (!faceView) {
+        faceView = [[UIView alloc] initWithFrame:CGRectMake(100.0, 100.0, 100.0, 100.0)];
+        faceView.layer.borderWidth = 1;
+        faceView.layer.borderColor = [[UIColor redColor] CGColor];
+        [self.captureView addSubview:faceView];
+        faceView.hidden = YES;
+    }
+    CGSize viewBounds = self.captureView.bounds.size;
+
+    [(GPUImageMotionDetector *) filterMotionDetector setMotionDetectionBlock:^(CGPoint motionCentroid, CGFloat motionIntensity, CMTime frameTime) {
+        if (motionIntensity > 0.01)
+        {
+            CGFloat motionBoxWidth = 1500.0 * motionIntensity;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                faceView.frame = CGRectMake(round(viewBounds.width * motionCentroid.x - motionBoxWidth / 2.0), round(viewBounds.height * motionCentroid.y - motionBoxWidth / 2.0), motionBoxWidth, motionBoxWidth);
+                faceView.hidden = NO;
+            });
+            
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                faceView.hidden = YES;
+            });
+        }
+        
+    }];
+    
+    [_stillCameraFilter addTarget:filterMotionDetector];
 }
 
 @end

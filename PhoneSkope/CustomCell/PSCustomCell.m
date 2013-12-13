@@ -14,15 +14,16 @@
     return self;
 }
 
--(void)customSwitchSetStatus:(CustomSwitchStatus)status atIndex:(int)index;
+-(void)customSwitchSetStatus:(CustomSwitchStatus)status filterData:(PSFilterData *)data atIndex:(int)index;
 {
     NSLog(@"Switch Status = %d", status);
     BOOL isOn = NO;
     if (status == 1) {
         isOn = YES;
     }
-    if ([_switchDelegate respondsToSelector:@selector(changeSwitchStatus:atIndex:)]) {
-        [_switchDelegate changeSwitchStatus:isOn atIndex:index];
+    
+    if ([_switchDelegate respondsToSelector:@selector(changeSwitchStatus:filterData:atIndex:)]) {
+        [_switchDelegate changeSwitchStatus:isOn filterData:data atIndex:index];
     }
 }
 
