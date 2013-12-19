@@ -2,12 +2,15 @@
 
 #import "PSCameraViewController.h"
 #import "PSCustomCell.h"
+#import <CoreLocation/CoreLocation.h>
 
+#define kPollingInterval 0.1
 #define TABLE_HEIGHT 36.0f
 #define MAX_ITEM_COUNT 8
 
 @interface PSCameraViewController ()
 {
+    int maximumItemCount;
     FilterMode _currentSessionFilter;
     FilterMode _backupFilter;
     
@@ -42,6 +45,28 @@
     UIView *faceView;
     int _indexTest;
     GPUImageMotionDetector *filterMotionDetector;
+    GPUImageCropFilter *transformFilter;
+    
+    GPUImageUIElement *_uiTimeElementInput, *_uiGPSElementInput;
+    GPUImageAlphaBlendFilter *blendTimeFilter, *blendGPSFilter;
+    
+    BOOL _isVideoStyle;
+    float _photoJPEGQuanlity;
+    
+    ALAssetsLibrary *_assetsLibrary;
+    
+    BOOL _isAddTimeLable;
+    BOOL _isAddGPSLable;
+    BOOL _idHDRPresetHigh;
+    NSString* _photoResolution;
+    UILabel *_timeLabel;
+    UILabel *_gPSLabel;
+    
+    CLLocationManager *locationManager;
+    NSTimer *pollingTimer;
+    NSDateFormatter *dateFormatter;
+    CFTimeInterval _ticks;
+    GPUImageMovieWriter *movieWriter;
 }
 
 @end
@@ -63,8 +88,17 @@
 - (void)initUIButtonControll;
 {
     CGAffineTransform sliderRotation = CGAffineTransformIdentity;
-    sliderRotation = CGAffineTransformRotate(sliderRotation, (M_PI / 2));
+    sliderRotation = CGAffineTransformRotate(sliderRotation, (-M_PI / 2));
     self.sliderBar.transform = sliderRotation;
+    [self.sliderBar setValue:0];
+    self.sliderBar.minimumValue = 0;
+    self.sliderBar.maximumValue = 10.0f;
+    [self.sliderBar addTarget:self action:@selector(sliderValueChanged:)
+                        forControlEvents:UIControlEventValueChanged];
+
+    
+//    transformFilter = [[GPUImageCropFilter alloc] init];
+//    [(GPUImageCropFilter *)transformFilter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.25)];
     
     [self.optionBtn setImage:[UIImage imageNamed:@"optionbutton_highlight.png"] forState:UIControlStateSelected];
     [self.optionBtn setImage:[UIImage imageNamed:@"optionButton.png"] forState:UIControlStateNormal];
@@ -133,6 +167,22 @@
                     forState:UIControlStateNormal];
     [self.flSoundBtn setImage:[UIImage imageNamed:@"icon-flash-sound-focus.png"]
                      forState:UIControlStateSelected];
+    
+    // Init timelable and gps lable ovelay on picture image
+    _timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 5.0, 240.0f, 320.0f)];
+    _timeLabel.font = [UIFont systemFontOfSize:14.0f];
+    _timeLabel.text = @"";
+    _timeLabel.textAlignment = UITextAlignmentCenter;
+    _timeLabel.backgroundColor = [UIColor clearColor];
+    _timeLabel.textColor = [UIColor whiteColor];
+    
+    CGRect frame = self.captureView.frame;
+    _gPSLabel = [[UILabel alloc] initWithFrame:CGRectMake(5.0, frame.size.height - 20, 240.0f, 320.0f)];
+    _gPSLabel.font = [UIFont systemFontOfSize:14.0f];
+    _gPSLabel.text = @"";
+    _gPSLabel.textAlignment = UITextAlignmentCenter;
+    _gPSLabel.backgroundColor = [UIColor clearColor];
+    _gPSLabel.textColor = [UIColor whiteColor];
 }
 
 - (void)initSegmentControll;
@@ -141,6 +191,7 @@
     UIFont *font = [UIFont boldSystemFontOfSize:16.0f];
     NSDictionary *attributes = [NSDictionary dictionaryWithObject:font
                                                            forKey:UITextAttributeFont];
+    
     [self.segmentControlFilter setTitleTextAttributes:attributes
                                              forState:UIControlStateNormal];
     
@@ -194,8 +245,8 @@
     count = _backupArray.count;
     [self.tableViewFilter reloadData];
 
-    if (count > MAX_ITEM_COUNT)
-    count = MAX_ITEM_COUNT;
+    if (count > maximumItemCount)
+    count = maximumItemCount;
 
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
@@ -217,7 +268,12 @@
             _currentSessionFilter = CameraSetting;
             break;
         case 1:
-            _currentSessionFilter = PhotoSetting;
+        {
+            if (_isVideoStyle) {
+                _currentSessionFilter = VideoSetting;
+            } else
+                _currentSessionFilter = PhotoSetting;
+        }
             break;
         case 2:
             _currentSessionFilter = OtherSetting;
@@ -263,8 +319,8 @@
             break;
     }
     
-    if (count > MAX_ITEM_COUNT)
-        count = MAX_ITEM_COUNT;
+    if (count > maximumItemCount)
+        count = maximumItemCount;
     
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
@@ -325,8 +381,8 @@
             break;
     }
     
-    if (count > MAX_ITEM_COUNT)
-        count = MAX_ITEM_COUNT;
+    if (count > maximumItemCount)
+        count = maximumItemCount;
     
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
@@ -368,15 +424,127 @@
 
 - (IBAction)captureAction:(id)sender;
 {
+    if (_isVideoStyle == YES) {
+        
+        NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+        unlink([pathToMovie UTF8String]);
+        NSURL *moviePath = [NSURL fileURLWithPath:pathToMovie];
+        
+        if (![sender isSelected]) {
+            [sender setSelected:YES];
+            [self startTimmer];
+            
+            // Start writer video
+            if (!movieWriter) {
+                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:moviePath size:CGSizeMake(480.0, 640.0)];
+            }
+            
+//            [_filterGroup removeAllTargets];
+//            [_stillCameraFilter removeAllTargets];
+            
+            [_filterGroup addTarget:movieWriter];
+            
+//            [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:movieWriter]];
+//            [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:_firstFilterInput];
+            
+            [_filterGroup prepareForImageCapture];
+            [_filterGroup addTarget:_filteredView];
+            [_stillCameraFilter addTarget:_filterGroup];
+            
+            _stillCameraFilter.audioEncodingTarget = movieWriter;
+            [movieWriter startRecording];
+            
+        } else {
+            [sender setSelected:NO];
+            [self stopTimmer];
+            
+            [_filterGroup removeTarget:movieWriter];
+            _stillCameraFilter.audioEncodingTarget = nil;
+            [movieWriter finishRecording];
+            NSLog(@"Movie completed");
+
+            [self writeMovieToLibraryWithPath:moviePath];
+        }
+        
+        
+        
+        return;
+    }
+    
+    // Check Overlay Infomation on Image
+    if (_isAddTimeLable) {
+        
+        NSDate *currDate = [NSDate date];
+        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+        NSString *dateString = [dateFormatter stringFromDate:currDate];
+        _timeLabel.text = dateString;
+        
+        if (!_uiTimeElementInput) {
+            _uiTimeElementInput = [[GPUImageUIElement alloc] initWithView:_timeLabel];
+            
+            [_uiTimeElementInput addTarget:blendTimeFilter];
+            
+            [self addFilterForCaptureStillCameraWith:blendTimeFilter];
+        }
+        
+    
+        
+    }
+//
+//    if (_isAddGPSLable) {
+//        if (!_uiGPSElementInput) {
+//            _uiGPSElementInput = [[GPUImageUIElement alloc] initWithView:_gPSLabel];
+//            
+//            [_filterGroup addTarget:blendGPSFilter];
+//            [_uiGPSElementInput addTarget:blendGPSFilter];
+//            [blendGPSFilter addTarget:_filteredView];
+//        }
+//        
+////        [_filterGroup setFrameProcessingCompletionBlock:^(GPUImageOutput * filter, CMTime frameTime){
+////            
+////        }];
+//    }
+    
     
     [sender setEnabled:NO];
     
-    [_stillCameraFilter capturePhotoAsJPEGProcessedUpToFilter:_filterGroup withCompletionHandler:^(NSData *processedJPEG, NSError *error){
+    
+    // capture image with HDR
+//    if (_photoResolution) {
+//        
+////        [_stillCameraFilter setCaptureSessionPreset:[NSString stringWithFormat:@"AVCaptureSessionPreset%@", _photoResolution]];
+//        [_stillCameraFilter stopCameraCapture];
+//        
+//        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset352x288];
+//        
+//        [_stillCameraFilter prepareForImageCapture];
+//        
+//        [_stillCameraFilter startCameraCapture];
+//    } else {
+//        [_stillCameraFilter stopCameraCapture];
+//        
+//        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetPhoto];
+//        
+//        [_stillCameraFilter prepareForImageCapture];
+//        [_stillCameraFilter startCameraCapture];
+//    }
+    
+    if (_idHDRPresetHigh) {
+        [_stillCameraFilter stopCameraCapture];
+        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetHigh];
+        [_stillCameraFilter removeAllTargets];
+        [_stillCameraFilter prepareForImageCapture];
+        [_stillCameraFilter startCameraCapture];
+    }
+    
+    
+    
+    [_stillCameraFilter capturePhotoAsImageProcessedUpToFilter:_filterGroup withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+        
+        NSData *dataForPNGFile = UIImageJPEGRepresentation(processedImage, _photoJPEGQuanlity);
         
         // Save to assets library
-        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        
-        [library writeImageDataToSavedPhotosAlbum:processedJPEG metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
+        [_assetsLibrary writeImageDataToSavedPhotosAlbum:dataForPNGFile metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
 
              if (error2) {
@@ -385,7 +553,7 @@
              else {
                  NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
              }
-			 
+
              runOnMainQueueWithoutDeadlocking(^{
 
                  [sender setEnabled:YES];
@@ -394,7 +562,6 @@
              });
          }];
     }];
-
 }
 
 - (IBAction)closeFilterChildren:(id)sender {
@@ -439,14 +606,58 @@
             break;
     }
     
-    if (count > MAX_ITEM_COUNT)
-        count = MAX_ITEM_COUNT;
+    if (count > maximumItemCount)
+        count = maximumItemCount;
     
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
 }
 
+
+- (void)reloadTableFilter;
+{
+    [self.tableViewFilter reloadData];
+    
+    int height = 0, count = 0;
+    
+    switch (_currentSessionFilter) {
+        case CameraSetting:
+        {
+            count = _arrayCamera.count;
+            _backupArray = _arrayCamera;
+        }
+            break;
+        case OtherSetting:
+        {
+            count = _arrayOther.count;
+            _backupArray = _arrayOther;
+        }
+            break;
+        case PhotoSetting:
+        {
+            count = _arrayPhoto.count;
+            _backupArray = _arrayPhoto;
+        }
+            break;
+        case VideoSetting:
+        {
+            count = _arrayVideo.count;
+            _backupArray = _arrayVideo;
+        }
+            break;
+        case ChildSetting:
+            count = _arrayFilterChildElement.count;
+            break;
+    }
+    
+    if (count > maximumItemCount)
+        count = maximumItemCount;
+    
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
+}
 
 -(IBAction)actionFilterOption:(id)sender
 {
@@ -469,46 +680,7 @@
         
         _currentSessionFilter = _backupFilter;
         
-        [self.tableViewFilter reloadData];
-        
-        int height = 0, count = 0;
-        
-        switch (_currentSessionFilter) {
-            case CameraSetting:
-            {
-                count = _arrayCamera.count;
-                _backupArray = _arrayCamera;
-            }
-                break;
-            case OtherSetting:
-            {
-                count = _arrayOther.count;
-                _backupArray = _arrayOther;
-            }
-                break;
-            case PhotoSetting:
-            {
-                count = _arrayPhoto.count;
-                _backupArray = _arrayPhoto;
-            }
-                break;
-            case VideoSetting:
-            {
-                count = _arrayVideo.count;
-                _backupArray = _arrayVideo;
-            }
-                break;
-            case ChildSetting:
-                count = _arrayFilterChildElement.count;
-                break;
-        }
-        
-        if (count > MAX_ITEM_COUNT)
-            count = MAX_ITEM_COUNT;
-        
-        height = count * TABLE_HEIGHT;
-        self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
-                                                self.tableViewFilter.frame.size.width, height);
+        [self reloadTableFilter];
         
         [self.optionBtn setSelected:NO];
         self.filterView.hidden = YES;
@@ -547,10 +719,12 @@
     if (self.sliderBar.hidden) {
         [self.zoomBtn setSelected:YES];
         self.sliderBar.hidden = NO;
+        
+        [self addFilterForCaptureStillCameraWith:transformFilter];
     } else {
         [self.zoomBtn setSelected:NO];
         self.sliderBar.hidden = YES;
-    }
+    }    
 }
 
 -(IBAction)actionAutoFlash:(id)sender;
@@ -633,6 +807,87 @@
     }
 }
 
+- (IBAction)changeVideoMode:(id)sender {
+    
+    
+    
+    if (_isVideoStyle == NO) {
+        NSLog(@"Change Mode Video");
+        [self.segmentControlFilter setTitle:@"Video" forSegmentAtIndex:1];
+        
+        if (_backupFilter == PhotoSetting) {
+            _backupFilter = VideoSetting;
+        }
+        
+        self.videoView.hidden = NO;
+        self.timmerLable.text = @"0' 00'' 00";
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_start_rotate_image.png"] forState:UIControlStateNormal];
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_rotate_image.png"] forState:UIControlStateSelected];
+        
+    } else {
+        NSLog(@"Change Photo");
+        [self.segmentControlFilter setTitle:@"Photo" forSegmentAtIndex:1];
+        
+        if (_backupFilter == VideoSetting) {
+            _backupFilter = PhotoSetting;
+        }
+        
+        self.videoView.hidden = YES;
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateNormal];
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateSelected];
+    }
+    
+    _isVideoStyle = !_isVideoStyle;
+    
+    _isChildFilter = NO;
+    
+    [self.sliderView setHidden:YES];
+    [self.tableViewFilter setHidden:NO];
+    
+    _currentSessionFilter = _backupFilter;
+    
+    [self.tableViewFilter reloadData];
+    
+    int height = 0, count = 0;
+    
+    switch (_currentSessionFilter) {
+        case CameraSetting:
+        {
+            count = _arrayCamera.count;
+            _backupArray = _arrayCamera;
+        }
+            break;
+        case OtherSetting:
+        {
+            count = _arrayOther.count;
+            _backupArray = _arrayOther;
+        }
+            break;
+        case PhotoSetting:
+        {
+            count = _arrayPhoto.count;
+            _backupArray = _arrayPhoto;
+        }
+            break;
+        case VideoSetting:
+        {
+            count = _arrayVideo.count;
+            _backupArray = _arrayVideo;
+        }
+            break;
+        case ChildSetting:
+            count = _arrayFilterChildElement.count;
+            break;
+    }
+    
+    if (count > maximumItemCount)
+        count = maximumItemCount;
+    
+    height = count * TABLE_HEIGHT;
+    self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
+                                            self.tableViewFilter.frame.size.width, height);
+}
+
 #pragma mark -
 #pragma mark - Init Filter Data
 
@@ -681,6 +936,8 @@
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     self.captureView.frame = CGRectMake(0, 0, screenRect.size.width, screenRect.size.height);
     _filteredView = [[GPUImageView alloc] initWithFrame:screenRect];
+    _filteredView.autoresizesSubviews = YES;
+    _filteredView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [_filteredView setFillMode:kGPUImageFillModeStretch];
     
     // Init filter for still camera
@@ -716,23 +973,24 @@
 
     
     // Init filter for camera
-//    _stillCameraFilter = [[GPUImageVideoCamera alloc]
-//                                        initWithSessionPreset:AVCaptureSessionPreset640x480
-//                                        cameraPosition:AVCaptureDevicePositionBack];
-//    
-//    _stillCameraFilter = [[GPUImageStillCamera alloc] init];
-//    _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
-//    
-//    GPUImageOutput<GPUImageInput> *filteraa = [[GPUImageSketchFilter alloc] init];
-//    
-//    [_stillCameraFilter addTarget:filteraa];
-//    
-//    GPUImageView *filteredVideoView = [[GPUImageView alloc] initWithFrame:self.view.bounds];
-//    [filteraa addTarget:filteredVideoView];
-//    [self.captureView addSubview:filteredVideoView];
-//    
-//    [_stillCameraFilter startCameraCapture];
+    _cameraFilter = [[GPUImageVideoCamera alloc]
+                                        initWithSessionPreset:AVCaptureSessionPreset640x480
+                                        cameraPosition:AVCaptureDevicePositionBack];
+    
+    _cameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+    [_cameraFilter stopCameraCapture];
 
+    
+    _photoJPEGQuanlity = 1;
+    _idHDRPresetHigh = NO;
+    if (!_assetsLibrary) {
+        _assetsLibrary = [[ALAssetsLibrary alloc] init];
+    }
+    
+    blendTimeFilter = [[GPUImageAlphaBlendFilter alloc] init];
+    blendTimeFilter.mix = 1.0;
+    blendGPSFilter = [[GPUImageAlphaBlendFilter alloc] init];
+    blendGPSFilter.mix = 1.0;
 }
 
 
@@ -744,6 +1002,8 @@
     [super viewDidLoad];
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    
+    _isVideoStyle = NO;
     
     // Do any additional setup after loading the view from its nib.
     
@@ -769,7 +1029,7 @@
     tapGestureRecognize.numberOfTapsRequired = 1;
     [self.captureView addGestureRecognizer:tapGestureRecognize];
     [self.captureView setUserInteractionEnabled:YES];
-    self.captureView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
+    self.captureView.backgroundColor = [UIColor clearColor];
     
     if ([GPUImageContext supportsFastTextureUpload])
     {
@@ -791,24 +1051,11 @@
     [self.scaledSlider setStyle:TavicsaStyle];
 
     // UISlider update value filter
-    self.scaledSlider.tvSliderValueChangedBlock = ^(id sender){
+    self.scaledSlider.tvSliderValueChangedBlock = ^(id sender) {
         
         float value = [(TVCalibratedSlider *)sender value];
         
-        _currentParentFilterObject.indexValue = value;
-        self.filterValue.text = [NSString stringWithFormat:@"%1.0f", value];
-        
-        if (_currentParentFilterObject.cameraType == FilterTypeMotionDetector) {
-            if (!filterMotionDetector) {
-                filterMotionDetector = [[GPUImageMotionDetector alloc] init];
-            }
-            
-            [(GPUImageMotionDetector *)filterMotionDetector setLowPassFilterStrength:value/10];
-            [self motionDetectFilter];
-            return;
-        }
-        
-        [self addFilterForCaptureStillCameraWith:[_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:value]];
+        [self sliderFilterValueChange:value];
     };
     
     self.filterValue.layer.cornerRadius = 5.0f;
@@ -816,7 +1063,58 @@
     self.filterValue.layer.borderColor = [[UIColor blueColor] CGColor];
     
     [self.sliderView setHidden:YES];
+    self.videoView.hidden = YES;
+    
+    dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"mm : ss : S"];
+    
+    // Check rotation
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        
+        [self changeUILandscapeRotation];
+        
+    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+        
+        [self changeUIPortraitRotation];
+    }
 }
+
+- (void)startTimmer;
+{
+    _ticks = 0;
+    if (!pollingTimer) {
+        pollingTimer = [NSTimer scheduledTimerWithTimeInterval:kPollingInterval
+                                                        target:self
+                                                      selector:@selector(timerFired:)
+                                                      userInfo:nil
+                                                       repeats:YES];
+    }
+}
+
+- (void)stopTimmer;
+{
+    if (pollingTimer != nil) {
+        [pollingTimer invalidate];
+        pollingTimer = nil;
+    }
+}
+
+-(void)timerFired:(NSTimer *) theTimer
+{
+//    NSLog(@"timerFired @ %@", [theTimer fireDate]);
+//    NSDate *today = [[NSDate alloc] init];
+//    NSString *currentTime = [dateFormatter stringFromDate: [theTimer fireDate]];
+    
+    // Timers are not guaranteed to tick at the nominal rate specified, so this isn't technically accurate.
+    // However, this is just an example to demonstrate how to stop some ongoing activity, so we can live with that inaccuracy.
+    _ticks += 0.1;
+    double seconds = fmod(_ticks, 60.0);
+    double minutes = fmod(trunc(_ticks / 60.0), 60.0);
+    double hours = trunc(_ticks / 3600.0);
+    self.timmerLable.text = [NSString stringWithFormat:@"%02.0f' %02.0f'' %02.0f", hours, minutes, seconds];
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -1118,10 +1416,21 @@
                     break;
                 case VideoSetting:
 //                    [_filterManager filterVideoTypeWithFilterType:_currentParentFilterObject.videoType andValue:indexPath.row];
+                    
                     break;
                 case PhotoSetting:
-//                    [_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row];
-                    [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
+                {
+                    if (_currentParentFilterObject.photoType == PhotoResolution) {
+                        
+                        _photoResolution = [_currentParentFilterObject.arrayValue objectAtIndex:indexPath.row];
+                        
+                        [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
+                        
+                        NSLog(@"%@", _photoResolution);
+                    } else {
+                        [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
+                    }
+                }
                     break;
                 case OtherSetting:
 //                    [_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row];
@@ -1136,8 +1445,8 @@
     
     [self.tableViewFilter reloadData];
     
-    if (count > MAX_ITEM_COUNT)
-        count = MAX_ITEM_COUNT;
+    if (count > maximumItemCount)
+        count = maximumItemCount;
 
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
@@ -1178,6 +1487,7 @@
     switch (_currentSessionFilter) {
         case CameraSetting:
         {
+            // Face detect
             if (data.cameraType == FilterTypeFaceDetection) {
                 
                 if (!status) {
@@ -1199,7 +1509,47 @@
 
             break;
         case PhotoSetting:
-
+        {
+            // Photo stabilizer
+            if (data.photoType == PhotoStabilizer) {
+                
+                AVCaptureConnection *videoConnection = [_stillCameraFilter videoCaptureConnection];
+                if (!status) {
+                    if ([videoConnection isVideoStabilizationSupported])
+                    {
+                        NSLog(@"VideoStabilizationSupported! Curr val: %i", [videoConnection isVideoStabilizationEnabled]);
+                        if (![videoConnection isVideoStabilizationEnabled]) {
+                            NSLog(@"enabling Video Stabilization!");
+                            [_stillCameraFilter stopCameraCapture];
+                            videoConnection.enablesVideoStabilizationWhenAvailable= YES;
+                            [_stillCameraFilter startCameraCapture];
+                            NSLog(@"after: %i", [videoConnection isVideoStabilizationEnabled]);
+                        }
+                    }
+                } else {
+                    if ([videoConnection isVideoStabilizationSupported])
+                    {
+                        NSLog(@"VideoStabilizationSupported! Curr val: %i", [videoConnection isVideoStabilizationEnabled]);
+                        if ([videoConnection isVideoStabilizationEnabled]) {
+                            NSLog(@"enabling Video Stabilization!");
+                            
+                            [_stillCameraFilter stopCameraCapture];
+                            videoConnection.enablesVideoStabilizationWhenAvailable= NO;
+                            [_stillCameraFilter startCameraCapture];
+                            NSLog(@"after: %i", [videoConnection isVideoStabilizationEnabled]);
+                        }
+                    }
+                }
+            } else if (data.photoType == PhotoDelayJPEG) {
+                
+                NSLog(@"PhotoDelayJPEG");
+                _idHDRPresetHigh = status;
+            } else if (data.photoType == PhotoOverlay) {
+                _isAddTimeLable = status;
+            } else if (data.photoType == PhotoSaveGPS) {
+                _isAddGPSLable = status;
+            }
+        }
             break;
         case VideoSetting:
 
@@ -1394,6 +1744,220 @@
     }];
     
     [_stillCameraFilter addTarget:filterMotionDetector];
+}
+
+
+- (IBAction)sliderValueChanged:(UISlider *)sender {
+
+    [self addFilterForCaptureStillCameraWith:[_filterManager filterCameraTypeWithFilterType:FilterTypeCrop andValue:(10 - sender.value)]];
+}
+
+- (void)sliderFilterValueChange:(float)value;
+{
+    _currentParentFilterObject.indexValue = value;
+    self.filterValue.text = [NSString stringWithFormat:@"%1.0f", value];
+    
+    switch (_currentParentFilterObject.filterMode) {
+        case CameraSetting:
+        {
+            if (_currentParentFilterObject.cameraType == FilterTypeMotionDetector) {
+                if (!filterMotionDetector) {
+                    filterMotionDetector = [[GPUImageMotionDetector alloc] init];
+                }
+                
+                [(GPUImageMotionDetector *)filterMotionDetector setLowPassFilterStrength:value/10];
+                [self motionDetectFilter];
+                return;
+            }
+            
+            [self addFilterForCaptureStillCameraWith:[_filterManager filterCameraTypeWithFilterType:_currentParentFilterObject.cameraType andValue:value]];
+        }
+            break;
+        case PhotoSetting:
+        {
+            if (_currentParentFilterObject.photoType == PhotoJPEGQuanlity) {
+                _photoJPEGQuanlity = value * 0.1;
+            }
+        }
+            break;
+        case VideoSetting:
+        {
+            
+        }
+            break;
+        case OtherSetting:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)writeMovieToLibraryWithPath:(NSURL *)path
+{
+    NSLog(@"writing %@ to library", path);
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [library writeVideoAtPathToSavedPhotosAlbum:path
+                                completionBlock:^(NSURL *assetURL, NSError *error) {
+                                    if (error)
+                                    {
+                                        NSLog(@"Error saving to library%@", [error localizedDescription]);
+                                    } else
+                                    {
+                                        NSLog(@"SAVED %@ to photo lib",path);
+                                    }
+                                }];
+}
+
+#define kVideoViewHeight 50
+#define kBootomViewHeight 85
+#define kThumbImgSize 35
+
+#pragma mark -
+#pragma mark - Detect Rotation
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        
+        [self changeUILandscapeRotation];
+        
+    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+
+        [self changeUIPortraitRotation];
+    }
+}
+
+- (void)changeUILandscapeRotation;
+{
+    NSLog(@"ROTATION: Landscape");
+    
+    maximumItemCount = 5;
+    
+    UIImage *bottomBarPortrait = [UIImage imageNamed:@"buttom_bar_portrain.png"];
+    
+    
+    CGRect screenBound = [self getLandscaptScreenBound]; // [[UIScreen mainScreen] bounds];
+    CGRect frame = CGRectMake(screenBound.size.width - kVideoViewHeight - kBootomViewHeight, 0, kVideoViewHeight + kBootomViewHeight, screenBound.size.height);
+    
+    self.controlView.frame = frame;
+    self.bottomBarImage.frame = CGRectMake(kVideoViewHeight, 0, kBootomViewHeight, screenBound.size.height);
+    self.videoView.frame = CGRectMake(0, 0, kVideoViewHeight + 20, screenBound.size.height);
+    self.bottomBarImage.image = bottomBarPortrait;
+    
+    NSLog(@"width %f", screenBound.size.width);
+    NSLog(@"height %f", screenBound.size.height);
+    
+    // Config element view on bottom bar
+    self.captureBtn.frame = CGRectMake(kVideoViewHeight + 10, (screenBound.size.height - self.captureBtn.frame.size.width) / 2 + 3, self.captureBtn.frame.size.width, self.captureBtn.frame.size.height);
+    
+    self.rectImage.frame = CGRectMake(3,
+                                      self.videoView.frame.size.height / 2 - 70
+                                      ,self.rectImage.frame.size.width,
+                                      self.rectImage.frame.size.height);
+    self.timmerLable.frame = CGRectMake(3,
+                                        self.videoView.frame.size.height / 2 - 50,
+                                        self.timmerLable.frame.size.width,
+                                        self.timmerLable.frame.size.height);
+
+    
+    self.thumbPhotoImage.frame = CGRectMake(85, screenBound.size.height - (25 + kThumbImgSize), kThumbImgSize, kThumbImgSize);
+    
+    self.cameraChangeImage.frame = CGRectMake(80, 25, self.cameraChangeImage.frame.size.width, self.cameraChangeImage.frame.size.height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x,
+                                       self.filterView.frame.origin.y,
+                                       screenBound.size.width - 20 - (kThumbImgSize + kVideoViewHeight),
+                                       self.filterView.frame.size.height);
+    
+    [self reloadTableFilter];
+    
+    _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationLandscapeRight;
+}
+
+- (void)changeUIPortraitRotation;
+{
+    NSLog(@"ROTATION: Portrait");
+    
+    maximumItemCount = 8;
+    
+    UIImage *bottomBarLandscape = [UIImage imageNamed:@"buttom_bar.png"];
+    
+    
+    CGRect screenBound = [self getPortraitScreenBound]; //[[UIScreen mainScreen] bounds];
+    CGRect frame = CGRectMake(0, screenBound.size.height - kVideoViewHeight - kBootomViewHeight, screenBound.size.width, kVideoViewHeight + kBootomViewHeight);
+    
+    self.controlView.frame = frame;
+    self.bottomBarImage.frame = CGRectMake(0, kVideoViewHeight, screenBound.size.width, kBootomViewHeight);
+    self.videoView.frame = CGRectMake(0, 0, screenBound.size.width, kVideoViewHeight + 20);
+    self.bottomBarImage.image = bottomBarLandscape;
+    
+//    _filteredView.frame = screenBound;
+//    [_filteredView removeFromSuperview];
+//    [self.captureView addSubview:_filterView];
+    
+    NSLog(@"width %f", screenBound.size.width);
+    NSLog(@"height %f", screenBound.size.height);
+    
+    // Config element view on bottom bar
+    self.captureBtn.frame = CGRectMake((screenBound.size.width - self.captureBtn.frame.size.width) / 2 - 3, kVideoViewHeight + 10, self.captureBtn.frame.size.width, self.captureBtn.frame.size.height);
+    
+    self.rectImage.frame = CGRectMake((screenBound.size.width - 180) / 2,
+                                      self.videoView.frame.size.height / 2 - 10
+                                      ,self.rectImage.frame.size.width,
+                                      self.rectImage.frame.size.height);
+    self.timmerLable.frame = CGRectMake(self.rectImage.frame.origin.x + self.rectImage.frame.size.width + 10,
+                                        self.videoView.frame.size.height / 2 - 15,
+                                        self.timmerLable.frame.size.width,
+                                        self.timmerLable.frame.size.height);
+    
+    self.thumbPhotoImage.frame = CGRectMake(25, 85, kThumbImgSize, kThumbImgSize);
+    
+    self.cameraChangeImage.frame = CGRectMake(screenBound.size.width - (25 + kThumbImgSize), 80, self.cameraChangeImage.frame.size.width, self.cameraChangeImage.frame.size.height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x,
+                                       self.filterView.frame.origin.y,
+                                       screenBound.size.width - 40,
+                                       self.filterView.frame.size.height);
+    
+    [self reloadTableFilter];
+    
+    _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+}
+
+
+
+- (CGRect)getPortraitScreenBound;
+{
+    CGRect screenBoundReal;
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    if (screenBound.size.width > screenBound.size.height) {
+        screenBoundReal.size.height = screenBound.size.width;
+        screenBoundReal.size.width = screenBound.size.height;
+    } else {
+        screenBoundReal.size.height = screenBound.size.height;
+        screenBoundReal.size.width = screenBound.size.width;
+    }
+    
+    return screenBoundReal;
+}
+
+- (CGRect)getLandscaptScreenBound;
+{
+    CGRect screenBoundReal;
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    if (screenBound.size.width < screenBound.size.height) {
+        screenBoundReal.size.height = screenBound.size.width;
+        screenBoundReal.size.width = screenBound.size.height;
+    } else {
+        screenBoundReal.size.height = screenBound.size.height;
+        screenBoundReal.size.width = screenBound.size.width;
+    }
+    
+    return screenBoundReal;
 }
 
 @end

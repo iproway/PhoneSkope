@@ -45,7 +45,9 @@
     PSFaceDetection *faceDetect;
     
     UIView *faceView;
-    UIView *mainView;;
+    UIView *mainView;
+    
+    GPUImageLanczosResamplingFilter *filteresamplingFilter;
 }
 
 @end
@@ -199,7 +201,29 @@
 {
     switch (type) {
         case PhotoResolution:
+        {
+            if (!filteresamplingFilter) {
+                filteresamplingFilter = [[GPUImageLanczosResamplingFilter alloc] init];
+            }
+            switch (value) {
+                case 0:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(352, 288)];
+                    break;
+                case 1:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(640, 480)];
+                    break;
+                case 2:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(1280, 720)];
+                    break;
+                case 3:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(1920, 1080)];
+                    break;
+                default:
+                    break;
+            }
             
+            return filteresamplingFilter;
+        }
             break;
         case PhotoJPEGQuanlity:
             
@@ -228,7 +252,47 @@
 
 -(GPUImageOutput<GPUImageInput> *)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
 {
-     return nil;
+    switch (type) {
+        case RotateVideoResolution:
+        {
+            if (!filteresamplingFilter) {
+                filteresamplingFilter = [[GPUImageLanczosResamplingFilter alloc] init];
+            }
+            switch (value) {
+                case 0:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(352, 288)];
+                    break;
+                case 1:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(640, 480)];
+                    break;
+                case 2:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(1280, 720)];
+                    break;
+                case 3:
+                    [filteresamplingFilter forceProcessingAtSizeRespectingAspectRatio:CGSizeMake(1920, 1080)];
+                    break;
+                default:
+                    break;
+            }
+            
+            return filteresamplingFilter;
+        }
+            break;
+        case RotateVideoFileFormat:
+        {
+            
+        }
+            break;
+        case RotateAutoRotateVideo:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+    
+    return nil;
 }
 
 -(GPUImageOutput<GPUImageInput> *)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;

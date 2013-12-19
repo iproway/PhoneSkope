@@ -20,25 +20,25 @@
     if (!filter) {
         filter = [[GPUImageCropFilter alloc] init];
     }
-    
+    NSLog(@"----------%d", value);
     switch (value) {
         case 0:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.2)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.2, 0.2)];
             break;
         case 1:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.35)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.35, 0.35)];
             break;
         case 2:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.5)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.5, 0.5)];
             break;
         case 3:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.65)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.65, 0.65)];
             break;
         case 4:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.8)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.8, 0.8)];
             break;
         case 5:
-            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.9)];
+            [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 0.9, 0.9)];
             break;
         case 6:
             [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
@@ -50,6 +50,10 @@
 }
 -(GPUImageCropFilter*)getDefaultValue
 {
-    return [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0.0, 0.0, 1.0, 0.25)];
+    if (!filter) {
+        filter = [[GPUImageCropFilter alloc] init];
+        [(GPUImageCropFilter *)filter setCropRegion:CGRectMake(0.0, 0.0, 1.0, 1.0)];
+    }
+    return (GPUImageCropFilter *)filter;
 }
 @end
