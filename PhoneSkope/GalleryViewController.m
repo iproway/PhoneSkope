@@ -37,6 +37,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    self.btnDeleteItem.enabled = NO;
+    
     UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(scrollViewDoubleTapped:)];
     doubleTapRecognizer.numberOfTapsRequired = 2;
     doubleTapRecognizer.numberOfTouchesRequired = 1;
@@ -75,19 +77,9 @@
 
 - (IBAction)deleteMedia:(id)sender {
     
-    ALAssetsLibrary *lib = [ALAssetsLibrary new];
-    [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        [group enumerateAssetsUsingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-            if([[[asset valueForProperty:ALAssetPropertyURLs] valueForKey:[[[asset valueForProperty:ALAssetPropertyURLs] allKeys] objectAtIndex:0]] isEqualToString:[(NSURL *)[[self.chosenMedias objectAtIndex:0] objectForKey:UIImagePickerControllerReferenceURL] absoluteString]]) {
-                [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
-                    NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
-                }];
-            }
-        }];
-    } failureBlock:^(NSError *error) {
-        
-    }];
-    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning!" message:@"Are you sure delete this media?" delegate:self cancelButtonTitle:@"NO" otherButtonTitles:@"YES", nil];
+    alert.tag = 5;
+    [alert show];
 }
 
 #pragma mark methods
@@ -289,6 +281,8 @@
             
             if (moviePlayer != nil){
                 
+                self.btnDeleteItem.enabled = YES;
+                
                 /* Listen for the notification that the movie player sends us
                  whenever it finishes playing an audio file */
                 [[NSNotificationCenter defaultCenter]
@@ -315,6 +309,7 @@
             }
         }
         else{
+            self.btnDeleteItem.enabled = YES;
             [self showImageResource:dict];
         }
 	}
@@ -331,4 +326,42 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+#pragma mark AlertView Delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (alertView.tag == 5 && buttonIndex == 1) {
+        ALAssetsLibrary *lib = [ALAssetsLibrary new];
+        [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            [group enumerateAssetsUsingBlock:^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+                if(asset.isEditable && [[[[asset valueForProperty:ALAssetPropertyURLs] valueForKey:[[[asset valueForProperty:ALAssetPropertyURLs] allKeys] objectAtIndex:0]] absoluteString] isEqualToString:[(NSURL *)[[self.chosenMedias objectAtIndex:0] objectForKey:UIImagePickerControllerReferenceURL] absoluteString]]) {
+                    [asset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^(void){
+                            self.imageView.image = nil;
+                            NSLog(@"Asset url %@ should be deleted. (Error %@)", assetURL, error);
+                            self.btnDeleteItem.enabled = NO;
+                            
+                            for (UIView *v in [_scrollView subviews]) {
+                                [v removeFromSuperview];
+                            }
+                            
+                            UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"" message:@"The media has been delete success." delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+                            [alert show];
+                            
+                            ELCImagePickerController *elcPicker = [[ELCImagePickerController alloc] initImagePicker];
+                            elcPicker.maximumImagesCount = 1;
+                            elcPicker.returnsOriginalImage = NO; //Only return the fullScreenImage, not the fullResolutionImage
+                            elcPicker.imagePickerDelegate = self;
+                            
+                            [self presentViewController:elcPicker animated:YES completion:nil];
+                        });
+                    }];
+                }
+            }];
+        } failureBlock:^(NSError *error) {
+            UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Failed to delete this media. You don't have permission update this media."] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+            [alert show];
+        }];
+
+    }
+}
 @end

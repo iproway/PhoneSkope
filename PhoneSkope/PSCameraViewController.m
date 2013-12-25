@@ -1059,7 +1059,7 @@ typedef enum
 - (void)viewWillAppear:(BOOL)animated;
 {
     [super viewWillAppear:animated];
-    
+
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     // Check rotation
@@ -1083,6 +1083,8 @@ typedef enum
     
     locationManager = [[CLLocationManager alloc] init];
     _geocoder = [[CLGeocoder alloc] init];
+    
+    max_ITEM_COUNT = 8;
     
     if (IS_IPHONE_5)
         max_ITEM_COUNT = 8;
@@ -1156,6 +1158,15 @@ typedef enum
     
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"mm : ss : S"];
+    
+    // Check rotation
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        
+        [self changeUILandscapeRotation];
+    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+        [self changeUIPortraitRotation];
+    }
 }
 
 - (void)startTimmer;
@@ -1634,22 +1645,31 @@ typedef enum
     [_stillCameraFilter addTarget:_filterGroup];
     
     for (PSFilterData *data in _arrayCamera) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
+        
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayPhoto) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayVideo) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayOther) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
@@ -1666,22 +1686,31 @@ typedef enum
     [_cameraFilter addTarget:_currentVideoFilterAdded];
     
     for (PSFilterData *data in _arrayCamera) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
+        
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayPhoto) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayVideo) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
     for (PSFilterData *data in _arrayOther) {
-        [data setSwitchValue:0];
+        if (data.switchValue != -1) {
+            [data setSwitchValue:0];
+        }
         [data setIndexValue:-1];
     }
     
@@ -2114,9 +2143,13 @@ typedef enum
     
     UIImage *bottomBarPortrait = [UIImage imageNamed:@"buttom_bar_portrain.png"];
     
+    float navigaHeight = self.navigationController.navigationBar.frame.size.height;
+    if ([self.navigationController.navigationBar isHidden]) {
+        navigaHeight = 0;
+    }
     
     CGRect screenBound = [self getLandscaptScreenBound]; // [[UIScreen mainScreen] bounds];
-    CGRect frame = CGRectMake(screenBound.size.width - kVideoViewHeight - kBootomViewHeight, 0, kVideoViewHeight + kBootomViewHeight, screenBound.size.height);
+    CGRect frame = CGRectMake(screenBound.size.width - kVideoViewHeight - kBootomViewHeight, -navigaHeight, kVideoViewHeight + kBootomViewHeight, screenBound.size.height);
     
     self.controlView.frame = frame;
     self.bottomBarImage.frame = CGRectMake(kVideoViewHeight, 0, kBootomViewHeight, screenBound.size.height);
@@ -2169,9 +2202,13 @@ typedef enum
     
     UIImage *bottomBarLandscape = [UIImage imageNamed:@"buttom_bar.png"];
     
+    float navigaHeight = self.navigationController.navigationBar.frame.size.height;
+    if ([self.navigationController.navigationBar isHidden]) {
+        navigaHeight = 0;
+    }
     
     CGRect screenBound = [self getPortraitScreenBound]; //[[UIScreen mainScreen] bounds];
-    CGRect frame = CGRectMake(0, screenBound.size.height - kVideoViewHeight - kBootomViewHeight, screenBound.size.width, kVideoViewHeight + kBootomViewHeight);
+    CGRect frame = CGRectMake(0, screenBound.size.height - kVideoViewHeight - kBootomViewHeight - navigaHeight, screenBound.size.width, kVideoViewHeight + kBootomViewHeight);
     
     self.controlView.frame = frame;
     self.bottomBarImage.frame = CGRectMake(0, kVideoViewHeight, screenBound.size.width, kBootomViewHeight);
