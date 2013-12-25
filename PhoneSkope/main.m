@@ -1,10 +1,4 @@
-//
-//  main.m
-//  PhoneSkope
-//
-//  Created by TrungUng on 11/29/13.
-//  Copyright (c) 2013 com. All rights reserved.
-//
+
 
 #import <UIKit/UIKit.h>
 
