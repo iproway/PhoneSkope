@@ -1,20 +1,22 @@
 
 
 #import <UIKit/UIKit.h>
-#import "PSGeneral.h"
 #import "PSFilterManager.h"
 #import "PSCustomCell.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "TVCalibratedSlider.h"
 #import <GPUImage/GPUImage.h>
+#import <CoreLocation/CoreLocation.h>
+#import "PSAppDelegate.h"
 
-@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SwitchChangeDelegate, GPUImageVideoCameraDelegate>
+@interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SwitchChangeDelegate, GPUImageVideoCameraDelegate, CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *thumbPhotoImage;
 @property (weak, nonatomic) IBOutlet UIButton *cameraChangeImage;
 @property (strong, nonatomic) IBOutlet UIView *captureView;
 @property (weak, nonatomic) IBOutlet UIView *controlView;
 @property (weak, nonatomic) IBOutlet UIImageView *bottomBarImage;
 @property (weak, nonatomic) IBOutlet UIImageView *rectImage;
+@property (weak, nonatomic) IBOutlet UIImageView *gridviewImg;
 
 @property (weak, nonatomic) IBOutlet UIView *sliderView;
 @property (weak, nonatomic) IBOutlet UILabel *filterTitle;

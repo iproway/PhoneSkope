@@ -36,6 +36,9 @@
         self.detailLabel.text = [data.arrayValue objectAtIndex:data.indexValue];
     }
     
+    if (data.otherType == OthersFormatFileNames)
+        self.detailLabel.text = @"";
+    
     self.switchBtn.delegate = self;
     
     if (!self.isChild) {

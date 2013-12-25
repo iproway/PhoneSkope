@@ -13,11 +13,16 @@
     
     PSCameraViewController* rootViewController = [[PSCameraViewController alloc] initWithNibName:@"PSCameraViewController" bundle:nil];
     rootViewController.view.frame = [[UIScreen mainScreen] bounds];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    [navController setNavigationBarHidden:YES animated:NO];
+    
     [self.window addSubview:rootViewController.view];
 
     [self.window makeKeyAndVisible];
     [self.window layoutSubviews];
-    self.window.rootViewController = rootViewController;
+    self.window.rootViewController = navController;
+    [self setHomeNavigationController:navController];
     
     return YES;
 }

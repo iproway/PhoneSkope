@@ -34,9 +34,9 @@ typedef enum
 {
     OthersShowGrid = 0,
     OthersPreviewTime = 1,
-    OthersVibrateButtonPress = 2,
-    OthersFormatFileNames = 3,
-    OthersFolderSavePhotoVideo = 4
+//    OthersVibrateButtonPress = 2,
+    OthersFormatFileNames = 2,
+    OthersFolderSavePhotoVideo = 3
 } OtherType;
 
 typedef enum
@@ -52,8 +52,7 @@ typedef enum{
     PhotoSaveGPS = 2,
     PhotoOverlay = 3,
     PhotoDelayJPEG  = 4,
-    PhotoSelfTimer = 5,
-    PhotoStabilizer = 6
+    PhotoStabilizer = 5
 } PhotoType;
 
 typedef enum

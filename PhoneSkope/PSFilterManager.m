@@ -237,9 +237,6 @@
         case PhotoDelayJPEG:
             
             break;
-        case PhotoSelfTimer:
-            
-            break;
         case PhotoStabilizer:
             
             break;
@@ -304,9 +301,6 @@
         case OthersPreviewTime:
             
             break;
-        case OthersVibrateButtonPress:
-            
-            break;
         case OthersFormatFileNames:
             
             break;
@@ -319,100 +313,6 @@
     
     return nil;
 }
-
-
-//-(void)filterPhotoTypeWithFilterType:(PhotoType)type andValue:(int)value;
-//{
-//    switch (type) {
-//        case PhotoResolution:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoJPEGQuanlity:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoSaveGPS:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoOverlay:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoDelayJPEG:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoSelfTimer:
-//        {
-//            
-//        }
-//            break;
-//        case PhotoStabilizer:
-//        {
-//            
-//        }
-//            break;
-//    }
-//}
-//
-//-(void)filterVideoTypeWithFilterType:(VideoType)type andValue:(int)value;
-//{
-//    switch (type) {
-//        case RotateVideoResolution:
-//        {
-//            
-//        }
-//            break;
-//        case RotateVideoFileFormat:
-//        {
-//            
-//        }
-//            break;
-//        case RotateAutoRotateVideo:
-//        {
-//            
-//        }
-//            break;
-//    }
-//}
-//
-//-(void)filterOtherTypeWithFilterType:(OtherType)type andValue:(int)value;
-//{
-//    switch (type) {
-//        case OthersShowGrid:
-//        {
-//            
-//        }
-//            break;
-//        case OthersPreviewTime:
-//        {
-//            
-//        }
-//            break;
-//        case OthersVibrateButtonPress:
-//        {
-//            
-//        }
-//            break;
-//        case OthersFormatFileNames:
-//        {
-//            
-//        }
-//            break;
-//        case OthersFolderSavePhotoVideo:
-//        {
-//            
-//        }
-//            break;
-//    }
-//}
 
 -(void)getDefaultValueWithView:(UIView *)view
 {
@@ -571,9 +471,6 @@
         case PhotoDelayJPEG:
             return [[NSArray alloc]initWithObjects:@"0",nil];
             break;
-        case PhotoSelfTimer:
-            return [[NSArray alloc]initWithObjects:@"1s", @"2s", @"3s", @"4s", @"5s", nil];
-            break;
         case PhotoStabilizer:
             return [[NSArray alloc]initWithObjects:@"0",nil];
             break;
@@ -590,9 +487,6 @@
             break;
         case OthersPreviewTime:
             return [[NSArray alloc]initWithObjects:@"None", @"1s", @"2s",@"3s", @"4s", @"5s", nil];
-            break;
-        case OthersVibrateButtonPress:
-            return [[NSArray alloc]initWithObjects:@"0",nil];
             break;
         case OthersFormatFileNames:
             return [[NSArray alloc]initWithObjects:@"yy_MM_DD_HH_mm_ss_mss.*", @"mss_ss_mm_HH_MM_MM_yy.*", nil];
@@ -639,15 +533,12 @@
                                 @"Save GPS data in EXIF",
                                 @"Overlay a time and date",
                                 @"HDR",
-                                @"Self-timer",
                                 @"Image Stabilizer", nil];
     
     NSArray *arrOtherSetting = [[NSArray alloc] initWithObjects:
                                 @"Show grid",
                                 @"Preview time",
-                                @"Vibrate on button press",
-                                @"Format of file names",
-                                @"Folder to save photo and video", nil];
+                                @"Format of file names",nil];
     
     // Init data for CameraSetting Filter
     if (!self.arrayCameraSetting) {
@@ -875,14 +766,14 @@
         [data5 setIndexValue:DEFAULT_INDEX];
         [arrayData addObject:data5];
         
-        PSFilterData *data6 = [[PSFilterData alloc] init];
-        [data6 setFilterMode:PhotoSetting];
-        [data6 setPhotoType:PhotoSelfTimer];
-        [data6 setFilterTitle:[arrPhotoSetting objectAtIndex:data6.photoType]];
-        [data6 setArrayValue:[self getMenuPhotoArray:data6.photoType]];
-        [data6 setSwitchValue:DEFAULT_INDEX];
-        [data6 setIndexValue:DEFAULT_INDEX];
-        [arrayData addObject:data6];
+//        PSFilterData *data6 = [[PSFilterData alloc] init];
+//        [data6 setFilterMode:PhotoSetting];
+//        [data6 setPhotoType:PhotoSelfTimer];
+//        [data6 setFilterTitle:[arrPhotoSetting objectAtIndex:data6.photoType]];
+//        [data6 setArrayValue:[self getMenuPhotoArray:data6.photoType]];
+//        [data6 setSwitchValue:DEFAULT_INDEX];
+//        [data6 setIndexValue:DEFAULT_INDEX];
+//        [arrayData addObject:data6];
         
         PSFilterData *data7 = [[PSFilterData alloc] init];
         [data7 setFilterMode:PhotoSetting];
@@ -918,14 +809,14 @@
         [data2 setIndexValue:DEFAULT_INDEX];
         [arrayData addObject:data2];
         
-        PSFilterData *data3 = [[PSFilterData alloc] init];
-        [data3 setFilterMode:OtherSetting];
-        [data3 setOtherType:OthersVibrateButtonPress];
-        [data3 setFilterTitle:[arrOtherSetting objectAtIndex:data3.otherType]];
-        [data3 setArrayValue:[self getMenuOtherArray:data3.otherType]];
-        [data3 setSwitchValue:0];
-        [data3 setIndexValue:DEFAULT_INDEX];
-        [arrayData addObject:data3];
+//        PSFilterData *data3 = [[PSFilterData alloc] init];
+//        [data3 setFilterMode:OtherSetting];
+//        [data3 setOtherType:OthersVibrateButtonPress];
+//        [data3 setFilterTitle:[arrOtherSetting objectAtIndex:data3.otherType]];
+//        [data3 setArrayValue:[self getMenuOtherArray:data3.otherType]];
+//        [data3 setSwitchValue:0];
+//        [data3 setIndexValue:DEFAULT_INDEX];
+//        [arrayData addObject:data3];
         
         PSFilterData *data4 = [[PSFilterData alloc] init];
         [data4 setFilterMode:OtherSetting];
@@ -936,14 +827,14 @@
         [data4 setIndexValue:DEFAULT_INDEX];
         [arrayData addObject:data4];
         
-        PSFilterData *data5 = [[PSFilterData alloc] init];
-        [data5 setFilterMode:OtherSetting];
-        [data5 setOtherType:OthersFolderSavePhotoVideo];
-        [data5 setFilterTitle:[arrOtherSetting objectAtIndex:data5.otherType]];
-        [data5 setArrayValue:[self getMenuOtherArray:data5.otherType]];
-        [data5 setSwitchValue:DEFAULT_INDEX];
-        [data5 setIndexValue:DEFAULT_INDEX];
-        [arrayData addObject:data5];
+//        PSFilterData *data5 = [[PSFilterData alloc] init];
+//        [data5 setFilterMode:OtherSetting];
+//        [data5 setOtherType:OthersFolderSavePhotoVideo];
+//        [data5 setFilterTitle:[arrOtherSetting objectAtIndex:data5.otherType]];
+//        [data5 setArrayValue:[self getMenuOtherArray:data5.otherType]];
+//        [data5 setSwitchValue:DEFAULT_INDEX];
+//        [data5 setIndexValue:DEFAULT_INDEX];
+//        [arrayData addObject:data5];
         
         [self setArrayOthersSetting:arrayData];
     }

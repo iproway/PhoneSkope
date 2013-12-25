@@ -3,13 +3,33 @@
 #import "PSCameraViewController.h"
 #import "PSCustomCell.h"
 #import <CoreLocation/CoreLocation.h>
+#import "GalleryViewController.h"
+
+typedef enum
+{
+    TypeDateTime = 0,
+    TypeClockTime = 1
+} TypeSaveFile;
+
+typedef enum
+{
+    Type3GP = 0,
+    TypeMPEG4 = 1
+} VideoFileType;
 
 #define kPollingInterval 0.1
 #define TABLE_HEIGHT 36.0f
-#define MAX_ITEM_COUNT 8
+
+#define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
 
 @interface PSCameraViewController ()
 {
+    CLLocationManager *locationManager;
+    NSString *_currentLocation;
+    CLGeocoder *_geocoder;
+
+    int max_ITEM_COUNT;
+    int max_ITEM_COUNT_LANDCAPT;
     int maximumItemCount;
     FilterMode _currentSessionFilter;
     FilterMode _backupFilter;
@@ -35,6 +55,10 @@
     GPUImageFilterGroup *_filterGroup;
     GPUImageOutput<GPUImageInput> *_currentFilterInput, *_firstFilterInput;
     GPUImageView *_filteredView;
+    GPUImageView *_filterVideoView;
+    NSString *pathToMovie;
+    
+    GPUImageFilter *_filterVideo;
     
     NSMutableArray *_currentFilterArray;
     
@@ -58,15 +82,23 @@
     BOOL _isAddTimeLable;
     BOOL _isAddGPSLable;
     BOOL _idHDRPresetHigh;
+    BOOL _isStabilizer;
+    BOOL _isAutoRotationVideo;
+    
     NSString* _photoResolution;
     UILabel *_timeLabel;
     UILabel *_gPSLabel;
     
-    CLLocationManager *locationManager;
     NSTimer *pollingTimer;
     NSDateFormatter *dateFormatter;
     CFTimeInterval _ticks;
     GPUImageMovieWriter *movieWriter;
+    TypeSaveFile _saveFileType;
+    VideoFileType _videoFileType;
+    
+    GPUImageOutput<GPUImageInput> *_currentVideoFilterAdded;
+    
+    int _previewTime;
 }
 
 @end
@@ -255,6 +287,13 @@
 
 -(IBAction) segmentChange:(id)sender;
 {
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        maximumItemCount = max_ITEM_COUNT_LANDCAPT;
+    } else {
+        maximumItemCount = max_ITEM_COUNT;
+    }
+    
     _isChildFilter = NO;
     UISegmentedControl * control = sender;
     
@@ -398,16 +437,20 @@
 //    [self presentModalViewController:picker animated:YES];
     
     
-    if([UIImagePickerController isSourceTypeAvailable:
-        UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
-        
-        UIImagePickerController *picker= [[UIImagePickerController alloc] init];
-        picker.delegate = self;
-        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-//        picker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
-        
-        [self presentModalViewController:picker animated:YES];
-    }
+//    if([UIImagePickerController isSourceTypeAvailable:
+//        UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
+//        
+//        UIImagePickerController *picker= [[UIImagePickerController alloc] init];
+//        picker.delegate = self;
+//        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+////        picker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
+//        
+//        [self presentModalViewController:picker animated:YES];
+//    }
+    
+
+    GalleryViewController *viewController = [[GalleryViewController alloc] initWithNibName:@"GalleryViewController" bundle:nil];
+    [[ApplicationDelegate homeNavigationController] pushViewController:viewController animated:YES];
 }
 
 
@@ -426,127 +469,98 @@
 {
     if (_isVideoStyle == YES) {
         
-        NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
-        unlink([pathToMovie UTF8String]);
-        NSURL *moviePath = [NSURL fileURLWithPath:pathToMovie];
-        
         if (![sender isSelected]) {
             [sender setSelected:YES];
             [self startTimmer];
             
             // Start writer video
-            if (!movieWriter) {
-                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:moviePath size:CGSizeMake(480.0, 640.0)];
+            // Record a movie for 10 s and store it in /Documents, visible via iTunes file sharing
+            NSDate *currDate = [NSDate date];
+            if (_saveFileType == TypeDateTime) {
+                [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+            } else {
+                [dateFormatter setDateFormat:@"HH:mm:ss dd.MM.YY"];
             }
             
-//            [_filterGroup removeAllTargets];
-//            [_stillCameraFilter removeAllTargets];
+            NSString *type = @"m4v";
+            if (_videoFileType == Type3GP) {
+                type = @"3gpp";
+            }
+            NSString *dateString = [dateFormatter stringFromDate:currDate];
+            pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/Movie_%@.%@", dateString, type]];
+            unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
+            NSURL *movieURL = [NSURL fileURLWithPath:pathToMovie];
             
-            [_filterGroup addTarget:movieWriter];
+            if (_cameraFilter.captureSessionPreset == AVCaptureSessionPreset352x288) {
+                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(352.0, 288.0)];
+            } else if (_cameraFilter.captureSessionPreset == AVCaptureSessionPreset640x480) {
+                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(480.0, 640.0)];
+            } else if (_cameraFilter.captureSessionPreset == AVCaptureSessionPreset1280x720) {
+                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(720.0, 1280.0)];
+            } else if (_cameraFilter.captureSessionPreset == AVCaptureSessionPreset1920x1080) {
+                movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(1080.0, 1920.0)];
+            }
+
+            [_currentVideoFilterAdded addTarget:movieWriter];
+            [_filterVideo addTarget:_filterVideoView];
             
-//            [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:movieWriter]];
-//            [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:_firstFilterInput];
+            [_cameraFilter startCameraCapture];
+            [_filterVideoView setHidden:NO];
             
-            [_filterGroup prepareForImageCapture];
-            [_filterGroup addTarget:_filteredView];
-            [_stillCameraFilter addTarget:_filterGroup];
+            [_stillCameraFilter stopCameraCapture];
+            [_filteredView setHidden:YES];
             
-            _stillCameraFilter.audioEncodingTarget = movieWriter;
+            // start recoding
+            _cameraFilter.audioEncodingTarget = movieWriter;
             [movieWriter startRecording];
             
         } else {
             [sender setSelected:NO];
             [self stopTimmer];
             
-            [_filterGroup removeTarget:movieWriter];
-            _stillCameraFilter.audioEncodingTarget = nil;
+            [_currentVideoFilterAdded removeTarget:movieWriter];
+            _cameraFilter.audioEncodingTarget = nil;
             [movieWriter finishRecording];
+            
+            NSURL *movieURL = [NSURL fileURLWithPath:pathToMovie];
+            [self writeMovieToLibraryWithPath:movieURL];
             NSLog(@"Movie completed");
-
-            [self writeMovieToLibraryWithPath:moviePath];
+            
+            [self resetFilterForVideo];
         }
-        
-        
-        
         return;
     }
     
-    // Check Overlay Infomation on Image
-    if (_isAddTimeLable) {
-        
-        NSDate *currDate = [NSDate date];
-        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
-        NSString *dateString = [dateFormatter stringFromDate:currDate];
-        _timeLabel.text = dateString;
-        
-        if (!_uiTimeElementInput) {
-            _uiTimeElementInput = [[GPUImageUIElement alloc] initWithView:_timeLabel];
-            
-            [_uiTimeElementInput addTarget:blendTimeFilter];
-            
-            [self addFilterForCaptureStillCameraWith:blendTimeFilter];
-        }
-        
-    
-        
-    }
-//
-//    if (_isAddGPSLable) {
-//        if (!_uiGPSElementInput) {
-//            _uiGPSElementInput = [[GPUImageUIElement alloc] initWithView:_gPSLabel];
-//            
-//            [_filterGroup addTarget:blendGPSFilter];
-//            [_uiGPSElementInput addTarget:blendGPSFilter];
-//            [blendGPSFilter addTarget:_filteredView];
-//        }
-//        
-////        [_filterGroup setFrameProcessingCompletionBlock:^(GPUImageOutput * filter, CMTime frameTime){
-////            
-////        }];
-//    }
-    
-    
     [sender setEnabled:NO];
-    
-    
-    // capture image with HDR
-//    if (_photoResolution) {
-//        
-////        [_stillCameraFilter setCaptureSessionPreset:[NSString stringWithFormat:@"AVCaptureSessionPreset%@", _photoResolution]];
-//        [_stillCameraFilter stopCameraCapture];
-//        
-//        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset352x288];
-//        
-//        [_stillCameraFilter prepareForImageCapture];
-//        
-//        [_stillCameraFilter startCameraCapture];
-//    } else {
-//        [_stillCameraFilter stopCameraCapture];
-//        
-//        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetPhoto];
-//        
-//        [_stillCameraFilter prepareForImageCapture];
-//        [_stillCameraFilter startCameraCapture];
-//    }
-    
-    if (_idHDRPresetHigh) {
-        [_stillCameraFilter stopCameraCapture];
-        [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetHigh];
-        [_stillCameraFilter removeAllTargets];
-        [_stillCameraFilter prepareForImageCapture];
-        [_stillCameraFilter startCameraCapture];
-    }
-    
-    
     
     [_stillCameraFilter capturePhotoAsImageProcessedUpToFilter:_filterGroup withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         
-        NSData *dataForPNGFile = UIImageJPEGRepresentation(processedImage, _photoJPEGQuanlity);
+        UIImage *imgTemple = processedImage;
+        if (_isAddTimeLable) {
+            
+            NSDate *currDate = [NSDate date];
+            [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+            NSString *dateString = [dateFormatter stringFromDate:currDate];
+            
+            imgTemple = [self drawText:dateString inImage:processedImage atPoint:CGPointMake(10, 10)];
+        }
+        
+        if (_isAddGPSLable) {
+            NSLog(@"%@",_currentLocation);
+            imgTemple = [self drawText:_currentLocation inImage:imgTemple atPoint:CGPointMake(10, imgTemple.size.height - 30)];
+        }
+        
+        NSData *dataForPNGFile = UIImageJPEGRepresentation(imgTemple, _photoJPEGQuanlity);
         
         // Save to assets library
         [_assetsLibrary writeImageDataToSavedPhotosAlbum:dataForPNGFile metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
 
+             [_stillCameraFilter stopCameraCapture];
+             [self performSelector:@selector(nextAction)
+                        withObject:nil
+                        afterDelay:(_previewTime * 1.0f)];
+             
              if (error2) {
                  NSLog(@"ERROR: the image failed to be written");
              }
@@ -557,11 +571,15 @@
              runOnMainQueueWithoutDeadlocking(^{
 
                  [sender setEnabled:YES];
-                 
-//                 [_stillCameraFilter startCameraCapture];
+                 [self resetFilterForPhoto];
              });
          }];
     }];
+}
+
+- (IBAction)nextAction;
+{
+    [_stillCameraFilter startCameraCapture];
 }
 
 - (IBAction)closeFilterChildren:(id)sender {
@@ -809,10 +827,10 @@
 
 - (IBAction)changeVideoMode:(id)sender {
     
-    
-    
     if (_isVideoStyle == NO) {
         NSLog(@"Change Mode Video");
+        [self resetFilterForPhoto];
+        
         [self.segmentControlFilter setTitle:@"Video" forSegmentAtIndex:1];
         
         if (_backupFilter == PhotoSetting) {
@@ -824,8 +842,19 @@
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_start_rotate_image.png"] forState:UIControlStateNormal];
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_rotate_image.png"] forState:UIControlStateSelected];
         
+        if (_stillCameraFilter) {
+            [_stillCameraFilter stopCameraCapture];
+        }
+        
+        [_cameraFilter startCameraCapture];
+        
+        [_filteredView setHidden:YES];
+        [_filterVideoView setHidden:NO];
+        
     } else {
         NSLog(@"Change Photo");
+        [self resetFilterForVideo];
+        
         [self.segmentControlFilter setTitle:@"Photo" forSegmentAtIndex:1];
         
         if (_backupFilter == VideoSetting) {
@@ -835,6 +864,14 @@
         self.videoView.hidden = YES;
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateNormal];
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateSelected];
+        
+        if (_cameraFilter) {
+            [_cameraFilter stopCameraCapture];
+        }
+        [_stillCameraFilter startCameraCapture];
+        
+        [_filteredView setHidden:NO];
+        [_filterVideoView setHidden:YES];
     }
     
     _isVideoStyle = !_isVideoStyle;
@@ -908,6 +945,7 @@
 
 #pragma mark -
 #pragma mark - Init GPUImage Filter camera and Photo
+
 - (void)initGPUImageToView;
 {
     flashLight = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -941,7 +979,7 @@
     [_filteredView setFillMode:kGPUImageFillModeStretch];
     
     // Init filter for still camera
-    _stillCameraFilter = [[GPUImageStillCamera alloc] init];
+    _stillCameraFilter = [[GPUImageStillCamera alloc] initWithSessionPreset:AVCaptureSessionPresetMedium cameraPosition:AVCaptureDevicePositionBack];
     _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
     
     _filterGroup = [[GPUImageFilterGroup alloc] init];
@@ -969,20 +1007,41 @@
     [self.captureView addSubview:_filteredView];
     [_stillCameraFilter startCameraCapture];
 
-    
-
-    
+    // ------------------------------
     // Init filter for camera
-    _cameraFilter = [[GPUImageVideoCamera alloc]
-                                        initWithSessionPreset:AVCaptureSessionPreset640x480
-                                        cameraPosition:AVCaptureDevicePositionBack];
+    _cameraFilter = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 cameraPosition:AVCaptureDevicePositionBack];
     
     _cameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
-    [_cameraFilter stopCameraCapture];
+    _cameraFilter.horizontallyMirrorFrontFacingCamera = NO;
+    _cameraFilter.horizontallyMirrorRearFacingCamera = NO;
 
+    _filterVideoView = [[GPUImageView alloc] initWithFrame:screenRect];
+    _filterVideoView.autoresizesSubviews = YES;
+    _filterVideoView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [_filterVideoView setFillMode:kGPUImageFillModeStretch];
+    
+    _filterVideo = [[GPUImageFilter alloc] init];
+    [_filterVideo addTarget:ExposureFilter];
+    _currentVideoFilterAdded = _filterVideo;
+    [_cameraFilter addTarget:_filterVideo];
+    
+    // Record a movie for 10 s and store it in /Documents, visible via iTunes file sharing
+    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+    unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
+    NSURL *movieURL = [NSURL fileURLWithPath:pathToMovie];
+    movieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(480.0, 640.0)];
+    
+    [_filterVideo addTarget:movieWriter];
+    [_filterVideo addTarget:_filterVideoView];
+    
+    [self.captureView addSubview:_filterVideoView];
+    [_cameraFilter stopCameraCapture];
+    [_filterVideoView setHidden:YES];
+    
     
     _photoJPEGQuanlity = 1;
     _idHDRPresetHigh = NO;
+    _isStabilizer = NO;
     if (!_assetsLibrary) {
         _assetsLibrary = [[ALAssetsLibrary alloc] init];
     }
@@ -997,14 +1056,44 @@
 #pragma mark -
 #pragma mark - ViewController Method
 
+- (void)viewWillAppear:(BOOL)animated;
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    // Check rotation
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+        
+        [self changeUILandscapeRotation];
+    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+        [self changeUIPortraitRotation];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.gridviewImg setHidden:YES];
+    _saveFileType = TypeDateTime;
+    _videoFileType = TypeMPEG4;
+    _isAutoRotationVideo = NO;
+    _previewTime = 0;
+    
+    locationManager = [[CLLocationManager alloc] init];
+    _geocoder = [[CLGeocoder alloc] init];
+    
+    if (IS_IPHONE_5)
+        max_ITEM_COUNT = 8;
+    else
+        max_ITEM_COUNT = 5;
+    max_ITEM_COUNT_LANDCAPT = 5;
+    maximumItemCount = max_ITEM_COUNT_LANDCAPT;
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     
     _isVideoStyle = NO;
-    
     // Do any additional setup after loading the view from its nib.
     
     [self initSegmentControll];
@@ -1067,17 +1156,6 @@
     
     dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"mm : ss : S"];
-    
-    // Check rotation
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
-        
-        [self changeUILandscapeRotation];
-        
-    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
-        
-        [self changeUIPortraitRotation];
-    }
 }
 
 - (void)startTimmer;
@@ -1415,8 +1493,32 @@
                     
                     break;
                 case VideoSetting:
-//                    [_filterManager filterVideoTypeWithFilterType:_currentParentFilterObject.videoType andValue:indexPath.row];
-                    
+                {
+                    if (_currentParentFilterObject.videoType == RotateVideoFileFormat) {
+                        if (indexPath.row == 0) {
+                            _videoFileType = Type3GP;
+                        } else
+                            _videoFileType = TypeMPEG4;
+                    } else if (_currentParentFilterObject.videoType == RotateVideoResolution) {
+                        
+                        switch (indexPath.row) {
+                            case 0:
+                                [_cameraFilter setCaptureSessionPreset:AVCaptureSessionPreset352x288];
+                                break;
+                            case 1:
+                                [_cameraFilter setCaptureSessionPreset:AVCaptureSessionPreset640x480];
+                                break;
+                            case 2:
+                                [_cameraFilter setCaptureSessionPreset:AVCaptureSessionPreset1280x720];
+                                break;
+                            case 3:
+                                [_cameraFilter setCaptureSessionPreset:AVCaptureSessionPreset1920x1080];
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
                     break;
                 case PhotoSetting:
                 {
@@ -1424,17 +1526,41 @@
                         
                         _photoResolution = [_currentParentFilterObject.arrayValue objectAtIndex:indexPath.row];
                         
-                        [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
+                        switch (indexPath.row) {
+                            case 0:
+                                [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset352x288];
+                                break;
+                            case 1:
+                                [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset640x480];
+                                break;
+                            case 2:
+                                [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset1280x720];
+                                break;
+                            case 3:
+                                [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPreset1920x1080];
+                                break;
+                            default:
+                                break;
+                        }
                         
-                        NSLog(@"%@", _photoResolution);
                     } else {
                         [self addFilterForCaptureStillCameraWith:[_filterManager filterPhotoTypeWithFilterType:_currentParentFilterObject.photoType andValue:indexPath.row]];
                     }
                 }
                     break;
                 case OtherSetting:
-//                    [_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row];
-                    [self addFilterForCaptureStillCameraWith:[_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row]];
+                {
+                    if (_currentParentFilterObject.otherType == OthersPreviewTime) {
+                        _previewTime = indexPath.row;
+                    } else
+                    if (_currentParentFilterObject.otherType == OthersFormatFileNames) {
+                        if (indexPath.row == 0)
+                            _saveFileType = TypeDateTime;
+                        else
+                            _saveFileType = TypeClockTime;
+                    } else
+                        [self addFilterForCaptureStillCameraWith:[_filterManager filterOtherTypeWithFilterType:_currentParentFilterObject.otherType andValue:indexPath.row]];
+                }
                     break;
                 default:
                     break;
@@ -1466,20 +1592,100 @@
     [_currentFilterArray addObject:filterAdded];
     
     [_filterGroup removeAllTargets];
-    [_stillCameraFilter removeAllTargets];
+    if (_isVideoStyle == YES) {
+        [_cameraFilter removeAllTargets];
+        [self addFilterForVideoCameraWith:filterAdded];
+        
+        return;
+    } else
+        [_stillCameraFilter removeAllTargets];
     
     [_filterGroup addTarget:filterAdded];
     
     [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:_firstFilterInput]];
     [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:filterAdded];
     
-    _currentFilterInput = filterAdded;
-    
     [_filterGroup prepareForImageCapture];
     
     [_filterGroup addTarget:_filteredView];
-    
     [_stillCameraFilter addTarget:_filterGroup];
+}
+
+- (void)addFilterForVideoCameraWith:(GPUImageOutput<GPUImageInput> *)filterAdded;
+{
+    [_firstFilterInput addTarget:filterAdded];
+    [filterAdded addTarget:_filterVideoView];
+    [_cameraFilter addTarget:filterAdded];
+    
+    _currentVideoFilterAdded = filterAdded;
+}
+
+- (void)resetFilterForPhoto;
+{
+    [_currentFilterArray removeAllObjects];
+    [_filterGroup removeAllTargets];
+    [_stillCameraFilter removeAllTargets];
+    [(GPUImageFilterGroup *)_filterGroup setInitialFilters:[NSArray arrayWithObject:_firstFilterInput]];
+    [(GPUImageFilterGroup *)_filterGroup setTerminalFilter:_currentFilterInput];
+
+    [_filterGroup prepareForImageCapture];
+    
+    [_filterGroup addTarget:_filteredView];
+    [_stillCameraFilter addTarget:_filterGroup];
+    
+    for (PSFilterData *data in _arrayCamera) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayPhoto) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayVideo) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayOther) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    [self reloadTableFilter];
+}
+
+- (void)resetFilterForVideo;
+{
+    [_currentFilterArray removeAllObjects];
+    [_filterVideo removeAllTargets];
+    _currentVideoFilterAdded = _filterVideo;
+    [_firstFilterInput addTarget:_currentVideoFilterAdded];
+    [_currentVideoFilterAdded addTarget:_filterVideoView];
+    [_cameraFilter addTarget:_currentVideoFilterAdded];
+    
+    for (PSFilterData *data in _arrayCamera) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayPhoto) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayVideo) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    for (PSFilterData *data in _arrayOther) {
+        [data setSwitchValue:0];
+        [data setIndexValue:-1];
+    }
+    
+    [self reloadTableFilter];
 }
 
 -(void)changeSwitchStatus:(BOOL)status filterData:(PSFilterData *)data atIndex:(int)index;
@@ -1506,7 +1712,15 @@
         }
             break;
         case OtherSetting:
-
+        {
+            if (data.otherType == OthersShowGrid) {
+                if (status) {
+                    [self.gridviewImg setHidden:NO];
+                } else {
+                    [self.gridviewImg setHidden:YES];
+                }
+            }
+        }
             break;
         case PhotoSetting:
         {
@@ -1515,8 +1729,9 @@
                 
                 AVCaptureConnection *videoConnection = [_stillCameraFilter videoCaptureConnection];
                 if (!status) {
-                    if ([videoConnection isVideoStabilizationSupported])
+                    if ([videoConnection isVideoStabilizationSupported] && _isStabilizer)
                     {
+                        _isStabilizer = NO;
                         NSLog(@"VideoStabilizationSupported! Curr val: %i", [videoConnection isVideoStabilizationEnabled]);
                         if (![videoConnection isVideoStabilizationEnabled]) {
                             NSLog(@"enabling Video Stabilization!");
@@ -1529,6 +1744,7 @@
                 } else {
                     if ([videoConnection isVideoStabilizationSupported])
                     {
+                        _isStabilizer = YES;
                         NSLog(@"VideoStabilizationSupported! Curr val: %i", [videoConnection isVideoStabilizationEnabled]);
                         if ([videoConnection isVideoStabilizationEnabled]) {
                             NSLog(@"enabling Video Stabilization!");
@@ -1544,19 +1760,70 @@
                 
                 NSLog(@"PhotoDelayJPEG");
                 _idHDRPresetHigh = status;
+                
+                if (status) {
+                    [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetHigh];
+                } else {
+                    [_stillCameraFilter setCaptureSessionPreset:AVCaptureSessionPresetMedium];
+                }
+                
             } else if (data.photoType == PhotoOverlay) {
                 _isAddTimeLable = status;
             } else if (data.photoType == PhotoSaveGPS) {
                 _isAddGPSLable = status;
+                if (status == YES) {
+                    locationManager.delegate = self;
+                    [locationManager startUpdatingLocation];
+                }
             }
         }
             break;
         case VideoSetting:
-
+        {
+            if (data.videoType == RotateAutoRotateVideo) {
+                _isAutoRotationVideo = status;
+            }
+        }
             break;
         case ChildSetting:
             break;
     }
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    UIAlertView *errorAlert = [[UIAlertView alloc]
+                               initWithTitle:@"Error" message:@"Failed to Get Your Location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [errorAlert show];
+    
+    _currentLocation = @"";
+    [locationManager stopUpdatingLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+{
+    NSLog(@"didUpdateToLocation: %@", newLocation);
+    if (_geocoder) {
+        _geocoder = [[CLGeocoder alloc] init];
+    }
+    
+    [_geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemark, NSError *error) {
+        
+        CLPlacemark *pm = [placemark objectAtIndex:0];
+        // do something with the address, see keys in the remark below
+        NSLog(@"name: %@", pm.name);
+        NSString *address = [NSString stringWithFormat:@"%@", pm.name];
+        
+        if (address == nil || [address isEqualToString:@""] || [address isEqualToString:@"(null)"]) {
+            _currentLocation = @"";
+        } else {
+            _currentLocation = address;
+        }
+    }];
+    
+    [locationManager stopUpdatingLocation];
 }
 
 #pragma mark -
@@ -1835,7 +2102,15 @@
 {
     NSLog(@"ROTATION: Landscape");
     
-    maximumItemCount = 5;
+    if (_stillCameraFilter) {
+        _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationLandscapeRight;
+    }
+    
+    if (_cameraFilter && _isAutoRotationVideo) {
+        _cameraFilter.outputImageOrientation = UIInterfaceOrientationLandscapeRight;
+    }
+    
+    maximumItemCount = max_ITEM_COUNT_LANDCAPT;
     
     UIImage *bottomBarPortrait = [UIImage imageNamed:@"buttom_bar_portrain.png"];
     
@@ -1882,7 +2157,15 @@
 {
     NSLog(@"ROTATION: Portrait");
     
-    maximumItemCount = 8;
+    if (_stillCameraFilter) {
+        _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+    }
+    
+    if (_cameraFilter && _isAutoRotationVideo) {
+        _cameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
+    }
+    
+    maximumItemCount = max_ITEM_COUNT;
     
     UIImage *bottomBarLandscape = [UIImage imageNamed:@"buttom_bar.png"];
     
@@ -1894,13 +2177,6 @@
     self.bottomBarImage.frame = CGRectMake(0, kVideoViewHeight, screenBound.size.width, kBootomViewHeight);
     self.videoView.frame = CGRectMake(0, 0, screenBound.size.width, kVideoViewHeight + 20);
     self.bottomBarImage.image = bottomBarLandscape;
-    
-//    _filteredView.frame = screenBound;
-//    [_filteredView removeFromSuperview];
-//    [self.captureView addSubview:_filterView];
-    
-    NSLog(@"width %f", screenBound.size.width);
-    NSLog(@"height %f", screenBound.size.height);
     
     // Config element view on bottom bar
     self.captureBtn.frame = CGRectMake((screenBound.size.width - self.captureBtn.frame.size.width) / 2 - 3, kVideoViewHeight + 10, self.captureBtn.frame.size.width, self.captureBtn.frame.size.height);
@@ -1958,6 +2234,24 @@
     }
     
     return screenBoundReal;
+}
+
+-(UIImage*) drawText:(NSString*) text
+             inImage:(UIImage*)  image
+             atPoint:(CGPoint)   point
+{
+    
+    UIFont *font = [UIFont boldSystemFontOfSize:17];
+    
+    UIGraphicsBeginImageContext(image.size);
+    [image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
+    CGRect rect = CGRectMake(point.x, point.y, image.size.width, image.size.height);
+    [[UIColor redColor] set];
+    [text drawInRect:CGRectIntegral(rect) withFont:font];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 @end
