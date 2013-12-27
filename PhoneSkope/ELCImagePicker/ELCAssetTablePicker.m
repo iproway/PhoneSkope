@@ -42,8 +42,8 @@
     if (self.immediateReturn) {
         
     } else {
-        UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)];
-        [self.navigationItem setRightBarButtonItem:doneButtonItem];
+//        UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)];
+//        [self.navigationItem setRightBarButtonItem:doneButtonItem];
         [self.navigationItem setTitle:@"Loading..."];
     }
 
@@ -152,6 +152,15 @@
         NSArray *singleAssetArray = @[asset.asset];
         [(NSObject *)self.parent performSelector:@selector(selectedAssets:) withObject:singleAssetArray afterDelay:0];
     }
+    
+    NSMutableArray *selectedAssetsImages = [[NSMutableArray alloc] init];
+    
+	for (ELCAsset *elcAsset in self.elcAssets) {
+		if ([elcAsset selected]) {
+			[selectedAssetsImages addObject:[elcAsset asset]];
+		}
+	}
+    [self.parent selectedAssets:selectedAssetsImages];
 }
 
 #pragma mark UITableViewDataSource Delegate Methods

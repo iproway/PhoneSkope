@@ -54,7 +54,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <subviews>
                         <view alpha="0.49999999999999961" contentMode="scaleToFill" id="uXE-M3-SZO">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="57"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="rectImage.png" id="KOm-QN-zCu">
@@ -80,7 +80,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <state key="normal" backgroundImage="video_capture_icon.png">
+                            <state key="normal" backgroundImage="ps_capture_icon.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="titleShadowColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
@@ -282,10 +282,10 @@
         <image name="camera_icon.png" width="45" height="45"/>
         <image name="close-icon.png" width="24" height="24"/>
         <image name="gridview.png" width="320" height="568"/>
-        <image name="imagestest.jpeg" width="275" height="183"/>
+        <image name="imagestest.jpeg" width="136" height="91"/>
         <image name="optionButton.png" width="132" height="33"/>
+        <image name="ps_capture_icon.png" width="42" height="42"/>
         <image name="rectImage.png" width="55" height="11"/>
-        <image name="video_capture_icon.png" width="41" height="41"/>
         <image name="zoom_normal.png" width="78" height="33"/>
     </resources>
 </document>

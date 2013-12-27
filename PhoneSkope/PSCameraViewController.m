@@ -20,7 +20,9 @@ typedef enum
 #define kPollingInterval 0.1
 #define TABLE_HEIGHT 36.0f
 
-#define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
+#define HEIGHT_IPHONE_5 568
+#define IS_IPHONE   ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_5 ([[UIScreen mainScreen] bounds ].size.height >= HEIGHT_IPHONE_5 )
 
 @interface PSCameraViewController ()
 {
@@ -99,6 +101,8 @@ typedef enum
     GPUImageOutput<GPUImageInput> *_currentVideoFilterAdded;
     
     int _previewTime;
+    
+    UIImageView *_animatedImage;
 }
 
 @end
@@ -283,6 +287,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 -(IBAction) segmentChange:(id)sender;
@@ -364,6 +371,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 
@@ -426,6 +436,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 
 }
 
@@ -552,6 +565,9 @@ typedef enum
         
         NSData *dataForPNGFile = UIImageJPEGRepresentation(imgTemple, _photoJPEGQuanlity);
         
+        // Animation capture photo
+        [self captureAnimation:imgTemple];
+        
         // Save to assets library
         [_assetsLibrary writeImageDataToSavedPhotosAlbum:dataForPNGFile metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
@@ -630,6 +646,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 
@@ -675,6 +694,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 -(IBAction)actionFilterOption:(id)sender
@@ -842,6 +864,8 @@ typedef enum
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_start_rotate_image.png"] forState:UIControlStateNormal];
         [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"camera_rotate_image.png"] forState:UIControlStateSelected];
         
+        [self.cameraChangeImage setImage:[UIImage imageNamed:@"photo_icon.png"] forState:UIControlStateNormal];
+        
         if (_stillCameraFilter) {
             [_stillCameraFilter stopCameraCapture];
         }
@@ -850,6 +874,8 @@ typedef enum
         
         [_filteredView setHidden:YES];
         [_filterVideoView setHidden:NO];
+        
+        [self.thumbPhotoImage setImage:[UIImage imageNamed:@"imagestest.jpeg"] forState:UIControlStateNormal];
         
     } else {
         NSLog(@"Change Photo");
@@ -862,8 +888,10 @@ typedef enum
         }
         
         self.videoView.hidden = YES;
-        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateNormal];
-        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"video_capture_icon.png"] forState:UIControlStateSelected];
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"ps_capture_icon.png"] forState:UIControlStateNormal];
+        [self.captureBtn setBackgroundImage:[UIImage imageNamed:@"ps_capture_icon.png"] forState:UIControlStateSelected];
+        
+        [self.cameraChangeImage setImage:[UIImage imageNamed:@"camera_icon.png"] forState:UIControlStateNormal];
         
         if (_cameraFilter) {
             [_cameraFilter stopCameraCapture];
@@ -923,6 +951,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 #pragma mark -
@@ -950,17 +981,17 @@ typedef enum
 {
     flashLight = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if ([flashLight hasTorch] || [flashLight hasFlash]) {
-        _flashLight = FlashLightAuto;
+        _flashLight = FlashLightOff;
         _isNoFlashLight = NO;
         
         BOOL success = [flashLight lockForConfiguration:nil];
         if(success){
-            [flashLight setTorchMode:AVCaptureTorchModeAuto];
-            [flashLight setFlashMode:AVCaptureFlashModeAuto];
+            [flashLight setTorchMode:AVCaptureTorchModeOff];
+            [flashLight setFlashMode:AVCaptureFlashModeOff];
             [flashLight unlockForConfiguration];
         }
         
-        [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-auto.png"]
+        [self.flashBtn setImage:[UIImage imageNamed:@"icon-flash-off.png"]
                        forState:UIControlStateNormal];
         
     } else {
@@ -1588,6 +1619,9 @@ typedef enum
     height = count * TABLE_HEIGHT;
     self.tableViewFilter.frame = CGRectMake(self.tableViewFilter.frame.origin.x, self.tableViewFilter.frame.origin.y,
                                             self.tableViewFilter.frame.size.width, height);
+    
+    self.filterView.frame = CGRectMake(self.filterView.frame.origin.x, self.filterView.frame.origin.y,
+                                       self.filterView.frame.size.width, height + self.segmentControlFilter.frame.size.height);
 }
 
 - (void)addFilterForCaptureStillCameraWith:(GPUImageOutput<GPUImageInput> *)filterAdded;
@@ -2148,16 +2182,17 @@ typedef enum
         navigaHeight = 0;
     }
     
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        navigaHeight = 0;
+    }
+    
     CGRect screenBound = [self getLandscaptScreenBound]; // [[UIScreen mainScreen] bounds];
     CGRect frame = CGRectMake(screenBound.size.width - kVideoViewHeight - kBootomViewHeight, -navigaHeight, kVideoViewHeight + kBootomViewHeight, screenBound.size.height);
     
     self.controlView.frame = frame;
     self.bottomBarImage.frame = CGRectMake(kVideoViewHeight, 0, kBootomViewHeight, screenBound.size.height);
-    self.videoView.frame = CGRectMake(0, 0, kVideoViewHeight + 20, screenBound.size.height);
+    self.videoView.frame = CGRectMake(0, 0, kVideoViewHeight + 30, screenBound.size.height);
     self.bottomBarImage.image = bottomBarPortrait;
-    
-    NSLog(@"width %f", screenBound.size.width);
-    NSLog(@"height %f", screenBound.size.height);
     
     // Config element view on bottom bar
     self.captureBtn.frame = CGRectMake(kVideoViewHeight + 10, (screenBound.size.height - self.captureBtn.frame.size.width) / 2 + 3, self.captureBtn.frame.size.width, self.captureBtn.frame.size.height);
@@ -2207,12 +2242,16 @@ typedef enum
         navigaHeight = 0;
     }
     
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        navigaHeight = 0;
+    }
+    
     CGRect screenBound = [self getPortraitScreenBound]; //[[UIScreen mainScreen] bounds];
     CGRect frame = CGRectMake(0, screenBound.size.height - kVideoViewHeight - kBootomViewHeight - navigaHeight, screenBound.size.width, kVideoViewHeight + kBootomViewHeight);
     
     self.controlView.frame = frame;
     self.bottomBarImage.frame = CGRectMake(0, kVideoViewHeight, screenBound.size.width, kBootomViewHeight);
-    self.videoView.frame = CGRectMake(0, 0, screenBound.size.width, kVideoViewHeight + 20);
+    self.videoView.frame = CGRectMake(0, 0, screenBound.size.width, kVideoViewHeight + 30);
     self.bottomBarImage.image = bottomBarLandscape;
     
     // Config element view on bottom bar
@@ -2289,6 +2328,41 @@ typedef enum
     UIGraphicsEndImageContext();
     
     return newImage;
+}
+
+- (void)captureAnimation:(UIImage *)image;
+{
+    
+    if (!_animatedImage) {
+        _animatedImage = [[UIImageView alloc]
+                          initWithFrame:CGRectMake(self.captureView.frame.origin.x,
+                                                   self.captureView.frame.origin.y,
+                                                   self.captureView.frame.size.width,
+                                                   self.captureView.frame.size.height - 20)];
+    } else
+        _animatedImage.frame = CGRectMake(self.captureView.frame.origin.x,
+                                          self.captureView.frame.origin.y,
+                                          self.captureView.frame.size.width,
+                                          self.captureView.frame.size.height - 20);
+    
+    _animatedImage.image = image;
+    
+    [self.captureView addSubview:_animatedImage];
+    
+    [UIView animateWithDuration: 0.5
+                          delay: 0.3
+                        options: UIViewAnimationOptionTransitionCurlUp
+                     animations:^{
+                         _animatedImage.frame = CGRectMake(self.thumbPhotoImage.frame.origin.x + self.controlView.frame.origin.x,
+                                                           self.thumbPhotoImage.frame.origin.y + self.controlView.frame.origin.y,
+                                                           self.thumbPhotoImage.frame.size.width,
+                                                           self.thumbPhotoImage.frame.size.height);
+                     }
+                     completion:^(BOOL finished){
+                         
+                         [self.thumbPhotoImage setBackgroundImage:image forState:UIControlStateNormal];
+                         [_animatedImage removeFromSuperview];
+                     }];
 }
 
 @end

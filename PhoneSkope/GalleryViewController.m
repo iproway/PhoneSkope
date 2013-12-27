@@ -56,6 +56,10 @@
     
     [self presentViewController:elcPicker animated:YES completion:nil];
     
+    
+        UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteMedia:)];
+        [self.navigationItem setRightBarButtonItem:doneButtonItem];
+    [self.navigationItem setTitle:@"PhoneSkope"];
 }
 
 - (void)didReceiveMemoryWarning
