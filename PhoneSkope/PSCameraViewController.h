@@ -9,6 +9,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "PSAppDelegate.h"
 
+
 @interface PSCameraViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SwitchChangeDelegate, GPUImageVideoCameraDelegate, CLLocationManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIButton *thumbPhotoImage;
 @property (weak, nonatomic) IBOutlet UIButton *cameraChangeImage;
@@ -39,10 +40,21 @@
 @property (weak, nonatomic) IBOutlet UIButton* flAlwayBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flNoneBtn;
 @property (weak, nonatomic) IBOutlet UIButton* flSoundBtn;
+
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentInfo;
+@property (weak, nonatomic) IBOutlet UILabel *infoLabel;
+@property (weak, nonatomic) IBOutlet UILabel *programLabel;
+@property (weak, nonatomic) IBOutlet UIButton *infoBtn;
+@property (weak, nonatomic) IBOutlet UIView *infoView;
+@property (strong, nonatomic) IBOutlet UIImage *currentCaptureImage;
+
 - (IBAction)sliderValueChanged:(id)sender;
 
 @property(nonatomic, retain) CIDetector*faceDetector;
 
+- (IBAction)closeInfoAction:(id)sender;
+- (IBAction)buyAction:(id)sender;
+- (IBAction)infoAction:(id)sender;
 - (IBAction)openPhotoGallery:(id)sender;
 - (IBAction)captureAction:(id)sender;
 - (IBAction)closeFilterChildren:(id)sender;

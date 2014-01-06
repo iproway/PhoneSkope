@@ -24,6 +24,8 @@ typedef enum
 #define IS_IPHONE   ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
 #define IS_IPHONE_5 ([[UIScreen mainScreen] bounds ].size.height >= HEIGHT_IPHONE_5 )
 
+#define kCaptureImageNotification        @"captureImageNotification"
+
 @interface PSCameraViewController ()
 {
     CLLocationManager *locationManager;
@@ -103,6 +105,7 @@ typedef enum
     int _previewTime;
     
     UIImageView *_animatedImage;
+    NSString *_imgPath;
 }
 
 @end
@@ -270,6 +273,32 @@ typedef enum
     if ([[[UIDevice currentDevice] systemVersion] floatValue] < 7.0) {
         self.segmentControlFilter.frame = CGRectMake(self.segmentControlFilter.frame.origin.x, self.segmentControlFilter.frame.origin.y - 15, self.segmentControlFilter.frame.size.width, self.segmentControlFilter.frame.size.height);
     }
+    
+    [self.segmentInfo addTarget:self action:@selector(segmentInfoChange:) forControlEvents:UIControlEventValueChanged];
+}
+
+-(IBAction) segmentInfoChange:(id)sender;
+{
+    UISegmentedControl * control = sender;
+    int selectedIndex = [control selectedSegmentIndex];
+    
+    switch (selectedIndex) {
+        case 0:
+        {
+            [self.programLabel setHidden:NO];
+            [self.infoLabel setHidden:YES];
+        }
+            break;
+        case 1:
+        {
+            [self.infoLabel setHidden:NO];
+            [self.programLabel setHidden:YES];
+        }
+            break;
+        default:
+            break;
+    }
+
 }
 
 -(IBAction) segmentTouch:(id)sender;
@@ -388,6 +417,7 @@ typedef enum
     [self.flashBtn setSelected:NO];
     [self.zoomBtn setSelected:NO];
     [self.optionBtn setSelected:NO];
+    [self.infoView setHidden:YES];
     
     _isChildFilter = NO;
     
@@ -442,26 +472,41 @@ typedef enum
 
 }
 
+- (IBAction)closeInfoAction:(id)sender {
+    [self.infoView setHidden:YES];
+}
+
+- (IBAction)buyAction:(id)sender {
+    [self.infoView setHidden:YES];
+}
+
+- (IBAction)infoAction:(id)sender {
+//    [[[UIAlertView alloc] initWithTitle:@"PhoneSkope"
+//                                message:[NSString stringWithFormat:@"Please fill in all fields!"]
+//                               delegate:nil
+//                      cancelButtonTitle:@"OK"
+//                      otherButtonTitles:nil] show];
+    
+    self.flashMenu.hidden = YES;
+    self.filterView.hidden = YES;
+    self.sliderBar.hidden = YES;
+    [self.flashBtn setSelected:NO];
+    [self.zoomBtn setSelected:NO];
+    [self.optionBtn setSelected:NO];
+    
+    
+    if ([self.infoView isHidden]) {
+        [self.infoView setHidden:NO];
+        [self.infoLabel setHidden:YES];
+        [self.programLabel setHidden:NO];
+        
+        [self.segmentInfo setSelectedSegmentIndex:0];
+    } else
+        [self.infoView setHidden:YES];
+}
+
 - (IBAction)openPhotoGallery:(id)sender;
 {
-//    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-//    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-//    
-//    [self presentModalViewController:picker animated:YES];
-    
-    
-//    if([UIImagePickerController isSourceTypeAvailable:
-//        UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
-//        
-//        UIImagePickerController *picker= [[UIImagePickerController alloc] init];
-//        picker.delegate = self;
-//        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-////        picker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
-//        
-//        [self presentModalViewController:picker animated:YES];
-//    }
-    
-
     GalleryViewController *viewController = [[GalleryViewController alloc] initWithNibName:@"GalleryViewController" bundle:nil];
     [[ApplicationDelegate homeNavigationController] pushViewController:viewController animated:YES];
 }
@@ -480,6 +525,7 @@ typedef enum
 
 - (IBAction)captureAction:(id)sender;
 {
+    [self.infoView setHidden:YES];
     if (_isVideoStyle == YES) {
         
         if (![sender isSelected]) {
@@ -549,6 +595,7 @@ typedef enum
     [_stillCameraFilter capturePhotoAsImageProcessedUpToFilter:_filterGroup withCompletionHandler:^(UIImage *processedImage, NSError *error) {
         
         UIImage *imgTemple = processedImage;
+//        [self setCurrentCaptureImage:processedImage];
         if (_isAddTimeLable) {
             
             NSDate *currDate = [NSDate date];
@@ -565,13 +612,9 @@ typedef enum
         
         NSData *dataForPNGFile = UIImageJPEGRepresentation(imgTemple, _photoJPEGQuanlity);
         
-        // Animation capture photo
-        [self captureAnimation:imgTemple];
-        
         // Save to assets library
         [_assetsLibrary writeImageDataToSavedPhotosAlbum:dataForPNGFile metadata:_stillCameraFilter.currentCaptureMetadata completionBlock:^(NSURL *assetURL, NSError *error2)
          {
-
              [_stillCameraFilter stopCameraCapture];
              [self performSelector:@selector(nextAction)
                         withObject:nil
@@ -584,10 +627,15 @@ typedef enum
                  NSLog(@"PHOTO SAVED - assetURL: %@", assetURL);
              }
 
+             NSString *imgPath = [NSString stringWithFormat:@"%@", assetURL];
              runOnMainQueueWithoutDeadlocking(^{
-
+                 
+//                 // Animation capture photo
+//                 [self captureAnimation:self.currentCaptureImage];
+                 
+                 [[NSNotificationCenter defaultCenter] postNotificationName:kCaptureImageNotification object:imgPath];
+                 
                  [sender setEnabled:YES];
-                 [self resetFilterForPhoto];
              });
          }];
     }];
@@ -595,6 +643,7 @@ typedef enum
 
 - (IBAction)nextAction;
 {
+    [self resetFilterForPhoto];
     [_stillCameraFilter startCameraCapture];
 }
 
@@ -703,7 +752,7 @@ typedef enum
 {
     [self.flashBtn setSelected:NO];
     [self.zoomBtn setSelected:NO];
-    
+    [self.infoView setHidden:YES];
     self.sliderBar.hidden = YES;
     self.flashMenu.hidden = YES;
 
@@ -732,7 +781,7 @@ typedef enum
     if (_isNoFlashLight) {
         return;
     }
-    
+    [self.infoView setHidden:YES];
     [self.optionBtn setSelected:NO];
     [self.zoomBtn setSelected:NO];
     self.sliderBar.hidden = YES;
@@ -755,6 +804,7 @@ typedef enum
     [self.optionBtn setSelected:NO];
     self.flashMenu.hidden = YES;
     self.filterView.hidden = YES;
+    [self.infoView setHidden:YES];
     
     if (self.sliderBar.hidden) {
         [self.zoomBtn setSelected:YES];
@@ -875,7 +925,7 @@ typedef enum
         [_filteredView setHidden:YES];
         [_filterVideoView setHidden:NO];
         
-        [self.thumbPhotoImage setImage:[UIImage imageNamed:@"imagestest.jpeg"] forState:UIControlStateNormal];
+        [self.thumbPhotoImage setBackgroundImage:[UIImage imageNamed:@"img_thumb.png"] forState:UIControlStateNormal];
         
     } else {
         NSLog(@"Change Photo");
@@ -1111,6 +1161,8 @@ typedef enum
     _videoFileType = TypeMPEG4;
     _isAutoRotationVideo = NO;
     _previewTime = 0;
+    [self.infoView setHidden:YES];
+    [self.infoLabel setHidden:YES];
     
     locationManager = [[CLLocationManager alloc] init];
     _geocoder = [[CLGeocoder alloc] init];
@@ -1198,6 +1250,20 @@ typedef enum
     } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
         [self changeUIPortraitRotation];
     }
+    
+    _animatedImage = [[UIImageView alloc]
+                      initWithFrame:CGRectMake(self.captureView.frame.origin.x,
+                                               self.captureView.frame.origin.y,
+                                               self.captureView.frame.size.width,
+                                               self.captureView.frame.size.height - 20)];
+    
+    [self.captureView addSubview:_animatedImage];
+    [_animatedImage setHidden:YES];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(animationCapture:)
+                                                 name:kCaptureImageNotification
+                                               object:nil];
 }
 
 - (void)startTimmer;
@@ -1778,6 +1844,15 @@ typedef enum
         {
             if (data.otherType == OthersShowGrid) {
                 if (status) {
+                    
+                    // Check rotation
+                    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+                    if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+                        [self.gridviewImg setImage:[UIImage imageNamed:@"gridview_lc.png"]];
+                    } else if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+                        [self.gridviewImg setImage:[UIImage imageNamed:@"gridview_pt.png"]];
+                    }
+                    
                     [self.gridviewImg setHidden:NO];
                 } else {
                     [self.gridviewImg setHidden:YES];
@@ -2128,8 +2203,7 @@ typedef enum
 - (void)writeMovieToLibraryWithPath:(NSURL *)path
 {
     NSLog(@"writing %@ to library", path);
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    [library writeVideoAtPathToSavedPhotosAlbum:path
+    [_assetsLibrary writeVideoAtPathToSavedPhotosAlbum:path
                                 completionBlock:^(NSURL *assetURL, NSError *error) {
                                     if (error)
                                     {
@@ -2164,6 +2238,8 @@ typedef enum
 - (void)changeUILandscapeRotation;
 {
     NSLog(@"ROTATION: Landscape");
+    
+    [self.gridviewImg setImage:[UIImage imageNamed:@"gridview_lc.png"]];
     
     if (_stillCameraFilter) {
         _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationLandscapeRight;
@@ -2207,7 +2283,7 @@ typedef enum
                                         self.timmerLable.frame.size.height);
 
     
-    self.thumbPhotoImage.frame = CGRectMake(85, screenBound.size.height - (25 + kThumbImgSize), kThumbImgSize, kThumbImgSize);
+    self.thumbPhotoImage.frame = CGRectMake(84, screenBound.size.height - (28 + 37), 37, 45);
     
     self.cameraChangeImage.frame = CGRectMake(80, 25, self.cameraChangeImage.frame.size.width, self.cameraChangeImage.frame.size.height);
     
@@ -2224,6 +2300,8 @@ typedef enum
 - (void)changeUIPortraitRotation;
 {
     NSLog(@"ROTATION: Portrait");
+    
+    [self.gridviewImg setImage:[UIImage imageNamed:@"gridview_pt.png"]];
     
     if (_stillCameraFilter) {
         _stillCameraFilter.outputImageOrientation = UIInterfaceOrientationPortrait;
@@ -2266,7 +2344,7 @@ typedef enum
                                         self.timmerLable.frame.size.width,
                                         self.timmerLable.frame.size.height);
     
-    self.thumbPhotoImage.frame = CGRectMake(25, 85, kThumbImgSize, kThumbImgSize);
+    self.thumbPhotoImage.frame = CGRectMake(20, 84, 45, 37);
     
     self.cameraChangeImage.frame = CGRectMake(screenBound.size.width - (25 + kThumbImgSize), 80, self.cameraChangeImage.frame.size.width, self.cameraChangeImage.frame.size.height);
     
@@ -2332,37 +2410,100 @@ typedef enum
 
 - (void)captureAnimation:(UIImage *)image;
 {
+//    [self.thumbPhotoImage setBackgroundImage:image forState:UIControlStateNormal];
     
-    if (!_animatedImage) {
-        _animatedImage = [[UIImageView alloc]
-                          initWithFrame:CGRectMake(self.captureView.frame.origin.x,
-                                                   self.captureView.frame.origin.y,
-                                                   self.captureView.frame.size.width,
-                                                   self.captureView.frame.size.height - 20)];
-    } else
-        _animatedImage.frame = CGRectMake(self.captureView.frame.origin.x,
-                                          self.captureView.frame.origin.y,
-                                          self.captureView.frame.size.width,
-                                          self.captureView.frame.size.height - 20);
+    _animatedImage.frame = CGRectMake(self.captureView.frame.origin.x,
+                                      self.captureView.frame.origin.y,
+                                      self.captureView.frame.size.width,
+                                      self.captureView.frame.size.height - 20);
     
-    _animatedImage.image = image;
-    
-    [self.captureView addSubview:_animatedImage];
+    [_animatedImage setHidden:YES];
     
     [UIView animateWithDuration: 0.5
                           delay: 0.3
                         options: UIViewAnimationOptionTransitionCurlUp
                      animations:^{
+
                          _animatedImage.frame = CGRectMake(self.thumbPhotoImage.frame.origin.x + self.controlView.frame.origin.x,
                                                            self.thumbPhotoImage.frame.origin.y + self.controlView.frame.origin.y,
                                                            self.thumbPhotoImage.frame.size.width,
                                                            self.thumbPhotoImage.frame.size.height);
+                         
+                         _animatedImage.image = image;
+                         [_animatedImage setHidden:NO];
                      }
                      completion:^(BOOL finished){
                          
+                         [_animatedImage setHidden:YES];
                          [self.thumbPhotoImage setBackgroundImage:image forState:UIControlStateNormal];
-                         [_animatedImage removeFromSuperview];
                      }];
+}
+
+- (void)animationCapture:(NSNotification *)notofication;
+{
+    if ([notofication.object isKindOfClass:[NSString class]]) {
+        
+        typedef void (^ALAssetsLibraryAssetForURLResultBlock)(ALAsset *asset);
+        typedef void (^ALAssetsLibraryAccessFailureBlock)(NSError *error);
+        
+        ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+        {
+            ALAssetRepresentation *rep = [myasset defaultRepresentation];
+            CGImageRef iref = [rep fullResolutionImage];
+            UIImage *images;
+            if (iref)
+            {
+                
+                images = [UIImage imageWithCGImage:iref scale:[rep scale] orientation:(UIImageOrientation)[rep orientation]];
+
+//                [self imageRotatedByDegrees:0.0 withImage:images]
+                // Animation capture photo
+                [self captureAnimation:images];
+            }
+            
+        };
+        
+        ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+        {
+            NSLog(@"can't get image");
+        };
+        
+        NSURL *asseturl = [NSURL URLWithString:notofication.object];
+        
+        [_assetsLibrary assetForURL:asseturl
+                       resultBlock:resultblock   
+                      failureBlock:failureblock];
+    }
+}
+
+CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
+CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
+
+- (UIImage *)imageRotatedByDegrees:(CGFloat)degrees withImage:(UIImage *)image
+{
+    // calculate the size of the rotated view's containing box for our drawing space
+    UIView *rotatedViewBox = [[UIView alloc] initWithFrame:CGRectMake(0,0,image.size.width, image.size.height)];
+    CGAffineTransform t = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
+    rotatedViewBox.transform = t;
+    CGSize rotatedSize = rotatedViewBox.frame.size;
+    
+    // Create the bitmap context
+    UIGraphicsBeginImageContext(rotatedSize);
+    CGContextRef bitmap = UIGraphicsGetCurrentContext();
+    
+    // Move the origin to the middle of the image so we will rotate and scale around the center.
+    CGContextTranslateCTM(bitmap, rotatedSize.width/2, rotatedSize.height/2);
+    
+    //   // Rotate the image context
+    CGContextRotateCTM(bitmap, DegreesToRadians(degrees));
+    
+    // Now, draw the rotated/scaled image into the context
+    CGContextScaleCTM(bitmap, 1.0, -1.0);
+    CGContextDrawImage(bitmap, CGRectMake(-image.size.width / 2, -image.size.height / 2, image.size.width, image.size.height), [image CGImage]);
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 @end
